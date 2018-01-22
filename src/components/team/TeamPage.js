@@ -1,9 +1,8 @@
-import React, {
-  Component
-} from 'react';
-import fire from './fire';
+import React from 'react';
+import fire from '../../fire';
+import People from './People';
 
-class App extends Component {
+class TeamPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -13,7 +12,11 @@ class App extends Component {
 
   componentWillMount() {
     /* Create reference to people in Firebase Database */
-    let peopleRef = fire.database().ref('people').orderByKey().limitToLast(100);
+    let peopleRef = fire
+      .database()
+      .ref('people')
+      .orderByKey()
+      .limitToLast(100);
     peopleRef.on('child_added', snapshot => {
       /* Update React state when person is added at Firebase Database */
       let person = {
@@ -23,13 +26,16 @@ class App extends Component {
       this.setState({
         people: [person].concat(this.state.people)
       });
-    })
+    });
   }
 
   addPerson(e) {
     e.preventDefault(); // <- prevent form submit from reloading the page
     /* Send the person to Firebase */
-    fire.database().ref('people').push(this.inputEl.value);
+    fire
+      .database()
+      .ref('people')
+      .push(this.inputEl.value);
     this.inputEl.value = ''; // <- clear the input
   }
 
@@ -37,17 +43,13 @@ class App extends Component {
     return (
       <div>
         <form onSubmit={this.addPerson.bind(this)}>
-          <input type="text" ref={ el => this.inputEl = el }/>
-          <input type="submit"/>
-          <ul>
-            { /* Render the list of people */
-              this.state.people.map( person => <li key={person.id}>{person.name}</li> )
-            }
-          </ul>
+          <input type="text" ref={el => (this.inputEl = el)} />
+          <input type="submit" />
         </form>
+        <People people={this.state.people} />
       </div>
     );
   }
 }
 
-export default App;
+export default TeamPage;
