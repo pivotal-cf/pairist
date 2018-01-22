@@ -1,8 +1,5 @@
 module.exports = {
-  extends:  [
-    "eslint:recommended",
-    "plugin:react/recommended",
-  ],
+  extends: ["eslint:recommended", "plugin:react/recommended"],
   env: {
     browser: true,
     node: true,
@@ -16,9 +13,9 @@ module.exports = {
     },
   },
   rules: {
-    "indent": ["error", 2],
+    indent: ["error", 2],
     "comma-dangle": ["error", "always-multiline"],
     "quote-props": ["error", "consistent-as-needed"],
-    "quotes": ["error", "double"],
+    quotes: ["error", "double"],
   },
 };

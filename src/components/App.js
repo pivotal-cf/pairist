@@ -1,7 +1,7 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import HomePage from './home/HomePage';
-import TeamPage from './team/TeamPage';
+import React from "react";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import HomePage from "./home/HomePage";
+import TeamPage from "./team/TeamPage";
 
 const App = () => (
   <Router>
