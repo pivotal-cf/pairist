@@ -1,12 +1,12 @@
-import React from 'react';
-import fire from '../../fire';
-import People from './People';
+import React from "react";
+import fire from "../../fire";
+import People from "./People";
 
 class TeamPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      people: []
+      people: [],
     }; // <- set up react state
   }
 
@@ -14,17 +14,17 @@ class TeamPage extends React.Component {
     /* Create reference to people in Firebase Database */
     let peopleRef = fire
       .database()
-      .ref('people')
+      .ref("people")
       .orderByKey()
       .limitToLast(100);
-    peopleRef.on('child_added', snapshot => {
+    peopleRef.on("child_added", snapshot => {
       /* Update React state when person is added at Firebase Database */
       let person = {
         id: snapshot.key,
-        name: snapshot.val()
+        name: snapshot.val(),
       };
       this.setState({
-        people: [person].concat(this.state.people)
+        people: [person].concat(this.state.people),
       });
     });
   }
@@ -34,9 +34,9 @@ class TeamPage extends React.Component {
     /* Send the person to Firebase */
     fire
       .database()
-      .ref('people')
+      .ref("people")
       .push(this.inputEl.value);
-    this.inputEl.value = ''; // <- clear the input
+    this.inputEl.value = ""; // <- clear the input
   }
 
   render() {

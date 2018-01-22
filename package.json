@@ -36,7 +36,7 @@
 		"css:watch": "npm run css:build && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
 		"js:start": "react-scripts start",
 		"js:build": "react-scripts build",
-		"lint": "eslint src/**/*.js --fix",
+		"lint": "eslint 'src/**' --fix",
 		"test": "react-scripts test",
 		"build": "npm-run-all css:build js:build",
 		"start": "npm-run-all -p css:watch js:start",
