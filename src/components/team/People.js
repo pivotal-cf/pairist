@@ -6,7 +6,7 @@ class People extends Component {
   render() {
     return (
       <div className="people">
-        {this.props.people.map(person => <Person key={person.id} person={person} />)}
+        {this.props.people.map(person => <Person key={person.id} name={person.name} />)}
       </div>
     );
   }
