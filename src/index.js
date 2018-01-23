@@ -5,27 +5,10 @@ import React from "react"
 import ReactDOM from "react-dom"
 import App from "./components/App"
 import { Provider } from "react-redux"
-import { createStore, combineReducers, compose } from "redux"
-import { reactReduxFirebase, firebaseReducer } from "react-redux-firebase"
-import firebase from "firebase"
 import registerServiceWorker from "./registerServiceWorker"
-import firebaseConfig from "./fire"
+import configureStore from "./store/configureStore"
 
-const rrfConfig = {
-  userProfile: "users",
-}
-
-firebase.initializeApp(firebaseConfig)
-
-const createStoreWithFirebase = compose(reactReduxFirebase(firebase, rrfConfig))(createStore)
-
-const rootReducer = combineReducers({
-  firebase: firebaseReducer,
-})
-
-// Create store with reducers and initial state
-const initialState = {}
-const store = createStoreWithFirebase(rootReducer, initialState)
+const store = configureStore()
 
 const All = () => {
   return (

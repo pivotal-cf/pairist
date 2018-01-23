@@ -1,4 +1,0 @@
-#!/bin/bash
-
-lpass show -G Pairist/src/fire.js --notes > src/fire.js
-lpass show -G Pairist/.firebaserc --notes > .firebaserc
