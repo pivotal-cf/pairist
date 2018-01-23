@@ -1,4 +1,5 @@
 module.exports = {
+  parser: "babel-eslint",
   extends: ["eslint:recommended", "plugin:react/recommended"],
   env: {
     browser: true,
@@ -17,5 +18,6 @@ module.exports = {
     "comma-dangle": ["error", "always-multiline"],
     "quote-props": ["error", "consistent-as-needed"],
     quotes: ["error", "double"],
+    semi: ["error", "never"],
   },
-};
+}
