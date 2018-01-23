@@ -2,11 +2,11 @@
 
 ## Development
 
-Run a local firebase database server:
+Run all server dependencies;
 
-```bash
-yarn firebase
-```
+ - `yarn start`: run server with local firebase
+ - `yarn test`: run and watch tests
+
 
 ## Production
 

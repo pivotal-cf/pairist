@@ -44,7 +44,7 @@
 		"lint": "eslint 'src/**' --fix",
 		"test": "react-scripts test",
 		"build": "npm-run-all css:build js:build",
-		"start": "npm-run-all -p css:watch js:start",
+		"start": "npm-run-all -p firebase css:watch js:start",
 		"eject": "react-scripts eject",
 		"firebase": "firebase-server",
 		"deploy": "firebase deploy"
