@@ -1,15 +1,15 @@
 <template>
   <div>
-    <h1>{{ msg }}</h1>
+    <h1>{{ team }}</h1>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Hello",
+  name: "Team",
   data () {
     return {
-      msg: "Welcome to Your Vue.js App",
+      team: this.$route.params.team,
     }
   },
 }

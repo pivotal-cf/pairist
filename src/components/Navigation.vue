@@ -27,6 +27,19 @@
           to="/">
           Home
         </router-link>
+
+        <b-field class="navbar-item">
+          <b-input
+            placeholder="Goto team..."
+            icon="account-multiple"
+            @keyup.native.enter="gotoTeam"
+            v-model="team"/>
+          <p class="control">
+            <button
+              class="button is-primary"
+              @click="gotoTeam">Go</button>
+          </p>
+        </b-field>
       </div>
     </div>
   </nav>
@@ -35,6 +48,18 @@
 <script>
 export default {
   name: "Navigation",
+  data() {
+    return {
+      team: "",
+    }
+  },
+  methods: {
+    gotoTeam() {
+      if (this.team) {
+        this.$router.push({ name: "Team", params: { team: this.team } })
+      }
+    },
+  },
 }
 </script>
 

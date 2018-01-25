@@ -5,7 +5,7 @@
       <div
         id="content"
         class="container is-fluid">
-        <router-view/>
+        <router-view :key="$route.fullPath"/>
       </div>
     </div>
     <Footer/>
