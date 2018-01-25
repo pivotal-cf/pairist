@@ -6,8 +6,9 @@
   "private": true,
   "scripts": {
     "precommit": "lint-staged",
+    "firebase": "firebase-server",
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
-    "start": "npm run dev",
+    "start": "npm-run-all -p dev firebase",
     "unit": "jest --config test/unit/jest.conf.js",
     "unit:watch": "npm run unit -- --watch",
     "e2e": "node test/e2e/runner.js",
@@ -61,6 +62,7 @@
     "eslint-plugin-vue": "^4.2.0",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^1.1.4",
+    "firebase-server": "^0.12.0",
     "friendly-errors-webpack-plugin": "^1.6.1",
     "html-webpack-plugin": "^2.30.1",
     "husky": "^0.14.3",
