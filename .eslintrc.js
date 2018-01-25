@@ -1,17 +1,14 @@
 module.exports = {
-  parser: "babel-eslint",
-  extends: ["eslint:recommended", "plugin:react/recommended"],
+  extends: ["eslint:recommended", "plugin:vue/recommended"],
   env: {
     browser: true,
     node: true,
     jest: true,
   },
   parserOptions: {
+    parser: "babel-eslint",
     ecmaVersion: 6,
     sourceType: "module",
-    ecmaFeatures: {
-      jsx: true,
-    },
   },
   rules: {
     indent: ["error", 2],
