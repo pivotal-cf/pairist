@@ -1,4 +1,5 @@
 "use strict"
+/* eslint-disable no-console */
 require("./check-versions")()
 
 process.env.NODE_ENV = "production"
