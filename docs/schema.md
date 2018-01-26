@@ -8,8 +8,7 @@ const schema = {
           .key: "<generated>",
           name: "<name>",
           picture: "<url>",
-          state: "(available|out|track)",
-          location: "<.key>",
+          location: "(available|out|lane)",
         }
       ],
       roles: [
@@ -17,16 +16,21 @@ const schema = {
           .key: "<generated>",
           name: "<name>",
           picture: "<url>",
-          state: "(available|out|track)",
-          location: "<.key>",
+          location: "(available|out|lane)",
         }
       ],
       tracks: [
         {
           .key: "<generated>",
           title: "<title>",
+          location: "(available|out|lane)",
         },
       ],
+      lanes: [
+        {
+          sortOrder: 0,
+        }
+      ]
       history: {
         Date(): [
           {
@@ -40,3 +44,4 @@ const schema = {
   },
 }
 ```
+

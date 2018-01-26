@@ -17,15 +17,15 @@
     "build": "node build/build.js"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,json,css}": [
+    "src/**/*.{js,vue,jsx,json,css}": [
       "eslint --fix --ext .js,.vue",
-      "prettier -write",
       "git add"
     ]
   },
   "dependencies": {
     "buefy": "^0.6.2",
     "firebase": "^4.9.0",
+    "interact.js": "^1.2.8",
     "vue": "^2.5.13",
     "vue-router": "^3.0.1",
     "vuefire": "^1.4.5"
