@@ -20,6 +20,7 @@
         <span/>
       </button>
     </div>
+
     <div class="navbar-menu">
       <div class="navbar-start">
         <router-link
@@ -30,7 +31,7 @@
 
         <b-field class="navbar-item">
           <b-input
-            placeholder="Goto team..."
+            placeholder="Go to team..."
             icon="account-multiple"
             @keyup.native.enter="gotoTeam"
             v-model="team"/>

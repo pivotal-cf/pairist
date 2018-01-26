@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "precommit": "lint-staged",
-    "firebase": "firebase-server",
+    "firebase": "firebase-server -e",
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm-run-all -p dev firebase",
     "unit": "jest --config test/unit/jest.conf.js",

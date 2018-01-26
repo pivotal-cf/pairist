@@ -29,8 +29,8 @@ describe("Navigation", () => {
     })
 
     const gotoPage = team => {
-      const form = wrapper.find("nav .navbar-item:nth-child(2)")
       wrapper.setData({ team: team })
+      const form = wrapper.find("nav .navbar-item:nth-child(2)")
       form.find("button").trigger("click")
     }
 
