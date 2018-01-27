@@ -105,6 +105,17 @@
         </div>
       </div>
     </div>
+
+    <div
+      class="delete-zone"
+      :class="{ visible: showTrash }"
+      data-key="delete"
+    >
+      <b-icon
+        icon="close-circle"
+        custom-size="delete-icon"
+      />
+    </div>
   </div>
 </template>
 
@@ -137,6 +148,7 @@ export default {
       newPersonPicture: "",
       newTrackName: "",
       newRoleName: "",
+      showTrash: false,
       team: this.$route.params.team,
     }
   },
@@ -171,7 +183,12 @@ export default {
     Interact(".person, .track, .role").draggable({
       inertia: false,
       restrict: false,
-      autoScroll: true,
+      autoScroll: false,
+
+      onstart(event) {
+        self.showTrash = true
+        event.target.classList.add("dragging")
+      },
 
       onmove(event) {
         const target = event.target,
@@ -189,14 +206,17 @@ export default {
       onend(event) {
         const target = event.target
 
+        target.classList.remove("dragging")
         target.style.webkitTransform = target.style.transform = ""
 
         target.removeAttribute("data-x")
         target.removeAttribute("data-y")
+
+        self.showTrash = false
       },
     })
 
-    Interact(".dropzone").dropzone({
+    Interact(".dropzone, .delete-zone").dropzone({
       accept: ".person, .track, .role",
       overlap: 0.50,
 
@@ -209,10 +229,16 @@ export default {
 
         dropzoneElement.classList.add("drop-target")
         draggableElement.classList.add("can-drop")
+        if (dropzoneElement.classList.contains("delete-zone")) {
+          draggableElement.classList.add("deleting")
+        }
       },
       ondragleave(event) {
         event.target.classList.remove("drop-target")
         event.relatedTarget.classList.remove("can-drop")
+        if (event.target.classList.contains("delete-zone")) {
+          event.relatedTarget.classList.remove("deleting")
+        }
       },
       ondrop(event) {
         const key = event.relatedTarget.dataset.key,
@@ -239,6 +265,9 @@ export default {
 
   methods: {
     addPerson() {
+      if (this.newPersonName === "") {
+        return
+      }
       this.$firebaseRefs.people.push({
         name: this.newPersonName,
         picture: this.newPersonPicture,
@@ -249,6 +278,9 @@ export default {
     },
 
     addTrack() {
+      if (this.newTrackName === "") {
+        return
+      }
       this.$firebaseRefs.tracks.push({
         name: this.newTrackName,
         location: "available",
@@ -257,6 +289,9 @@ export default {
     },
 
     addRole() {
+      if (this.newRoleName === "") {
+        return
+      }
       this.$firebaseRefs.roles.push({
         name: this.newRoleName,
         location: "available",
@@ -265,20 +300,24 @@ export default {
     },
 
     move(type, key, targetKey) {
-      const thing = {...this[type].find(thing => thing[".key"] === key)}
-      delete thing[".key"]
-
-      if (targetKey == "new-lane") {
-        const newLaneKey = this.$firebaseRefs.lanes.push({sortOrder: 0}).key
-
-        thing.location = newLaneKey
-      } else if (targetKey) {
-        thing.location = targetKey
+      if (targetKey === "delete") {
+        this.$firebaseRefs[type].child(key).set(null)
       } else {
-        thing.location = "available"
-      }
+        const thing = {...this[type].find(thing => thing[".key"] === key)}
+        delete thing[".key"]
 
-      this.$firebaseRefs[type].child(key).set(thing)
+        if (targetKey == "new-lane") {
+          const newLaneKey = this.$firebaseRefs.lanes.push({sortOrder: 0}).key
+
+          thing.location = newLaneKey
+        } else if (targetKey) {
+          thing.location = targetKey
+        } else {
+          thing.location = "available"
+        }
+
+        this.$firebaseRefs[type].child(key).set(thing)
+      }
 
       this.lanesWithData.forEach(lane => {
         if (lane.people.length === 0 && lane.tracks.length === 0 && lane.roles.length === 0) {
@@ -294,7 +333,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .drop-target {
   background-color: hsl(0, 0%, 98%);
 }
@@ -322,5 +361,55 @@ export default {
 
 .roles.available {
   min-height: 122px;
+}
+
+.delete-zone {
+  transition: opacity 0.3s linear;
+
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  z-index: 100;
+  right: 0;
+  height: 100vh;
+  width: 8rem;
+  background: linear-gradient(to left, rgba(100, 0, 0, 0.4) 0%,rgba(255,255,255,0) 100%);
+  opacity: 0;
+  display: none;
+
+  &.drop-target {
+    background: linear-gradient(to left, rgba(100, 0, 0, 0.6) 0%,rgba(255,255,255,0) 100%);
+
+    .delete-icon:before {
+      color: rgb(200, 0, 0);
+    }
+  }
+
+  .delete-icon:before {
+    transition: top 0.3s linear;
+    top: 45vh;
+    left: 100px;
+    position: absolute;
+    font-size: 100px;
+    color: rgba(200, 0, 0, 0.7);
+  }
+
+  &.visible {
+    display: block;
+    opacity: 1;
+
+    .delete-icon:before {
+      left: -20px;
+    }
+  }
+}
+
+.dragging {
+  z-index: 200;
+  position: relative;
+}
+
+.deleting {
+  opacity: 0.8;
 }
 </style>
