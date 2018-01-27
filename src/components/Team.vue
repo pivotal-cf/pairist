@@ -9,10 +9,23 @@
         v-model="newPersonName"/>
       <p class="control">
         <button
-          class="button is-primary"
-          @click="addPerson">Go</button>
+          class="button is-success"
+          @click="addPerson"><b-icon icon="plus"/><span>Person</span></button>
       </p>
     </b-field>
+
+    <b-field>
+      <b-input
+        placeholder="Xenial"
+        @keyup.native.enter="addTrack"
+        v-model="newTrackName"/>
+      <p class="control">
+        <button
+          class="button is-success"
+          @click="addTrack"><b-icon icon="plus"/><span>Track</span></button>
+      </p>
+    </b-field>
+
 
     <div class="columns">
       <div class="column is-three-fifths">
@@ -48,9 +61,19 @@
             {{ person.name }}
           </div>
         </div>
+        <div class="box available">
+          <b-tag
+            class="track"
+            type="is-primary"
+            size="is-large"
+            v-for="track in availableTracks"
+            :data-key="track['.key']"
+            :key="track['.key']">
+            {{ track.name }}
+          </b-tag>
+        </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -65,6 +88,7 @@ export default {
   firebase() {
     return {
       people: db.ref(`/team/${this.team}/people`),
+      tracks: db.ref(`/team/${this.team}/tracks`),
       lanes: db.ref(`/team/${this.team}/lanes`),
     }
   },
@@ -72,6 +96,7 @@ export default {
   data () {
     return {
       newPersonName: "",
+      newTrackName: "",
       team: this.$route.params.team,
     }
   },
@@ -87,6 +112,9 @@ export default {
     },
     availablePeople() {
       return this.people.filter(person => person.location == "available")
+    },
+    availableTracks() {
+      return this.tracks.filter(track => track.location == "available")
     },
   },
 
@@ -161,6 +189,14 @@ export default {
       this.newPersonName = ""
     },
 
+    addTrack() {
+      this.$firebaseRefs.tracks.push({
+        name: this.newTrackName,
+        location: "available",
+      })
+      this.newTrackName = ""
+    },
+
     movePerson(personKey, targetKey) {
       const person = {...this.people.find(person => person[".key"] === personKey)}
       delete person[".key"]
@@ -216,6 +252,5 @@ export default {
   width: 100%;
 }
 
-.available {
-}
+.available {}
 </style>
