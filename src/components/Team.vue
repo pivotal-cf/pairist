@@ -26,6 +26,17 @@
       </p>
     </b-field>
 
+    <b-field>
+      <b-input
+        placeholder="Interrupt"
+        @keyup.native.enter="addRole"
+        v-model="newRoleName"/>
+      <p class="control">
+        <button
+          class="button is-success"
+          @click="addRole"><b-icon icon="plus"/><span>Role</span></button>
+      </p>
+    </b-field>
 
     <div class="columns">
       <div class="column is-three-fifths">
@@ -83,6 +94,17 @@
             {{ track.name }}
           </b-tag>
         </div>
+        <div class="box available">
+          <b-tag
+            class="role"
+            type="is-info"
+            size="is-small"
+            v-for="role in availableRoles"
+            :data-key="role['.key']"
+            :key="role['.key']">
+            {{ role.name }}
+          </b-tag>
+        </div>
       </div>
     </div>
   </div>
@@ -100,6 +122,7 @@ export default {
     return {
       people: db.ref(`/team/${this.team}/people`),
       tracks: db.ref(`/team/${this.team}/tracks`),
+      roles: db.ref(`/team/${this.team}/roles`),
       lanes: db.ref(`/team/${this.team}/lanes`),
     }
   },
@@ -108,6 +131,7 @@ export default {
     return {
       newPersonName: "",
       newTrackName: "",
+      newRoleName: "",
       team: this.$route.params.team,
     }
   },
@@ -119,14 +143,21 @@ export default {
           ".key": lane[".key"],
           "people": this.people.filter(person => person.location == lane[".key"]),
           "tracks": this.tracks.filter(track => track.location == lane[".key"]),
+          "roles": this.roles.filter(role => role.location == lane[".key"]),
         }
       })
     },
+
     availablePeople() {
       return this.people.filter(person => person.location == "available")
     },
+
     availableTracks() {
       return this.tracks.filter(track => track.location == "available")
+    },
+
+    availableRoles() {
+      return this.roles.filter(role => role.location == "available")
     },
   },
 
@@ -211,6 +242,14 @@ export default {
       this.newTrackName = ""
     },
 
+    addRole() {
+      this.$firebaseRefs.roles.push({
+        name: this.newRoleName,
+        location: "available",
+      })
+      this.newRoleName = ""
+    },
+
     movePerson(personKey, targetKey) {
       const person = {...this.people.find(person => person[".key"] === personKey)}
       delete person[".key"]
@@ -291,5 +330,9 @@ export default {
 
 .track {
   margin-right: 0.75rem;
+}
+
+.role {
+  margin-right: 0.25rem !important;
 }
 </style>
