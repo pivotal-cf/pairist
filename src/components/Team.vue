@@ -54,7 +54,18 @@
               {{ person.name }}
             </div>
           </div>
+
           <div class="level-right">
+            <b-tag
+              class="role level-item"
+              type="is-info"
+              size="is-small"
+              v-for="role in lane.roles"
+              :data-key="role['.key']"
+              :key="role['.key']">
+              {{ role.name }}
+            </b-tag>
+
             <b-tag
               class="track level-item"
               type="is-primary"
@@ -163,7 +174,7 @@ export default {
 
   created() {
     const self = this
-    Interact(".person, .track").draggable({
+    Interact(".person, .track, .role").draggable({
       inertia: false,
       restrict: false,
       autoScroll: true,
@@ -192,7 +203,7 @@ export default {
     })
 
     Interact(".dropzone").dropzone({
-      accept: ".person, .track",
+      accept: ".person, .track, .role",
       overlap: 0.50,
 
       ondropactivate(event) {
@@ -212,11 +223,18 @@ export default {
       ondrop(event) {
         const key = event.relatedTarget.dataset.key,
           targetKey = event.target.dataset.key
+
+        let type
+
         if (event.relatedTarget.classList.contains("person")) {
-          self.movePerson(key, targetKey)
+          type = "people"
+        } else if (event.relatedTarget.classList.contains("track")) {
+          type = "tracks"
         } else {
-          self.moveTrack(key, targetKey)
+          type = "roles"
         }
+
+        self.move(type, key, targetKey)
       },
       ondropdeactivate(event) {
         event.target.classList.remove("drop-active")
@@ -250,47 +268,24 @@ export default {
       this.newRoleName = ""
     },
 
-    movePerson(personKey, targetKey) {
-      const person = {...this.people.find(person => person[".key"] === personKey)}
-      delete person[".key"]
+    move(type, key, targetKey) {
+      const thing = {...this[type].find(thing => thing[".key"] === key)}
+      delete thing[".key"]
 
       if (targetKey == "new-lane") {
         const newLaneKey = this.$firebaseRefs.lanes.push({sortOrder: 0}).key
 
-        person.location = newLaneKey
+        thing.location = newLaneKey
       } else if (targetKey) {
-        person.location = targetKey
+        thing.location = targetKey
       } else {
-        person.location = "available"
+        thing.location = "available"
       }
 
-      this.$firebaseRefs.people.child(personKey).set(person)
+      this.$firebaseRefs[type].child(key).set(thing)
 
       this.lanesWithData.forEach(lane => {
-        if (lane.people.length === 0 && lane.tracks.length === 0) {
-          this.removeLane(lane[".key"])
-        }
-      })
-    },
-
-    moveTrack(trackKey, targetKey) {
-      const track = {...this.tracks.find(track => track[".key"] === trackKey)}
-      delete track[".key"]
-
-      if (targetKey == "new-lane") {
-        const newLaneKey = this.$firebaseRefs.lanes.push({sortOrder: 0}).key
-
-        track.location = newLaneKey
-      } else if (targetKey) {
-        track.location = targetKey
-      } else {
-        track.location = "available"
-      }
-
-      this.$firebaseRefs.tracks.child(trackKey).set(track)
-
-      this.lanesWithData.forEach(lane => {
-        if (lane.people.length === 0 && lane.tracks.length === 0) {
+        if (lane.people.length === 0 && lane.tracks.length === 0 && lane.roles.length === 0) {
           this.removeLane(lane[".key"])
         }
       })
