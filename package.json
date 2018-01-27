@@ -26,6 +26,7 @@
   "dependencies": {
     "buefy": "^0.6.2",
     "firebase": "^4.9.0",
+    "firebase-functions": "^0.8.1",
     "interact.js": "^1.2.8",
     "vue": "^2.5.13",
     "vue-router": "^3.0.1",
