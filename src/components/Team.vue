@@ -1,120 +1,82 @@
 <template>
-  <div>
-    <h1>{{ team }}</h1>
-
-    <b-field>
-      <b-input
-        placeholder="John Smith"
-        @keyup.native.enter="addPerson"
-        v-model="newPersonName"/>
-      <p class="control">
-        <button
-          class="button is-success"
-          @click="addPerson"><b-icon icon="plus"/><span>Person</span></button>
-      </p>
-    </b-field>
-
-    <b-field>
-      <b-input
-        placeholder="Xenial"
-        @keyup.native.enter="addTrack"
-        v-model="newTrackName"/>
-      <p class="control">
-        <button
-          class="button is-success"
-          @click="addTrack"><b-icon icon="plus"/><span>Track</span></button>
-      </p>
-    </b-field>
-
-    <b-field>
-      <b-input
-        placeholder="Interrupt"
-        @keyup.native.enter="addRole"
-        v-model="newRoleName"/>
-      <p class="control">
-        <button
-          class="button is-success"
-          @click="addRole"><b-icon icon="plus"/><span>Role</span></button>
-      </p>
-    </b-field>
+  <div class="dropzone">
+    <h1 class="is-size-1 is-uppercase has-text-weight-bold">{{ team }}</h1>
+    <hr >
 
     <div class="columns">
       <div class="column is-three-fifths">
-        <div
-          class="level box lane dropzone"
+        <Lane
+          class="dropzone"
           v-for="lane in lanesWithData"
-          :data-key="lane['.key']"
-          :key="lane['.key']">
-          <div class="level-left">
-            <div
-              class="box person level-item"
-              v-for="person in lane.people"
-              :data-key="person['.key']"
-              :key="person['.key']">
-              {{ person.name }}
-            </div>
-          </div>
-
-          <div class="level-right">
-            <b-tag
-              class="role level-item"
-              type="is-info"
-              size="is-small"
-              v-for="role in lane.roles"
-              :data-key="role['.key']"
-              :key="role['.key']">
-              {{ role.name }}
-            </b-tag>
-
-            <b-tag
-              class="track level-item"
-              type="is-primary"
-              size="is-large"
-              v-for="track in lane.tracks"
-              :data-key="track['.key']"
-              :key="track['.key']">
-              {{ track.name }}
-            </b-tag>
-          </div>
-        </div>
-        <div
-          data-key="new-lane"
-          class="level box lane dropzone">
-          <div class="level-left"/>
-        </div>
+          :lane="lane"
+          :key="lane['.key']"
+        />
+        <Lane
+          class="dropzone"
+          :lane="{'.key': 'new-lane'}"
+        />
       </div>
 
       <div class="column is-two-fifths">
-        <div class="box available dropzone">
-          <div
-            class="box person"
+        <div class="people available">
+          <h1 class="is-size-3">People</h1>
+          <b-field>
+            <b-input
+              placeholder="John Smith"
+              @keyup.native.enter="addPerson"
+              v-model="newPersonName"/>
+            <p class="control">
+              <button
+                class="button is-success"
+                @click="addPerson"><b-icon icon="plus"/></button>
+            </p>
+          </b-field>
+
+          <Person
             v-for="person in availablePeople"
-            :data-key="person['.key']"
-            :key="person['.key']">
-            {{ person.name }}
-          </div>
+            :person="person"
+            :key="person['.key']"
+          />
         </div>
-        <div class="box available">
-          <b-tag
-            class="track"
-            type="is-primary"
-            size="is-large"
+        <div class="tracks available">
+          <h1 class="is-size-3">Tracks</h1>
+          <b-field>
+            <b-input
+              placeholder="Xenial"
+              @keyup.native.enter="addTrack"
+              v-model="newTrackName"/>
+            <p class="control">
+              <button
+                class="button is-success"
+                @click="addTrack"><b-icon icon="plus"/></button>
+            </p>
+          </b-field>
+
+          <TrackComponent
             v-for="track in availableTracks"
-            :data-key="track['.key']"
-            :key="track['.key']">
-            {{ track.name }}
-          </b-tag>
+            :track="track"
+            :key="track['.key']"
+          />
         </div>
-        <div class="box available">
-          <b-tag
-            class="role"
-            type="is-info"
-            size="is-small"
+        <div class="roles available">
+          <h1 class="is-size-3">Roles</h1>
+          <b-field>
+            <b-input
+              placeholder="Interrupt"
+              @keyup.native.enter="addRole"
+              v-model="newRoleName"/>
+            <p class="control">
+              <button
+                class="button is-success"
+                @click="addRole"><b-icon icon="plus"/></button>
+            </p>
+          </b-field>
+
+          <Role
             v-for="role in availableRoles"
-            :data-key="role['.key']"
-            :key="role['.key']">
-            {{ role.name }}
-          </b-tag>
+            :role="role"
+            :key="role['.key']"
+          />
         </div>
       </div>
     </div>
@@ -124,10 +86,16 @@
 <script>
 import Interact from "interact.js"
 import db from "@/db"
+import Person from "@/components/Person"
+import Role from "@/components/Role"
+import TrackComponent from "@/components/Track"
+import Lane from "@/components/Lane"
 
 export default {
   name: "Team",
-  components: { },
+  components: {
+    Person, Role, TrackComponent, Lane,
+  },
 
   firebase() {
     return {
@@ -299,23 +267,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.person {
+.drop-target {
   background-color: hsl(0, 0%, 98%);
-  margin: 10px;
-  display: inline-block;
-  padding-top: 70px;
-  text-align: center;
-  height: 180px;
-  width: 140px;
 }
 
 .lane.drop-target {
   background-color: hsl(0, 0%, 97%);
-}
-
-.lane {
-  height: 200px;
-  margin-bottom: 1.0rem;
 }
 
 .dropzone {
@@ -323,11 +280,15 @@ export default {
   width: 100%;
 }
 
-.track {
-  margin-right: 0.75rem;
+.people.available {
+  min-height: 296px;
 }
 
-.role {
-  margin-right: 0.25rem !important;
+.tracks.available {
+  min-height: 136px;
+}
+
+.roles.available {
+  min-height: 122px;
 }
 </style>

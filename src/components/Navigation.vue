@@ -14,14 +14,20 @@
           height="28">
       </router-link>
 
-      <button class="button navbar-burger">
+      <button
+        class="button navbar-burger"
+        @click="toggleNavbar"
+      >
         <span/>
         <span/>
         <span/>
       </button>
     </div>
 
-    <div class="navbar-menu">
+    <div
+      class="navbar-menu"
+      :style="{ display: navbarState ? 'block' : '' }"
+    >
       <div class="navbar-start">
         <router-link
           class="navbar-item"
@@ -51,6 +57,7 @@ export default {
   name: "Navigation",
   data() {
     return {
+      navbarState: false,
       team: "",
     }
   },
@@ -59,6 +66,9 @@ export default {
       if (this.team) {
         this.$router.push({ name: "Team", params: { team: this.team } })
       }
+    },
+    toggleNavbar() {
+      this.navbarState = !this.navbarState
     },
   },
 }
