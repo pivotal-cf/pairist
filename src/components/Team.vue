@@ -31,7 +31,7 @@
       <div class="column is-three-fifths">
         <div
           class="level box lane dropzone"
-          v-for="lane in lanesWithPeople"
+          v-for="lane in lanesWithData"
           :data-key="lane['.key']"
           :key="lane['.key']">
           <div class="level-left">
@@ -42,6 +42,17 @@
               :key="person['.key']">
               {{ person.name }}
             </div>
+          </div>
+          <div class="level-right">
+            <b-tag
+              class="track level-item"
+              type="is-primary"
+              size="is-large"
+              v-for="track in lane.tracks"
+              :data-key="track['.key']"
+              :key="track['.key']">
+              {{ track.name }}
+            </b-tag>
           </div>
         </div>
         <div
@@ -102,11 +113,12 @@ export default {
   },
 
   computed: {
-    lanesWithPeople() {
+    lanesWithData() {
       return this.lanes.map(lane => {
         return {
           ".key": lane[".key"],
           "people": this.people.filter(person => person.location == lane[".key"]),
+          "tracks": this.tracks.filter(track => track.location == lane[".key"]),
         }
       })
     },
@@ -120,7 +132,7 @@ export default {
 
   created() {
     const self = this
-    Interact(".person").draggable({
+    Interact(".person, .track").draggable({
       inertia: false,
       restrict: false,
       autoScroll: true,
@@ -149,7 +161,7 @@ export default {
     })
 
     Interact(".dropzone").dropzone({
-      accept: ".person",
+      accept: ".person, .track",
       overlap: 0.50,
 
       ondropactivate(event) {
@@ -167,11 +179,13 @@ export default {
         event.relatedTarget.classList.remove("can-drop")
       },
       ondrop(event) {
-        const personKey = event.relatedTarget.dataset.key,
+        const key = event.relatedTarget.dataset.key,
           targetKey = event.target.dataset.key
-
-        self.movePerson(personKey, targetKey)
-
+        if (event.relatedTarget.classList.contains("person")) {
+          self.movePerson(key, targetKey)
+        } else {
+          self.moveTrack(key, targetKey)
+        }
       },
       ondropdeactivate(event) {
         event.target.classList.remove("drop-active")
@@ -213,8 +227,31 @@ export default {
 
       this.$firebaseRefs.people.child(personKey).set(person)
 
-      this.lanesWithPeople.forEach(lane => {
-        if (lane.people.length === 0) {
+      this.lanesWithData.forEach(lane => {
+        if (lane.people.length === 0 && lane.tracks.length === 0) {
+          this.removeLane(lane[".key"])
+        }
+      })
+    },
+
+    moveTrack(trackKey, targetKey) {
+      const track = {...this.tracks.find(track => track[".key"] === trackKey)}
+      delete track[".key"]
+
+      if (targetKey == "new-lane") {
+        const newLaneKey = this.$firebaseRefs.lanes.push({sortOrder: 0}).key
+
+        track.location = newLaneKey
+      } else if (targetKey) {
+        track.location = targetKey
+      } else {
+        track.location = "available"
+      }
+
+      this.$firebaseRefs.tracks.child(trackKey).set(track)
+
+      this.lanesWithData.forEach(lane => {
+        if (lane.people.length === 0 && lane.tracks.length === 0) {
           this.removeLane(lane[".key"])
         }
       })
@@ -252,5 +289,7 @@ export default {
   width: 100%;
 }
 
-.available {}
+.track {
+  margin-right: 0.75rem;
+}
 </style>
