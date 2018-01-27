@@ -20,16 +20,29 @@
       <div class="column is-two-fifths">
         <div class="people available">
           <h1 class="is-size-3">People</h1>
-          <b-field>
-            <b-input
-              placeholder="John Smith"
-              @keyup.native.enter="addPerson"
-              v-model="newPersonName"/>
-            <p class="control">
-              <button
-                class="button is-success"
-                @click="addPerson"><b-icon icon="plus"/></button>
-            </p>
+          <b-field grouped>
+            <b-field expanded>
+              <b-input
+                placeholder="Name"
+                @keyup.native.enter="addPerson"
+                size="is-small"
+                v-model="newPersonName"/>
+            </b-field>
+            <b-field expanded>
+              <b-input
+                placeholder="Picture URL"
+                @keyup.native.enter="addPerson"
+                type="url"
+                size="is-small"
+                v-model="newPersonPicture"/>
+            </b-field>
+            <b-field expanded>
+              <p class="control">
+                <button
+                  class="button is-success is-small"
+                  @click="addPerson"><b-icon icon="plus"/></button>
+              </p>
+            </b-field>
           </b-field>
 
           <Person
@@ -38,18 +51,24 @@
             :key="person['.key']"
           />
         </div>
+
         <div class="tracks available">
           <h1 class="is-size-3">Tracks</h1>
-          <b-field>
-            <b-input
-              placeholder="Xenial"
-              @keyup.native.enter="addTrack"
-              v-model="newTrackName"/>
-            <p class="control">
-              <button
-                class="button is-success"
-                @click="addTrack"><b-icon icon="plus"/></button>
-            </p>
+          <b-field grouped>
+            <b-field expanded>
+              <b-input
+                placeholder="Xenial"
+                @keyup.native.enter="addTrack"
+                size="is-small"
+                v-model="newTrackName"/>
+            </b-field>
+            <b-field expanded>
+              <p class="control">
+                <button
+                  class="button is-success is-small"
+                  @click="addTrack"><b-icon icon="plus"/></button>
+              </p>
+            </b-field>
           </b-field>
 
           <TrackComponent
@@ -58,18 +77,24 @@
             :key="track['.key']"
           />
         </div>
+
         <div class="roles available">
           <h1 class="is-size-3">Roles</h1>
-          <b-field>
-            <b-input
-              placeholder="Interrupt"
-              @keyup.native.enter="addRole"
-              v-model="newRoleName"/>
-            <p class="control">
-              <button
-                class="button is-success"
-                @click="addRole"><b-icon icon="plus"/></button>
-            </p>
+          <b-field grouped>
+            <b-field expanded>
+              <b-input
+                placeholder="Interrupt"
+                @keyup.native.enter="addRole"
+                size="is-small"
+                v-model="newRoleName"/>
+            </b-field>
+            <b-field expanded>
+              <p class="control">
+                <button
+                  class="button is-success is-small"
+                  @click="addRole"><b-icon icon="plus"/></button>
+              </p>
+            </b-field>
           </b-field>
 
           <Role
@@ -109,6 +134,7 @@ export default {
   data () {
     return {
       newPersonName: "",
+      newPersonPicture: "",
       newTrackName: "",
       newRoleName: "",
       team: this.$route.params.team,
@@ -154,7 +180,7 @@ export default {
 
         target.style.webkitTransform =
           target.style.transform =
-          `translate(${x}px, ${y}px)`
+          `translate(${x}px, ${y}px) rotate(1deg)`
 
         target.setAttribute("data-x", x)
         target.setAttribute("data-y", y)
@@ -215,9 +241,11 @@ export default {
     addPerson() {
       this.$firebaseRefs.people.push({
         name: this.newPersonName,
+        picture: this.newPersonPicture,
         location: "available",
       })
       this.newPersonName = ""
+      this.newPersonPicture = ""
     },
 
     addTrack() {
@@ -273,6 +301,10 @@ export default {
 
 .lane.drop-target {
   background-color: hsl(0, 0%, 97%);
+}
+
+.field.is-expanded {
+  height: 26px;
 }
 
 .dropzone {
