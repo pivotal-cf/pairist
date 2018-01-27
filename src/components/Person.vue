@@ -26,13 +26,13 @@ export default {
       if (this.person.picture && this.person.picture.length > 0) {
         return this.person.picture
       }
-      return "http://s3.amazonaws.com/37assets/svn/765-default-avatar.png"
+      return require("../assets/no-picture.svg")
     },
   },
 
   methods: {
     fixPicture(event) {
-      event.target.src = "https://emojipedia-us.s3.amazonaws.com/thumbs/240/google/119/black-question-mark-ornament_2753.png"
+      event.target.src = require("../assets/error-image.svg")
     },
   },
 }
