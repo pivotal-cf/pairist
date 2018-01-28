@@ -5,7 +5,6 @@
 
     </h1>
 
-
     <button
       class="button is-info is-small"
       @click="saveHistory"
@@ -174,7 +173,7 @@ export default {
       newTrackName: "",
       newRoleName: "",
       showTrash: false,
-      team: this.$route.params.team,
+      team: this.$route.params.team.toLowerCase(),
     }
   },
 
