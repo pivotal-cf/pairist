@@ -4,7 +4,7 @@ import _ from "lodash"
 const TIME_SCALE_DIVISOR = process.env.NODE_ENV === "production" ? 3600000 : 360
 
 function findBestPairingSync({history, people, solos, lanes}) {
-  if (2 * lanes.length > people.length) {
+  if ((2 * lanes.length - 1) > people.length) {
     return
   }
 
@@ -31,8 +31,8 @@ function findBestPairingSync({history, people, solos, lanes}) {
 
     Object.values(groups).forEach(group => {
       const personKeys = group.map(person => person[".key"])
-      // solos are 'undefined' in the map of last pairings.  this allows us to
-      // not have to special case it on the cost computation below
+      // solos are 'undefined' in the map of last pairings.
+      // this allows us to not have to special case it on the cost computation below
       if (personKeys.length === 1) {
         lastPairings[personKeys[0]][undefined] = epoch
         return
