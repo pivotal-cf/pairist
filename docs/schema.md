@@ -31,16 +31,12 @@ const schema = {
           sortOrder: 0,
         }
       ]
-      history: {
-        Date(): [
-          {
-            track: "<.key>",
-            people: [...keys],
-            roles: [...keys],
-          }...
-        ],
-      },
     },
+  },
+  history: {
+    "{teamName}": [
+      { date: Date(), ...snapshot }
+    ],
   },
 }
 ```

@@ -1,6 +1,18 @@
 <template>
   <div class="dropzone">
-    <h1 class="is-size-1 is-uppercase has-text-weight-bold">{{ team }}</h1>
+    <h1 class="is-size-1 is-uppercase has-text-weight-bold">
+      {{ team }}
+
+    </h1>
+
+
+    <button
+      class="button is-info is-small"
+      @click="saveHistory"
+    >
+      <b-icon icon="content-save"/>
+      <span>Record</span>
+    </button>
     <hr >
 
     <div class="columns">
@@ -281,6 +293,23 @@ export default {
   },
 
   methods: {
+    saveHistory() {
+      const loadingComponent = this.$loading.open()
+
+      db.ref(`/team/${this.team}`).once("value").then(snapshot => {
+        const team = snapshot.val()
+        const key = ((new Date).getTime() / 3600000).toFixed(0)
+        db.ref(`/history/${this.team}/${key}`).set(team).then(() => {
+          loadingComponent.close()
+
+          this.$toast.open({
+            message: "History recorded!",
+            type: "is-success",
+          })
+        })
+      })
+    },
+
     addPerson() {
       if (this.newPersonName === "") {
         return
