@@ -351,13 +351,18 @@ export default {
       const loadingComponent = this.$loading.open()
       const bestPairing = await findBestPairing({
         history: this.history,
-        people: this.people,
-        availablePeople: this.availablePeople,
+        people: this.availablePeople,
+        lanes: this.lanesWithData.filter(({locked}) => !locked),
         solos: this.solos,
       })
 
       if (bestPairing) {
         this.applyPairing(bestPairing)
+      } else {
+        this.$toast.open({
+          message: "Cannot make a valid pairing assignment. Do you have too many lanes?",
+          type: "is-danger",
+        })
       }
       loadingComponent.close()
     },
@@ -366,7 +371,7 @@ export default {
       const pairsAndLanes = findMatchingLanes({
         pairing,
         lanes: this.lanesWithData.filter(({locked}) => !locked),
-        people: this.people,
+        people: this.availablePeople,
       })
 
       let getNextLane = () => {
