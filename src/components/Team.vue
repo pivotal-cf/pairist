@@ -12,6 +12,13 @@
       <b-icon icon="content-save"/>
       <span>Record</span>
     </button>
+
+    <button
+      class="button is-primary is-small"
+      @click="recommendPairs"
+    >
+      <span>Recommend</span>
+    </button>
     <hr >
 
     <div class="columns">
@@ -150,6 +157,10 @@ import Person from "@/components/Person"
 import Role from "@/components/Role"
 import TrackComponent from "@/components/Track"
 import Lane from "@/components/Lane"
+import { pairs, permutations } from "@/lib/combinatorics"
+import _ from "lodash"
+
+const HOUR_IN_MS = 3600000
 
 export default {
   name: "Team",
@@ -163,6 +174,7 @@ export default {
       tracks: db.ref(`/team/${this.team}/tracks`),
       roles: db.ref(`/team/${this.team}/roles`),
       lanes: db.ref(`/team/${this.team}/lanes`),
+      history: db.ref(`/history/${this.team}`).orderByKey().limitToLast(30),
     }
   },
 
@@ -203,6 +215,14 @@ export default {
 
     availableRoles() {
       return this.roles.filter(role => role.location == "available")
+    },
+
+    inPeople() {
+      return this.people.filter(person => person.location != "out")
+    },
+
+    peopleInLanes() {
+      return this.people.filter(person => person.location != "out" && person.location != "available")
     },
   },
 
@@ -297,7 +317,7 @@ export default {
 
       db.ref(`/team/${this.team}`).once("value").then(snapshot => {
         const team = snapshot.val()
-        const key = ((new Date).getTime() / 3600000).toFixed(0)
+        const key = ((new Date).getTime() / HOUR_IN_MS).toFixed(0)
         db.ref(`/history/${this.team}/${key}`).set(team).then(() => {
           loadingComponent.close()
 
@@ -307,6 +327,101 @@ export default {
           })
         })
       })
+    },
+
+    recommendPairs() {
+      let lastPairings = {}
+      const today = new Date()
+
+      this.people.forEach(left => {
+        lastPairings[left[".key"]] = {}
+        this.people.forEach(right => {
+          lastPairings[left[".key"]][right[".key"]] = parseInt((
+            (new Date)
+              .setDate(today.getDate()-31)/ HOUR_IN_MS
+          ).toFixed(0))
+        })
+      })
+
+      this.history.forEach(state => {
+        const epoch = parseInt(state[".key"])
+        const people = Object.keys(state.people).map(key =>
+          Object.assign({".key": key}, state.people[key])
+        ).filter(person =>
+          person.location != "out" && person.location != "available"
+        )
+        const groups = _.groupBy(people, "location")
+
+        Object.values(groups).forEach(group => {
+          const personKeys = group.map(person => person[".key"])
+          pairs(personKeys).forEach(pair => {
+            if (
+              lastPairings[pair[0]] === undefined ||
+              lastPairings[pair[1]] === undefined
+            ) {
+              return
+            }
+            if (lastPairings[pair[0]][pair[1]] < epoch) {
+              lastPairings[pair[0]][pair[1]] = epoch
+              lastPairings[pair[1]][pair[0]] = epoch
+            }
+          })
+        })
+      })
+
+      let bestCost = Infinity
+      let bestPairing = []
+
+      const possiblePairings = permutations(this.inPeople.map(person => person[".key"]))
+      possiblePairings.forEach(pairing => {
+        pairing = _.chunk(pairing, 2)
+        const cost = _.sum(_.map(pairing, pair =>
+          lastPairings[pair[0]][pair[1]]
+        ))
+
+        if (this.isPairingValid(pairing) && cost < bestCost) {
+          bestCost = cost
+          bestPairing = pairing
+        }
+      })
+
+      if (bestPairing.length > 0) {
+        this.applyPairing(bestPairing)
+      } else {
+        alert("lol")
+      }
+    },
+
+    applyPairing(pairing) {
+      pairing = pairing.map(pair => pair.map(key => this.people.find(person => person[".key"] === key)))
+      const laneKeys = this.lanesWithData.filter(lane => lane.people.length > 0).map(lane => lane[".key"])
+      const orders = permutations(pairing)
+      const order = orders.find(pairing =>
+        laneKeys.every((laneKey,  i) =>
+          pairing[i].some(person => person.location === laneKey)
+        )
+      )
+
+      let getNextLane = () => {
+        const emptyLane = this.lanesWithData.find(lane => lane.people.length === 0)
+        if (emptyLane) {
+          return emptyLane[".key"]
+        }
+        return this.$firebaseRefs.lanes.push({sortOrder: 0}).key
+      }
+      order.forEach((pairs, i) => {
+        const laneKey = laneKeys[i] || getNextLane()
+        pairs.forEach(person => this.move("people", person[".key"], laneKey))
+      })
+    },
+
+    isPairingValid(pairing) {
+      const solos = _.flatten(
+        Object.values(_.groupBy(this.peopleInLanes, "location"))
+          .filter(group => group.length === 1)
+      ).map(person => person[".key"])
+
+      return !pairing.some(pair => pair.every(person => solos.includes(person)))
     },
 
     addPerson() {

@@ -29,6 +29,7 @@
     "firebase-admin": "^5.8.1",
     "firebase-functions": "^0.8.1",
     "interact.js": "^1.2.8",
+    "lodash": "^4.17.4",
     "vue": "^2.5.13",
     "vue-router": "^3.0.1",
     "vuefire": "^1.4.5"
