@@ -26,6 +26,7 @@
         <Lane
           class="dropzone"
           v-for="lane in lanesWithData"
+          :toggle-lock-lane="toggleLockLane"
           :lane="lane"
           :key="lane['.key']"
         />
@@ -36,7 +37,7 @@
       </div>
 
       <div class="column is-two-fifths">
-        <div class="tracks available">
+        <div class="tracks unassigned">
           <h1 class="is-size-3">Tracks</h1>
           <b-field grouped>
             <b-field expanded>
@@ -56,13 +57,13 @@
           </b-field>
 
           <TrackComponent
-            v-for="track in availableTracks"
+            v-for="track in unassignedTracks"
             :track="track"
             :key="track['.key']"
           />
         </div>
 
-        <div class="roles available">
+        <div class="roles unassigned">
           <h1 class="is-size-3">Roles</h1>
           <b-field grouped>
             <b-field expanded>
@@ -82,13 +83,13 @@
           </b-field>
 
           <Role
-            v-for="role in availableRoles"
+            v-for="role in unassignedRoles"
             :role="role"
             :key="role['.key']"
           />
         </div>
 
-        <div class="people available">
+        <div class="people unassigned">
           <h1 class="is-size-3">People</h1>
           <b-field grouped>
             <b-field expanded>
@@ -116,7 +117,7 @@
           </b-field>
 
           <Person
-            v-for="person in availablePeople"
+            v-for="person in unassignedPeople"
             :person="person"
             :key="person['.key']"
           />
@@ -192,37 +193,47 @@ export default {
   computed: {
     lanesWithData() {
       return this.lanes.map(lane => {
-        return {
-          ".key": lane[".key"],
-          "people": this.people.filter(person => person.location == lane[".key"]),
-          "tracks": this.tracks.filter(track => track.location == lane[".key"]),
-          "roles": this.roles.filter(role => role.location == lane[".key"]),
-        }
+        return Object.assign({
+          people: this.people.filter(person => person.location == lane[".key"]),
+          tracks: this.tracks.filter(track => track.location == lane[".key"]),
+          roles: this.roles.filter(role => role.location == lane[".key"]),
+        }, lane)
       })
     },
 
-    availablePeople() {
-      return this.people.filter(person => person.location == "available")
+    lockedLaneKeys() {
+      return this.lanes.filter(({locked}) => locked).map(lane => lane[".key"])
+    },
+
+    unassignedPeople() {
+      return this.people.filter(person => person.location == "unassigned")
     },
 
     outPeople() {
       return this.people.filter(person => person.location == "out")
     },
 
-    availableTracks() {
-      return this.tracks.filter(track => track.location == "available")
+    unassignedTracks() {
+      return this.tracks.filter(track => track.location == "unassigned")
     },
 
-    availableRoles() {
-      return this.roles.filter(role => role.location == "available")
+    unassignedRoles() {
+      return this.roles.filter(role => role.location == "unassigned")
     },
 
-    inPeople() {
-      return this.people.filter(person => person.location != "out")
+    availablePeople() {
+      return this.people.filter(person =>
+        person.location != "out" &&
+        !this.lockedLaneKeys.some(laneKey => laneKey == person.location)
+      )
     },
 
     peopleInLanes() {
-      return this.people.filter(person => person.location != "out" && person.location != "available")
+      return this.people.filter(person =>
+        person.location != "out" &&
+        person.location != "unassigned" &&
+        !this.lockedLaneKeys.some(laneKey => laneKey == person.location)
+      )
     },
 
     solos() {
@@ -341,7 +352,7 @@ export default {
       const bestPairing = await findBestPairing({
         history: this.history,
         people: this.people,
-        inPeople: this.inPeople,
+        availablePeople: this.availablePeople,
         solos: this.solos,
       })
 
@@ -354,7 +365,7 @@ export default {
     applyPairing(pairing) {
       const pairsAndLanes = findMatchingLanes({
         pairing,
-        lanes: this.lanesWithData,
+        lanes: this.lanesWithData.filter(({locked}) => !locked),
         people: this.people,
       })
 
@@ -379,7 +390,7 @@ export default {
       this.$firebaseRefs.people.push({
         name: this.newPersonName,
         picture: this.newPersonPicture,
-        location: "available",
+        location: "unassigned",
       })
       this.newPersonName = ""
       this.newPersonPicture = ""
@@ -391,7 +402,7 @@ export default {
       }
       this.$firebaseRefs.tracks.push({
         name: this.newTrackName,
-        location: "available",
+        location: "unassigned",
       })
       this.newTrackName = ""
     },
@@ -402,7 +413,7 @@ export default {
       }
       this.$firebaseRefs.roles.push({
         name: this.newRoleName,
-        location: "available",
+        location: "unassigned",
       })
       this.newRoleName = ""
     },
@@ -421,7 +432,7 @@ export default {
         } else if (targetKey) {
           thing.location = targetKey
         } else {
-          thing.location = "available"
+          thing.location = "unassigned"
         }
 
         this.$firebaseRefs[type].child(key).set(thing)
@@ -436,6 +447,10 @@ export default {
 
     removeLane(key) {
       this.$firebaseRefs.lanes.child(key).remove()
+    },
+
+    toggleLockLane(lane) {
+      this.$firebaseRefs.lanes.child(lane[".key"]).child("locked").set(!lane.locked)
     },
   },
 }
@@ -459,15 +474,15 @@ export default {
   width: 100%;
 }
 
-.people.available {
+.people.unassigned {
   min-height: 221px;
 }
 
-.tracks.available {
+.tracks.unassigned {
   min-height: 136px;
 }
 
-.roles.available {
+.roles.unassigned {
   min-height: 122px;
 }
 

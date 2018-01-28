@@ -26,6 +26,15 @@
         :track="track"
         :key="track['.key']"
       />
+
+      <button
+        class="button is-small"
+        :class="{ 'is-danger': lane.locked }"
+        v-if="toggleLockLane"
+        @click="toggleLock"
+      >
+        <b-icon :icon="lane.locked ? 'lock' : 'lock-open'"/>
+      </button>
     </div>
   </div>
 </template>
@@ -44,6 +53,16 @@ export default {
     lane: {
       type: Object,
       required: true,
+    },
+    toggleLockLane: {
+      type: Function,
+      required: false,
+      default: undefined,
+    },
+  },
+  methods: {
+    toggleLock() {
+      this.toggleLockLane(this.lane)
     },
   },
 }

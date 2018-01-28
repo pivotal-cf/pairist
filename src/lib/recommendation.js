@@ -3,7 +3,7 @@ import _ from "lodash"
 
 const TIME_SCALE_DIVISOR = process.env.NODE_ENV === "production" ? 3600000 : 360
 
-function findBestPairingSync({history, people, inPeople, solos}) {
+function findBestPairingSync({history, people, availablePeople, solos}) {
   let lastPairings = {}
   const today = new Date()
 
@@ -45,7 +45,7 @@ function findBestPairingSync({history, people, inPeople, solos}) {
   let bestCost = Infinity
   let bestPairing
 
-  const possiblePairings = permutations(inPeople.map(person => person[".key"]))
+  const possiblePairings = permutations(availablePeople.map(person => person[".key"]))
   _.shuffle(possiblePairings).forEach(pairing => {
     pairing = _.chunk(pairing, 2)
     const cost = _.sum(_.map(pairing, pair =>
