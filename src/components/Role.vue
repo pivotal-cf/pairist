@@ -21,7 +21,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .role {
   margin-right: 0.25rem !important;
 }

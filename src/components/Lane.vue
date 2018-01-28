@@ -49,13 +49,13 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .lane.drop-target {
   background-color: hsl(0, 0%, 97%);
 }
 
 .lane {
-  height: 200px;
+  height: 100px;
   margin-bottom: 1.0rem;
 }
 </style>

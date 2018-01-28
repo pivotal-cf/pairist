@@ -7,7 +7,7 @@
       :src="picture"
       @error="fixPicture"
     >
-    <p>{{ person.name }}</p>
+    <span>{{ person.name }}</span>
   </div>
 </template>
 
@@ -38,28 +38,23 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .person {
+  position: relative;
   background-color: hsl(0, 0%, 100%);
-  font-family: 'Permanent Marker', cursive;
-  color: #2d0079;
-  text-shadow: 0 0 1px black;
   display: inline-block;
   margin: 10px;
-  text-align: center;
-  padding: 7px;
-  transform: rotate(-3deg);
-  font-size: 0;
-  height: 150px;
-  width: 130px;
+  padding: 6px;
 
   img {
-    border: 1px solid hsl(0, 0%, 90%);
-    height: 120px;
-    width: 120px;
+    height: 50px;
+    display: inline-block;
   }
-  p {
-    font-size: 1rem;
+  span {
+    margin-top: 14px;
+    margin-left: 10px;
+    margin-right: 10px;
+    display: inline-block;
   }
 }
 </style>

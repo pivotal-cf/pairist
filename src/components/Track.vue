@@ -21,7 +21,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .track {
   margin-right: 0.50rem !important;
 }

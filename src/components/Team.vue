@@ -18,40 +18,6 @@
       </div>
 
       <div class="column is-two-fifths">
-        <div class="people available">
-          <h1 class="is-size-3">People</h1>
-          <b-field grouped>
-            <b-field expanded>
-              <b-input
-                placeholder="Name"
-                @keyup.native.enter="addPerson"
-                size="is-small"
-                v-model="newPersonName"/>
-            </b-field>
-            <b-field expanded>
-              <b-input
-                placeholder="Picture URL"
-                @keyup.native.enter="addPerson"
-                type="url"
-                size="is-small"
-                v-model="newPersonPicture"/>
-            </b-field>
-            <b-field expanded>
-              <p class="control">
-                <button
-                  class="button is-success is-small"
-                  @click="addPerson"><b-icon icon="plus"/></button>
-              </p>
-            </b-field>
-          </b-field>
-
-          <Person
-            v-for="person in availablePeople"
-            :person="person"
-            :key="person['.key']"
-          />
-        </div>
-
         <div class="tracks available">
           <h1 class="is-size-3">Tracks</h1>
           <b-field grouped>
@@ -101,6 +67,53 @@
             v-for="role in availableRoles"
             :role="role"
             :key="role['.key']"
+          />
+        </div>
+
+        <div class="people available">
+          <h1 class="is-size-3">People</h1>
+          <b-field grouped>
+            <b-field expanded>
+              <b-input
+                placeholder="Name"
+                @keyup.native.enter="addPerson"
+                size="is-small"
+                v-model="newPersonName"/>
+            </b-field>
+            <b-field expanded>
+              <b-input
+                placeholder="Picture URL"
+                @keyup.native.enter="addPerson"
+                type="url"
+                size="is-small"
+                v-model="newPersonPicture"/>
+            </b-field>
+            <b-field expanded>
+              <p class="control">
+                <button
+                  class="button is-success is-small"
+                  @click="addPerson"><b-icon icon="plus"/></button>
+              </p>
+            </b-field>
+          </b-field>
+
+          <Person
+            v-for="person in availablePeople"
+            :person="person"
+            :key="person['.key']"
+          />
+        </div>
+
+        <div
+          class="people out dropzone"
+          data-key="out"
+        >
+          <h1 class="is-size-3">PM / Out</h1>
+
+          <Person
+            v-for="person in outPeople"
+            :person="person"
+            :key="person['.key']"
           />
         </div>
       </div>
@@ -167,6 +180,10 @@ export default {
 
     availablePeople() {
       return this.people.filter(person => person.location == "available")
+    },
+
+    outPeople() {
+      return this.people.filter(person => person.location == "out")
     },
 
     availableTracks() {
@@ -347,12 +364,12 @@ export default {
 }
 
 .dropzone {
-  min-height: 200px;
+  min-height: 100px;
   width: 100%;
 }
 
 .people.available {
-  min-height: 296px;
+  min-height: 221px;
 }
 
 .tracks.available {
@@ -411,5 +428,10 @@ export default {
 
 .deleting {
   opacity: 0.8;
+}
+
+.people.out {
+  border: 3px dashed rgba(200, 120, 120, 0.4);
+  padding: 10px;
 }
 </style>
