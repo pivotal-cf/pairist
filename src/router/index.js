@@ -5,7 +5,7 @@ import Team from "@/components/Team"
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: "history",
   routes: [
     {
@@ -20,3 +20,13 @@ export default new Router({
     },
   ],
 })
+
+router.beforeEach((to, from, next) => {
+  document.title = "Pairist"
+  if (to.params.team) {
+    document.title += ` - ${to.params.team.toUpperCase()}`
+  }
+  next()
+})
+
+export default router
