@@ -47,19 +47,21 @@
     <v-container class="dropzone" grid-list-md fluid>
       <v-layout row wrap>
         <v-flex xs8>
-          <Lane
-            class="dropzone"
-            v-for="lane in lanesWithData"
-            :toggle-lock-lane="toggleLockLane"
-            :lane="lane"
-            :key="lane['.key']"
-            :data-key="lane['.key']"
-          />
-          <Lane
-            class="dropzone"
-            :lane="{'.key': 'new-lane'}"
-            data-key="new-lane"
-          />
+          <v-list>
+            <Lane
+              class="dropzone"
+              v-for="lane in lanesWithData"
+              :toggle-lock-lane="toggleLockLane"
+              :lane="lane"
+              :key="lane['.key']"
+              :data-key="lane['.key']"
+            />
+            <Lane
+              class="dropzone"
+              :lane="{'.key': 'new-lane'}"
+              data-key="new-lane"
+            />
+          </v-list>
         </v-flex>
 
         <v-flex xs4>
@@ -208,10 +210,7 @@
           :class="{ visible: showTrash }"
           data-key="delete"
         >
-          <b-icon
-            icon="close-circle"
-            custom-size="delete-icon"
-          />
+          <v-icon>close-circle</v-icon>
         </div>
       </v-layout>
       <v-snackbar

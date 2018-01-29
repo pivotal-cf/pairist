@@ -1,49 +1,48 @@
 <template>
-  <v-flex xs12>
-    <v-card
+  <div>
+    <v-list-tile
+      ripple
       class="lane"
-      color="blue-grey lighten-4"
     >
-      <v-card-text v-if="toggleLockLane">
-        <v-layout row justify-space-between>
-          <v-flex>
-            <Person
-              class="level-item"
-              v-for="person in lane.people"
-              :person="person"
-              :key="person['.key']"
-            />
-          </v-flex>
-          <v-flex class="text-xs-right">
-            <Role
-              class="level-item"
-              v-for="role in lane.roles"
-              :role="role"
-              :key="role['.key']"
-            />
-            <TrackComponent
-              class="level-item"
-              v-for="track in lane.tracks"
-              :track="track"
-              :key="track['.key']"
-            />
-          </v-flex>
-          <v-btn
-            class="lock-button"
-            :class="{'is-locked': lane.locked}"
-            dark
-            fab
-            small
-            :color="lane.locked? 'pink' : 'secondary'"
-            @click="toggleLock"
-          >
-            <v-icon v-if="lane.locked">mdi-lock</v-icon>
-            <v-icon v-else>mdi-lock-open</v-icon>
-          </v-btn>
-        </v-layout>
-      </v-card-text>
-    </v-card>
-  </v-flex>
+      <v-layout row justify-space-between>
+        <v-flex >
+          <Person
+            class="level-item"
+            v-for="person in lane.people"
+            :person="person"
+            :key="person['.key']"
+          />
+        </v-flex>
+        <v-flex class="text-xs-right">
+          <Role
+            class="level-item"
+            v-for="role in lane.roles"
+            :role="role"
+            :key="role['.key']"
+          />
+          <TrackComponent
+            class="level-item"
+            v-for="track in lane.tracks"
+            :track="track"
+            :key="track['.key']"
+          />
+        </v-flex>
+        <v-btn
+          class="lock-button"
+          :class="{'is-locked': lane.locked}"
+          dark
+          fab
+          small
+          :color="lane.locked? 'pink' : 'secondary'"
+          @click="toggleLock"
+        >
+          <v-icon v-if="lane.locked">mdi-lock</v-icon>
+          <v-icon v-else>mdi-lock-open</v-icon>
+        </v-btn>
+      </v-layout>
+    </v-list-tile>
+    <v-divider/>
+  </div>
 </template>
 
 <script>
@@ -81,7 +80,16 @@ export default {
 }
 
 .lane {
-  height: 150px !important;
+  height: 140px !important;
+
+  .list__tile {
+  height: auto;
+  padding: 10px;
+
+  .list__tile__content {
+    overflow: visible !important;
+  }
+}
 
   &:hover .lock-button {
     opacity: 1,
