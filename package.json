@@ -14,8 +14,8 @@
     "test": "yarn unit && yarn e2e",
     "lint": "eslint --fix --ext .js,.vue build config src test/unit test/e2e/specs",
     "build": "node build/build.js",
-    "deploy:env": "yarn build && firebase deploy -P",
-    "deploy:dev": "yarn deploy:env dev",
+    "deploy:env": "firebase deploy -P",
+    "deploy:dev": "yarn build && yarn deploy:env dev",
     "deploy:production": "yarn deploy:env production"
   },
   "lint-staged": {
