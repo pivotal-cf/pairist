@@ -1,153 +1,236 @@
 <template>
-  <div class="dropzone">
-    <h1 class="is-size-1 is-uppercase has-text-weight-bold">
-      {{ teamName }}
-    </h1>
-
-    <button
-      class="button is-info is-small"
-      @click="saveHistory"
+  <v-content>
+    <v-toolbar
+      class="primary"
+      dark
     >
-      <b-icon icon="content-save"/>
-      <span>Record</span>
-    </button>
+      <v-toolbar-title>
+        Pairist
+        <span v-if="team">
+          - {{ teamName.toUpperCase() }}
+        </span>
+      </v-toolbar-title>
+      <v-spacer/>
+      <v-toolbar-side-icon class="hidden-md-and-up"/>
+      <v-toolbar-items class="hidden-sm-and-down">
+        <v-btn
+          :loading="recommending"
+          :disabled="recommending"
+          @click="recommendPairs"
+          flat
+        >
+          <v-icon dark>mdi-shuffle-variant</v-icon>
+        </v-btn>
+        <v-btn
+          :loading="savingHistory"
+          :disabled="savingHistory"
+          @click="saveHistory"
+          flat
+        >
+          <v-icon dark>mdi-content-save</v-icon>
+        </v-btn>
+        <v-menu bottom left>
+          <v-btn icon slot="activator" dark>
+            <v-icon>more_vert</v-icon>
+          </v-btn>
+          <v-list>
+            <v-list-tile v-if="user">
+              <v-list-tile-title @click="logout" >
+                Logout <v-icon>mdi-logout</v-icon>
+              </v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+        </v-menu>
+      </v-toolbar-items>
+    </v-toolbar>
 
-    <button
-      class="button is-primary is-small"
-      @click="recommendPairs"
-    >
-      <span>Recommend</span>
-    </button>
-    <hr >
-
-    <div class="columns">
-      <div class="column is-three-fifths">
-        <Lane
-          class="dropzone"
-          v-for="lane in lanesWithData"
-          :toggle-lock-lane="toggleLockLane"
-          :lane="lane"
-          :key="lane['.key']"
-        />
-        <Lane
-          class="dropzone"
-          :lane="{'.key': 'new-lane'}"
-        />
-      </div>
-
-      <div class="column is-two-fifths">
-        <div class="tracks unassigned">
-          <h1 class="is-size-3">Tracks</h1>
-          <b-field grouped>
-            <b-field expanded>
-              <b-input
-                placeholder="Xenial"
-                @keyup.native.enter="addTrack"
-                size="is-small"
-                v-model="newTrackName"/>
-            </b-field>
-            <b-field expanded>
-              <p class="control">
-                <button
-                  class="button is-success is-small"
-                  @click="addTrack"><b-icon icon="plus"/></button>
-              </p>
-            </b-field>
-          </b-field>
-
-          <TrackComponent
-            v-for="track in unassignedTracks"
-            :track="track"
-            :key="track['.key']"
+    <v-container class="dropzone" grid-list-md fluid>
+      <v-layout row wrap>
+        <v-flex xs8>
+          <Lane
+            class="dropzone"
+            v-for="lane in lanesWithData"
+            :toggle-lock-lane="toggleLockLane"
+            :lane="lane"
+            :key="lane['.key']"
+            :data-key="lane['.key']"
           />
-        </div>
-
-        <div class="roles unassigned">
-          <h1 class="is-size-3">Roles</h1>
-          <b-field grouped>
-            <b-field expanded>
-              <b-input
-                placeholder="Interrupt"
-                @keyup.native.enter="addRole"
-                size="is-small"
-                v-model="newRoleName"/>
-            </b-field>
-            <b-field expanded>
-              <p class="control">
-                <button
-                  class="button is-success is-small"
-                  @click="addRole"><b-icon icon="plus"/></button>
-              </p>
-            </b-field>
-          </b-field>
-
-          <Role
-            v-for="role in unassignedRoles"
-            :role="role"
-            :key="role['.key']"
+          <Lane
+            class="dropzone"
+            :lane="{'.key': 'new-lane'}"
+            data-key="new-lane"
           />
-        </div>
+        </v-flex>
 
-        <div class="people unassigned">
-          <h1 class="is-size-3">People</h1>
-          <b-field grouped>
-            <b-field expanded>
-              <b-input
-                placeholder="Name"
-                @keyup.native.enter="addPerson"
-                size="is-small"
-                v-model="newPersonName"/>
-            </b-field>
-            <b-field expanded>
-              <b-input
-                placeholder="Picture URL"
-                @keyup.native.enter="addPerson"
-                type="url"
-                size="is-small"
-                v-model="newPersonPicture"/>
-            </b-field>
-            <b-field expanded>
-              <p class="control">
-                <button
-                  class="button is-success is-small"
-                  @click="addPerson"><b-icon icon="plus"/></button>
-              </p>
-            </b-field>
-          </b-field>
+        <v-flex xs4>
+          <div class="tracks unassigned">
+            <h2>
+              Tracks
+              <v-dialog v-model="newTrackDialog" max-width="300px">
+                <v-btn color="primary" dark slot="activator" icon>
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">New Track</span>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container grid-list-md>
+                      <v-layout wrap>
+                        <v-flex xs12>
+                          <v-text-field
+                            v-model="newTrackName"
+                            label="Name"
+                            @keyup.native.enter="addTrack"
+                            required/>
+                        </v-flex>
+                      </v-layout>
+                    </v-container>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer/>
+                    <v-btn color="blue darken-1" flat @click.native="newTrackDialog = false">Close</v-btn>
+                    <v-btn color="blue darken-1" flat @click.native="addTrack">Save</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </h2>
 
-          <Person
-            v-for="person in unassignedPeople"
-            :person="person"
-            :key="person['.key']"
-          />
-        </div>
+            <TrackComponent
+              v-for="track in unassignedTracks"
+              :track="track"
+              :key="track['.key']"
+            />
+          </div>
+
+          <div class="roles unassigned">
+            <h2>
+              Roles
+              <v-dialog v-model="newRoleDialog" max-width="300px">
+                <v-btn color="primary" dark slot="activator" icon>
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">New Role</span>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container grid-list-md>
+                      <v-layout wrap>
+                        <v-flex xs12>
+                          <v-text-field
+                            v-model="newRoleName"
+                            label="Name"
+                            @keyup.native.enter="addRole"
+                            required/>
+                        </v-flex>
+                      </v-layout>
+                    </v-container>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer/>
+                    <v-btn color="blue darken-1" flat @click.native="newRoleDialog = false">Close</v-btn>
+                    <v-btn color="blue darken-1" flat @click.native="addRole">Save</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </h2>
+
+            <Role
+              v-for="role in unassignedRoles"
+              :role="role"
+              :key="role['.key']"
+            />
+          </div>
+
+          <div class="people unassigned">
+            <h2>
+              People
+              <v-dialog v-model="newPersonDialog" max-width="500px">
+                <v-btn color="primary" dark slot="activator" icon>
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">New Person</span>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container grid-list-md>
+                      <v-layout wrap>
+                        <v-flex xs12 sm6>
+                          <v-text-field
+                            v-model="newPersonName"
+                            label="Name"
+                            @keyup.native.enter="addPerson"
+                            required/>
+                        </v-flex>
+                        <v-flex xs12 sm6>
+                          <v-text-field
+                            v-model="newPersonPicture"
+                            @keyup.native.enter="addPerson"
+                            type="url"
+                            label="Picture URL"/>
+                        </v-flex>
+                      </v-layout>
+                    </v-container>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer/>
+                    <v-btn color="blue darken-1" flat @click.native="newPersonDialog = false">Close</v-btn>
+                    <v-btn color="blue darken-1" flat @click.native="addPerson">Save</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </h2>
+            <Person
+              v-for="person in unassignedPeople"
+              :person="person"
+              :key="person['.key']"
+            />
+          </div>
+
+          <div
+            class="people out dropzone"
+            data-key="out"
+          >
+            <h2>PM / Out</h2>
+
+            <Person
+              v-for="person in outPeople"
+              :person="person"
+              :key="person['.key']"
+            />
+          </div>
+        </v-flex>
 
         <div
-          class="people out dropzone"
-          data-key="out"
+          class="delete-zone"
+          :class="{ visible: showTrash }"
+          data-key="delete"
         >
-          <h1 class="is-size-3">PM / Out</h1>
-
-          <Person
-            v-for="person in outPeople"
-            :person="person"
-            :key="person['.key']"
+          <b-icon
+            icon="close-circle"
+            custom-size="delete-icon"
           />
         </div>
-      </div>
-    </div>
-
-    <div
-      class="delete-zone"
-      :class="{ visible: showTrash }"
-      data-key="delete"
-    >
-      <b-icon
-        icon="close-circle"
-        custom-size="delete-icon"
-      />
-    </div>
-  </div>
+      </v-layout>
+      <v-snackbar
+        :timeout="5000"
+        :color="snackbarColor"
+        v-model="snackbar"
+        top
+      >
+        {{ snackbarText }}
+        <v-btn
+          dark
+          flat
+          @click.native="snackbar = false"
+        >
+          <v-icon dark>mdi-close</v-icon>
+        </v-btn>
+      </v-snackbar>
+    </v-container>
+  </v-content>
 </template>
 
 <script>
@@ -186,12 +269,24 @@ export default {
     }
   },
 
-  data () {
+  data() {
     return {
+      user: null,
+
+      snackbarColor: "",
+      snackbar: false,
+      snackbarText: "",
+
+      newPersonDialog: false,
+      newRoleDialog: false,
+      newTrackDialog: false,
+
       newPersonName: "",
       newPersonPicture: "",
       newTrackName: "",
       newRoleName: "",
+      savingHistory: false,
+      recommending: false,
       showTrash: false,
       teamName: this.$route.params.team.toLowerCase(),
     }
@@ -337,17 +432,30 @@ export default {
   },
 
   methods: {
+    logout(event) {
+      event.preventDefault()
+      firebaseApp.auth().signOut()
+    },
+
+    snackbarOpen({color, message}) {
+      this.snackbarColor = color
+      this.snackbarText = message
+      this.snackbar = true
+    },
+
     checkAuth() {
       if (this.team.public === true) {
         return true
       }
 
       firebaseApp.auth().onAuthStateChanged(user => {
-        if (!user) {
+        if (user) {
+          this.user = user
+        } else {
           this.$router.push("/")
-          this.$toast.open({
+          this.snackbarOpen({
             message: "You need to be logged in to access this page.",
-            type: "is-danger",
+            color: "error",
           })
           return false
         }
@@ -356,23 +464,21 @@ export default {
     },
 
     saveHistory() {
-      const loadingComponent = this.$loading.open()
+      this.savingHistory = true
 
       const key = scaleDate((new Date()).getTime())
-      const team = Object.assign({}, this.team)
-      delete team[".key"]
-      this.$firebaseRefs.history.child(key).set(team).then(() => {
-        loadingComponent.close()
+      this.$firebaseRefs.history.child(key).set(this.team.current).then(() => {
+        this.savingHistory = false
 
-        this.$toast.open({
+        this.snackbarOpen({
           message: "History recorded!",
-          type: "is-success",
+          color: "success",
         })
       })
     },
 
     async recommendPairs() {
-      const loadingComponent = this.$loading.open()
+      this.recommending = true
       const bestPairing = await findBestPairing({
         history: this.history,
         people: this.availablePeople,
@@ -383,12 +489,12 @@ export default {
       if (bestPairing) {
         this.applyPairing(bestPairing)
       } else {
-        this.$toast.open({
+        this.snackbarOpen({
           message: "Cannot make a valid pairing assignment. Do you have too many lanes?",
-          type: "is-danger",
+          color: "error",
         })
       }
-      loadingComponent.close()
+      this.recommending = false
     },
 
     applyPairing(pairing) {
@@ -423,6 +529,7 @@ export default {
       })
       this.newPersonName = ""
       this.newPersonPicture = ""
+      this.newPersonDialog = false
     },
 
     addTrack() {
@@ -434,6 +541,7 @@ export default {
         location: "unassigned",
       })
       this.newTrackName = ""
+      this.newTrackDialog = false
     },
 
     addRole() {
@@ -445,6 +553,7 @@ export default {
         location: "unassigned",
       })
       this.newRoleName = ""
+      this.newRoleDialog = false
     },
 
     move(type, key, targetKey) {
@@ -491,7 +600,7 @@ export default {
 }
 
 .lane.drop-target {
-  background-color: hsl(0, 0%, 97%);
+  border: 10px solid green !important;
 }
 
 .field.is-expanded {

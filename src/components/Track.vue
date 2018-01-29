@@ -1,12 +1,7 @@
 <template>
-  <b-tag
-    class="track"
-    type="is-primary"
-    size="is-large"
-    :data-key="track['.key']"
-  >
+  <v-chip class="track" color="primary" text-color="white" :data-key="track['.key']">
     {{ track.name }}
-  </b-tag>
+  </v-chip>
 </template>
 
 <script>
@@ -22,7 +17,4 @@ export default {
 </script>
 
 <style lang="scss">
-.track {
-  margin-right: 0.50rem !important;
-}
 </style>

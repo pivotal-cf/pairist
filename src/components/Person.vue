@@ -1,14 +1,17 @@
 <template>
-  <div
-    class="box person"
-    :data-key="person['.key']"
-  >
-    <img
-      :src="picture"
-      @error="fixPicture"
-    >
-    <span>{{ person.name }}</span>
-  </div>
+  <v-card class="person" :data-key="person['.key']">
+    <v-card-text>
+      <v-avatar
+        size="80px"
+        class="grey lighten-4"
+      >
+        <img
+          :src="picture"
+          @error="fixPicture"
+        >
+      </v-avatar>
+    <span>{{ person.name }}<span/></span></v-card-text>
+  </v-card>
 </template>
 
 <script>
@@ -40,21 +43,13 @@ export default {
 
 <style lang="scss">
 .person {
-  position: relative;
-  background-color: hsl(0, 0%, 100%);
   display: inline-block;
-  margin: 10px;
-  padding: 6px;
+  margin-right: 10px;
+  text-align: center;
+  width: 100px;
 
-  img {
-    height: 50px;
-    display: inline-block;
-  }
-  span {
-    margin-top: 14px;
-    margin-left: 10px;
-    margin-right: 10px;
-    display: inline-block;
+  .card__text {
+    padding: 5px;
   }
 }
 </style>

@@ -1,25 +1,18 @@
 <template>
-  <div id="app">
-    <div id="wrapper">
-      <Navigation/>
-      <div
-        id="content"
-        class="container is-fluid">
-        <router-view :key="$route.fullPath"/>
-      </div>
-    </div>
+  <v-app id="app">
+    <v-content>
+      <router-view :key="$route.fullPath"/>
+    </v-content>
     <Footer/>
-  </div>
+  </v-app>
 </template>
 
 <script>
-import Navigation from "./components/Navigation.vue"
 import Footer from "./components/Footer.vue"
 
 export default {
   name: "App",
   components: {
-    Navigation,
     Footer,
   },
 }

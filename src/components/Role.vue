@@ -1,12 +1,7 @@
 <template>
-  <b-tag
-    class="role"
-    type="is-info"
-    size="is-small"
-    :data-key="role['.key']"
-  >
+  <v-chip class="role" outline color="accent" :data-key="role['.key']">
     {{ role.name }}
-  </b-tag>
+  </v-chip>
 </template>
 
 <script>
@@ -22,7 +17,4 @@ export default {
 </script>
 
 <style lang="scss">
-.role {
-  margin-right: 0.25rem !important;
-}
 </style>

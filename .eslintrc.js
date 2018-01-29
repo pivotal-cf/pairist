@@ -11,10 +11,11 @@ module.exports = {
     sourceType: "module",
   },
   rules: {
-    indent: ["error", 2],
+    "indent": ["error", 2],
     "comma-dangle": ["error", "always-multiline"],
     "quote-props": ["error", "consistent-as-needed"],
-    quotes: ["error", "double"],
-    semi: ["error", "never"],
+    "quotes": ["error", "double"],
+    "semi": ["error", "never"],
+    "vue/max-attributes-per-line": [5, "multiline"],
   },
 }
