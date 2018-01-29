@@ -2,7 +2,9 @@
   <v-content>
     <v-toolbar
       class="primary"
+      fixed
       dark
+      app
     >
       <v-toolbar-title>
         Pairist
@@ -46,7 +48,7 @@
 
     <v-container class="dropzone" grid-list-md fluid>
       <v-layout row wrap>
-        <v-flex xs8>
+        <v-flex class="lanes" elevation-2 xs8>
           <v-list>
             <Lane
               class="dropzone"
@@ -60,11 +62,12 @@
               class="dropzone"
               :lane="{'.key': 'new-lane'}"
               data-key="new-lane"
+              :divider="false"
             />
           </v-list>
         </v-flex>
 
-        <v-flex xs4>
+        <v-flex xs4 elevation-8 class="sidebar">
           <div class="tracks unassigned">
             <h2>
               Tracks
@@ -355,6 +358,7 @@ export default {
       onstart(event) {
         self.showTrash = true
         event.target.classList.add("dragging")
+        event.target.classList.add("elevation-10")
       },
 
       onmove(event) {
@@ -362,9 +366,8 @@ export default {
           x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx,
           y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy
 
-        target.style.webkitTransform =
-          target.style.transform =
-          `translate(${x}px, ${y}px) rotate(1deg)`
+        target.style.left = `${x}px`
+        target.style.top = `${y}px`
 
         target.setAttribute("data-x", x)
         target.setAttribute("data-y", y)
@@ -374,7 +377,9 @@ export default {
         const target = event.target
 
         target.classList.remove("dragging")
-        target.style.webkitTransform = target.style.transform = ""
+        target.classList.remove("elevation-10")
+        target.style.left = ""
+        target.style.top = ""
 
         target.removeAttribute("data-x")
         target.removeAttribute("data-y")
@@ -663,14 +668,28 @@ export default {
 .dragging {
   z-index: 200;
   position: relative;
+  transition: transform 0.4s ease-in-out,
+              box-shadow 0.4s ease-in-out;
+  transform: rotate(4deg);
 }
 
 .deleting {
   opacity: 0.8;
 }
 
-.people.out {
-  border: 3px dashed rgba(200, 120, 120, 0.4);
+#app .sidebar {
+  position: relative;
+  top: -20px;
+  left: 30px;
   padding: 10px;
+  padding-top: 20px;
+  padding-right: 30px;
+  background-color: white;
+  min-height: 60vh;
+}
+
+#app .lanes {
+  height: fit-content;
+  padding: 0;
 }
 </style>

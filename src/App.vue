@@ -1,8 +1,6 @@
 <template>
   <v-app id="app">
-    <v-content>
-      <router-view :key="$route.fullPath"/>
-    </v-content>
+    <router-view :key="$route.fullPath"/>
     <Footer/>
   </v-app>
 </template>

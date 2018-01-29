@@ -7,7 +7,6 @@
       <v-layout row justify-space-between>
         <v-flex >
           <Person
-            class="level-item"
             v-for="person in lane.people"
             :person="person"
             :key="person['.key']"
@@ -15,13 +14,11 @@
         </v-flex>
         <v-flex class="text-xs-right">
           <Role
-            class="level-item"
             v-for="role in lane.roles"
             :role="role"
             :key="role['.key']"
           />
           <TrackComponent
-            class="level-item"
             v-for="track in lane.tracks"
             :track="track"
             :key="track['.key']"
@@ -41,7 +38,7 @@
         </v-btn>
       </v-layout>
     </v-list-tile>
-    <v-divider/>
+    <v-divider v-if="divider" />
   </div>
 </template>
 
@@ -64,6 +61,11 @@ export default {
       type: Function,
       required: false,
       default: undefined,
+    },
+    divider: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
   },
   methods: {
