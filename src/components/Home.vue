@@ -1,62 +1,80 @@
 <template>
-  <div v-if="!loggedIn">
-    <label>
-      <span>Email</span>
-      <input
-        type="email"
-        v-model="email"
-      >
-    </label>
-    <label>
-      <span>Password</span>
-      <input
-        type="password"
-        v-model="password"
-      >
-    </label>
-
-    <button
-      class="is-success"
-      @click="login"
-    >
-      Login
-    </button>
-    <button
-      class="is-success"
-      @click="signup"
-    >
-      Signup
-    </button>
-  </div>
-  <div v-else>
-    <button
-      class="is-success"
-      @click="logout"
-    >
-      Logout
-    </button>
+  <div>
+    <div v-if="user === ''">
+      <b-field>
+        <b-input
+          placeholder="Go to team..."
+          icon="account-multiple"
+          @keyup.native.enter="create"
+          v-model="team"/>
+      </b-field>
+      <b-field>
+        <b-input
+          placeholder="Password"
+          @keyup.native.enter="create"
+          type="password"
+          v-model="password"/>
+      </b-field>
+      <b-field>
+        <p class="control">
+          <button
+            class="button is-success"
+            @click="create"
+          >
+            Create
+          </button>
+        </p>
+      </b-field>
+    </div>
+    <div v-if="user === ''">
+      <b-field>
+        <b-input
+          placeholder="Go to team..."
+          icon="account-multiple"
+          @keyup.native.enter="login"
+          v-model="team"/>
+      </b-field>
+      <b-field>
+        <b-input
+          placeholder="Password"
+          @keyup.native.enter="login"
+          type="password"
+          v-model="password"/>
+      </b-field>
+      <b-field>
+        <p class="control">
+          <button
+            class="button is-primary"
+            @click="login"
+          >
+            Login
+          </button>
+        </p>
+      </b-field>
+    </div>
   </div>
 </template>
 
 <script>
-import { firebaseApp } from "@/firebase"
+import { db, firebaseApp } from "@/firebase"
 
 export default {
   name: "Hello",
   data() {
     return {
-      loggedIn: false,
-      email: "",
+      user: "",
+      team: "",
       password: "",
     }
   },
-  created() {
-    const self = this
+  beforeCreate() {
     firebaseApp.auth().onAuthStateChanged(firebaseUser => {
       if (firebaseUser) {
-        self.loggedIn = true
+        this.user = firebaseUser
+        this.$router.push({ name: "Team", params: { team: this.team } })
       } else {
-        self.loggedIn = false
+        this.$router.push("/")
+        this.user = ""
       }
     })
   },
@@ -65,51 +83,45 @@ export default {
       event.preventDefault()
 
       const auth = firebaseApp.auth()
-      const email = this.email
+      const email = `${this.team}@pair.ist`
       const password = this.password
 
-      this.email = ""
-      this.password = ""
+      auth.signInWithEmailAndPassword(email, password).catch(error => {
+        this.email = ""
+        this.password = ""
 
-      auth.signInWithEmailAndPassword(email, password).then(() => {
         this.$toast.open({
-          message: "Welcome",
-          type: "is-success",
-        })
-      }).catch(error => {
-        this.$toast.open({
-          message: error.message,
+          message: error.message.replace("email address", "name"),
           type: "is-danger",
         })
       })
     },
 
-    signup(event) {
+    create(event) {
       event.preventDefault()
 
       const auth = firebaseApp.auth()
-      const email = this.email
+      const email = `${this.team}@pair.ist`
       const password = this.password
 
-      this.email = ""
-      this.password = ""
-
-      auth.createUserWithEmailAndPassword(email, password).then(() => {
-        this.$toast.open({
-          message: "Welcome",
-          type: "is-success",
+      auth.createUserWithEmailAndPassword(email, password).then(event => {
+        db.ref(`/teams/${this.team}`).child("ownerUID").set(event.uid).catch(() => {
+          firebaseApp.auth().signOut()
+          this.$router.push("/")
+          this.$toast.open({
+            message: "You don't have permissions to view this team.",
+            type: "is-danger",
+          })
         })
       }).catch(error => {
+        this.team = ""
+        this.password = ""
+
         this.$toast.open({
-          message: error.message,
+          message: error.message.replace("email address", "name"),
           type: "is-danger",
         })
       })
-    },
-
-    logout(event) {
-      event.preventDefault()
-      firebaseApp.auth().signOut()
     },
   },
 }

@@ -170,6 +170,7 @@ export default {
 
   firebase() {
     const teamRef = db.ref(`/teams/${this.teamName}`)
+    const currentRef = teamRef.child("current")
 
     return {
       team:  {
@@ -177,11 +178,11 @@ export default {
         asObject: true,
         readyCallback: this.checkAuth,
       },
-      people: teamRef.child("people"),
-      tracks: teamRef.child("tracks"),
-      roles: teamRef.child("roles"),
-      lanes: teamRef.child("lanes"),
-      history: db.ref(`/history/${this.team}`).orderByKey().limitToLast(30),
+      people: currentRef.child("people"),
+      tracks: currentRef.child("tracks"),
+      roles: currentRef.child("roles"),
+      lanes: currentRef.child("lanes"),
+      history: teamRef.child("history").orderByKey().limitToLast(30),
     }
   },
 
@@ -350,16 +351,6 @@ export default {
           })
           return false
         }
-
-        this.$firebaseRefs.team.child("ownerUID").set(user.uid).catch(() => {
-          this.$router.push("/")
-          this.$toast.open({
-            message: "You don't have permissions to view this team.",
-            type: "is-danger",
-          })
-
-          return false
-        })
       })
       return true
     },
@@ -368,7 +359,9 @@ export default {
       const loadingComponent = this.$loading.open()
 
       const key = scaleDate((new Date()).getTime())
-      this.$firebaseRefs.history.child(key).set(this.team).then(() => {
+      const team = Object.assign({}, this.team)
+      delete team[".key"]
+      this.$firebaseRefs.history.child(key).set(team).then(() => {
         loadingComponent.close()
 
         this.$toast.open({

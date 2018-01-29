@@ -35,21 +35,13 @@
           Home
         </router-link>
 
-        <b-field class="navbar-item">
-          <b-input
-            placeholder="Go to team..."
-            icon="account-multiple"
-            @keyup.native.enter="gotoTeam"
-            v-model="team"/>
-          <p class="control">
-            <button
-              class="button is-primary"
-              @click="gotoTeam">Go</button>
-          </p>
-        </b-field>
-
         <div v-if="user != ''">
-          Logged in as {{ user.email }}
+          <button
+            class="button is-danger"
+            @click="logout"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </div>
@@ -74,15 +66,16 @@ export default {
         this.user = firebaseUser
       } else {
         this.user = ""
+        this.$router.push("/")
       }
     })
   },
   methods: {
-    gotoTeam() {
-      if (this.team) {
-        this.$router.push({ name: "Team", params: { team: this.team } })
-      }
+    logout(event) {
+      event.preventDefault()
+      firebaseApp.auth().signOut()
     },
+
     toggleNavbar() {
       this.navbarState = !this.navbarState
     },
