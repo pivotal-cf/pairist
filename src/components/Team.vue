@@ -258,7 +258,7 @@ export default {
       team:  {
         source: teamRef,
         asObject: true,
-        readyCallback: this.checkAuth,
+        cancelCallback: () => this.$router.push("/"),
       },
       people: currentRef.child("people"),
       tracks: currentRef.child("tracks"),
@@ -430,6 +430,22 @@ export default {
     })
   },
 
+  beforeCreate() {
+    firebaseApp.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.user = user
+      } else {
+        this.$router.push("/")
+        this.snackbarOpen({
+          message: "You need to be logged in to access this page.",
+          color: "error",
+        })
+        return false
+      }
+    })
+    return true
+  },
+
   methods: {
     logout(event) {
       event.preventDefault()
@@ -440,26 +456,6 @@ export default {
       this.snackbarColor = color
       this.snackbarText = message
       this.snackbar = true
-    },
-
-    checkAuth() {
-      if (this.team.public === true) {
-        return true
-      }
-
-      firebaseApp.auth().onAuthStateChanged(user => {
-        if (user) {
-          this.user = user
-        } else {
-          this.$router.push("/")
-          this.snackbarOpen({
-            message: "You need to be logged in to access this page.",
-            color: "error",
-          })
-          return false
-        }
-      })
-      return true
     },
 
     saveHistory() {
