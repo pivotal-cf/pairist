@@ -6,10 +6,13 @@
     "serve": "firebase serve --only functions",
     "shell": "firebase experimental:functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
+    "deploy:env": "firebase deploy --only functions -P",
+    "deploy:dev": "yarn deploy:env dev",
+    "deploy:production": "yarn deploy:env production",
     "logs": "firebase functions:log"
   },
   "dependencies": {
+    "axios": "^0.17.1",
     "firebase-admin": "~5.8.1",
     "firebase-functions": "^0.8.1"
   },

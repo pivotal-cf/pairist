@@ -1,6 +1,21 @@
 {
   "rules": {
-    ".read": true,
-    ".write": true
+    "teams": {
+      "$team": {
+        ".read": "data.child('public').val() === true || data.child('ownerUID').val() === auth.uid",
+        ".write": "auth.uid != null && (!data.exists() && newData.exists()) || data.child('ownerUID').val() === auth.uid"
+      }
+    },
+    "history": {
+      "$team": {
+        ".read": "data.child('public').val() === true || data.child('ownerUID').val() === auth.uid",
+        ".write": "auth.uid != null && (!data.exists() && newData.exists()) || data.child('ownerUID').val() === auth.uid"
+      }
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid"
+      }
+    }
   }
 }

@@ -1,8 +1,7 @@
 <template>
   <div class="dropzone">
     <h1 class="is-size-1 is-uppercase has-text-weight-bold">
-      {{ team }}
-
+      {{ teamName }}
     </h1>
 
     <button
@@ -153,7 +152,7 @@
 
 <script>
 import Interact from "interact.js"
-import db from "@/db"
+import { db, firebaseApp } from "@/firebase"
 import _ from "lodash"
 
 import Person from "@/components/Person"
@@ -170,11 +169,18 @@ export default {
   },
 
   firebase() {
+    const teamRef = db.ref(`/teams/${this.teamName}`)
+
     return {
-      people: db.ref(`/team/${this.team}/people`),
-      tracks: db.ref(`/team/${this.team}/tracks`),
-      roles: db.ref(`/team/${this.team}/roles`),
-      lanes: db.ref(`/team/${this.team}/lanes`),
+      team:  {
+        source: teamRef,
+        asObject: true,
+        readyCallback: this.checkAuth,
+      },
+      people: teamRef.child("people"),
+      tracks: teamRef.child("tracks"),
+      roles: teamRef.child("roles"),
+      lanes: teamRef.child("lanes"),
       history: db.ref(`/history/${this.team}`).orderByKey().limitToLast(30),
     }
   },
@@ -186,7 +192,7 @@ export default {
       newTrackName: "",
       newRoleName: "",
       showTrash: false,
-      team: this.$route.params.team.toLowerCase(),
+      teamName: this.$route.params.team.toLowerCase(),
     }
   },
 
@@ -330,19 +336,44 @@ export default {
   },
 
   methods: {
+    checkAuth() {
+      if (this.team.public === true) {
+        return true
+      }
+
+      firebaseApp.auth().onAuthStateChanged(user => {
+        if (!user) {
+          this.$router.push("/")
+          this.$toast.open({
+            message: "You need to be logged in to access this page.",
+            type: "is-danger",
+          })
+          return false
+        }
+
+        this.$firebaseRefs.team.child("ownerUID").set(user.uid).catch(() => {
+          this.$router.push("/")
+          this.$toast.open({
+            message: "You don't have permissions to view this team.",
+            type: "is-danger",
+          })
+
+          return false
+        })
+      })
+      return true
+    },
+
     saveHistory() {
       const loadingComponent = this.$loading.open()
 
-      db.ref(`/team/${this.team}`).once("value").then(snapshot => {
-        const team = snapshot.val()
-        const key = scaleDate((new Date()).getTime())
-        db.ref(`/history/${this.team}/${key}`).set(team).then(() => {
-          loadingComponent.close()
+      const key = scaleDate((new Date()).getTime())
+      this.$firebaseRefs.history.child(key).set(this.team).then(() => {
+        loadingComponent.close()
 
-          this.$toast.open({
-            message: "History recorded!",
-            type: "is-success",
-          })
+        this.$toast.open({
+          message: "History recorded!",
+          type: "is-success",
         })
       })
     },

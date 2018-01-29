@@ -3,6 +3,7 @@
 const schema = {
   team: {
     "{teamName}": {
+      ownerUID: "<uid>",
       people: [
         {
           .key: "<generated>",

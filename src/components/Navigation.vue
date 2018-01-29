@@ -47,19 +47,35 @@
               @click="gotoTeam">Go</button>
           </p>
         </b-field>
+
+        <div v-if="user != ''">
+          Logged in as {{ user.email }}
+        </div>
       </div>
     </div>
   </nav>
 </template>
 
 <script>
+import { firebaseApp } from "@/firebase"
+
 export default {
   name: "Navigation",
   data() {
     return {
       navbarState: false,
       team: "",
+      user: "",
     }
+  },
+  beforeCreate() {
+    firebaseApp.auth().onAuthStateChanged(firebaseUser => {
+      if (firebaseUser) {
+        this.user = firebaseUser
+      } else {
+        this.user = ""
+      }
+    })
   },
   methods: {
     gotoTeam() {

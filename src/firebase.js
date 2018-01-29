@@ -6,4 +6,5 @@ const config = {
   databaseURL: process.env.FIREBASE_URL,
 }
 
-export default firebase.initializeApp(config).database()
+export const firebaseApp = firebase.initializeApp(config)
+export const db = firebaseApp.database()
