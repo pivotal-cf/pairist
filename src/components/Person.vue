@@ -1,8 +1,8 @@
 <template>
-  <v-card class="person" :data-key="person['.key']">
+  <v-card class="person title" dark color="secondary" :data-key="person['.key']" @contextmenu="openMenu">
     <v-card-text>
       <v-avatar
-        size="80px"
+        size="86px"
         class="grey lighten-4"
       >
         <img
@@ -10,13 +10,20 @@
           @error="fixPicture"
         >
       </v-avatar>
-    <span>{{ person.name }}<span/></span></v-card-text>
+      <div class="name">{{ person.name }}</div>
+    </v-card-text>
+
+    <ContextMenu @remove="$emit('remove')" ref="menu" />
   </v-card>
 </template>
 
 <script>
+import ContextMenu from "@/components/ContextMenu"
+
 export default {
   name: "Person",
+  components: { ContextMenu },
+
   props: {
     person: {
       type: Object,
@@ -37,6 +44,10 @@ export default {
     fixPicture(event) {
       event.target.src = require("../assets/error-image.svg")
     },
+
+    openMenu(event) {
+      this.$refs.menu.open(event)
+    },
   },
 }
 </script>
@@ -46,10 +57,13 @@ export default {
   display: inline-block;
   margin-right: 10px;
   text-align: center;
-  width: 100px;
 
   .card__text {
-    padding: 5px;
+    padding: 15px;
+
+    .name {
+      margin-top: 7px;
+    }
   }
 }
 </style>

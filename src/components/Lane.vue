@@ -8,6 +8,7 @@
         <v-flex >
           <Person
             v-for="person in lane.people"
+            @remove="$emit('removePerson', person['.key'])"
             :person="person"
             :key="person['.key']"
           />
@@ -15,11 +16,13 @@
         <v-flex class="text-xs-right">
           <Role
             v-for="role in lane.roles"
+            @remove="$emit('removeRole', role['.key'])"
             :role="role"
             :key="role['.key']"
           />
           <TrackComponent
             v-for="track in lane.tracks"
+            @remove="$emit('removeTrack', track['.key'])"
             :track="track"
             :key="track['.key']"
           />
@@ -30,7 +33,7 @@
           dark
           fab
           small
-          :color="lane.locked? 'pink' : 'secondary'"
+          :color="lane.locked? 'pink' : 'accent'"
           @click="toggleLock"
         >
           <v-icon v-if="lane.locked">mdi-lock</v-icon>
@@ -82,11 +85,11 @@ export default {
 }
 
 .lane {
-  height: 140px !important;
+  height: 155px !important;
 
   .list__tile {
   height: auto;
-  padding: 10px;
+  padding: 5px 10px;
 
   .list__tile__content {
     overflow: visible !important;

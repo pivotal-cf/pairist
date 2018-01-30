@@ -36,8 +36,8 @@
             <v-icon>more_vert</v-icon>
           </v-btn>
           <v-list>
-            <v-list-tile v-if="user">
-              <v-list-tile-title @click="logout" >
+            <v-list-tile @click="logout" >
+              <v-list-tile-title>
                 Logout <v-icon>mdi-logout</v-icon>
               </v-list-tile-title>
             </v-list-tile>
@@ -53,6 +53,9 @@
             <Lane
               class="dropzone"
               v-for="lane in lanesWithData"
+              @removePerson="removePerson"
+              @removeRole="removeRole"
+              @removeTrack="removeTrack"
               :toggle-lock-lane="toggleLockLane"
               :lane="lane"
               :key="lane['.key']"
@@ -67,15 +70,15 @@
           </v-list>
         </v-flex>
 
-        <v-flex xs4 elevation-8 class="sidebar">
+        <v-flex xs4 elevation-8 background sidebar>
           <div class="tracks unassigned">
             <h2>
               Tracks
               <v-dialog v-model="newTrackDialog" max-width="300px">
-                <v-btn color="primary" dark slot="activator" icon>
+                <v-btn color="secondary" small dark slot="activator" icon>
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
-                <v-card>
+                <v-card v-if="newTrackDialog">
                   <v-card-title>
                     <span class="headline">New Track</span>
                   </v-card-title>
@@ -87,6 +90,7 @@
                             v-model="newTrackName"
                             label="Name"
                             @keyup.native.enter="addTrack"
+                            autofocus
                             required/>
                         </v-flex>
                       </v-layout>
@@ -94,8 +98,8 @@
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer/>
-                    <v-btn color="blue darken-1" flat @click.native="newTrackDialog = false">Close</v-btn>
-                    <v-btn color="blue darken-1" flat @click.native="addTrack">Save</v-btn>
+                    <v-btn color="secondary darken-2" flat @click.native="newTrackDialog = false">Close</v-btn>
+                    <v-btn color="secondary darken-2" flat @click.native="addTrack">Save</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
@@ -103,6 +107,7 @@
 
             <TrackComponent
               v-for="track in unassignedTracks"
+              @remove="removeTrack(track['.key'])"
               :track="track"
               :key="track['.key']"
             />
@@ -112,10 +117,10 @@
             <h2>
               Roles
               <v-dialog v-model="newRoleDialog" max-width="300px">
-                <v-btn color="primary" dark slot="activator" icon>
+                <v-btn color="secondary" small dark slot="activator" icon>
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
-                <v-card>
+                <v-card v-if="newRoleDialog">
                   <v-card-title>
                     <span class="headline">New Role</span>
                   </v-card-title>
@@ -127,6 +132,7 @@
                             v-model="newRoleName"
                             label="Name"
                             @keyup.native.enter="addRole"
+                            autofocus
                             required/>
                         </v-flex>
                       </v-layout>
@@ -134,8 +140,8 @@
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer/>
-                    <v-btn color="blue darken-1" flat @click.native="newRoleDialog = false">Close</v-btn>
-                    <v-btn color="blue darken-1" flat @click.native="addRole">Save</v-btn>
+                    <v-btn color="secondary darken-2" flat @click.native="newRoleDialog = false">Close</v-btn>
+                    <v-btn color="secondary darken-2" flat @click.native="addRole">Save</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
@@ -143,6 +149,7 @@
 
             <Role
               v-for="role in unassignedRoles"
+              @remove="removeRole(role['.key'])"
               :role="role"
               :key="role['.key']"
             />
@@ -152,10 +159,10 @@
             <h2>
               People
               <v-dialog v-model="newPersonDialog" max-width="500px">
-                <v-btn color="primary" dark slot="activator" icon>
+                <v-btn color="secondary" small dark slot="activator" icon>
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
-                <v-card>
+                <v-card v-if="newPersonDialog">
                   <v-card-title>
                     <span class="headline">New Person</span>
                   </v-card-title>
@@ -167,6 +174,7 @@
                             v-model="newPersonName"
                             label="Name"
                             @keyup.native.enter="addPerson"
+                            autofocus
                             required/>
                         </v-flex>
                         <v-flex xs12 sm6>
@@ -181,14 +189,15 @@
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer/>
-                    <v-btn color="blue darken-1" flat @click.native="newPersonDialog = false">Close</v-btn>
-                    <v-btn color="blue darken-1" flat @click.native="addPerson">Save</v-btn>
+                    <v-btn color="secondary darken-2" flat @click.native="newPersonDialog = false">Close</v-btn>
+                    <v-btn color="secondary darken-2" flat @click.native="addPerson">Save</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
             </h2>
             <Person
               v-for="person in unassignedPeople"
+              @remove="removePerson(person['.key'])"
               :person="person"
               :key="person['.key']"
             />
@@ -202,19 +211,12 @@
 
             <Person
               v-for="person in outPeople"
+              @remove="remoevPerson(person['.key'])"
               :person="person"
               :key="person['.key']"
             />
           </div>
         </v-flex>
-
-        <div
-          class="delete-zone"
-          :class="{ visible: showTrash }"
-          data-key="delete"
-        >
-          <v-icon>close-circle</v-icon>
-        </div>
       </v-layout>
       <v-snackbar
         :timeout="5000"
@@ -273,8 +275,6 @@ export default {
 
   data() {
     return {
-      user: null,
-
       snackbarColor: "",
       snackbar: false,
       snackbarText: "",
@@ -388,7 +388,7 @@ export default {
       },
     })
 
-    Interact(".dropzone, .delete-zone").dropzone({
+    Interact(".dropzone").dropzone({
       accept: ".person, .track, .role",
       overlap: 0.50,
 
@@ -401,16 +401,10 @@ export default {
 
         dropzoneElement.classList.add("drop-target")
         draggableElement.classList.add("can-drop")
-        if (dropzoneElement.classList.contains("delete-zone")) {
-          draggableElement.classList.add("deleting")
-        }
       },
       ondragleave(event) {
         event.target.classList.remove("drop-target")
         event.relatedTarget.classList.remove("can-drop")
-        if (event.target.classList.contains("delete-zone")) {
-          event.relatedTarget.classList.remove("deleting")
-        }
       },
       ondrop(event) {
         const key = event.relatedTarget.dataset.key,
@@ -437,9 +431,7 @@ export default {
 
   beforeCreate() {
     firebaseApp.auth().onAuthStateChanged(user => {
-      if (user) {
-        this.user = user
-      } else {
+      if (!user) {
         this.$router.push("/")
         this.snackbarOpen({
           message: "You need to be logged in to access this page.",
@@ -477,24 +469,26 @@ export default {
       })
     },
 
-    async recommendPairs() {
+    recommendPairs() {
       this.recommending = true
-      const bestPairing = await findBestPairing({
-        history: this.history,
-        people: this.availablePeople,
-        lanes: this.lanesWithData.filter(({locked}) => !locked),
-        solos: this.solos,
-      })
-
-      if (bestPairing) {
-        this.applyPairing(bestPairing)
-      } else {
-        this.snackbarOpen({
-          message: "Cannot make a valid pairing assignment. Do you have too many lanes?",
-          color: "error",
+      this.$nextTick(async () => {
+        const bestPairing = await findBestPairing({
+          history: this.history,
+          people: this.availablePeople,
+          lanes: this.lanesWithData.filter(({locked}) => !locked),
+          solos: this.solos,
         })
-      }
-      this.recommending = false
+
+        if (bestPairing) {
+          this.applyPairing(bestPairing)
+        } else {
+          this.snackbarOpen({
+            message: "Cannot make a valid pairing assignment. Do you have too many lanes?",
+            color: "error",
+          })
+        }
+        this.recommending = false
+      })
     },
 
     applyPairing(pairing) {
@@ -557,30 +551,44 @@ export default {
     },
 
     move(type, key, targetKey) {
-      if (targetKey === "delete") {
-        this.$firebaseRefs[type].child(key).set(null)
+      const thing = {...this[type].find(thing => thing[".key"] === key)}
+      delete thing[".key"]
+
+      if (targetKey == "new-lane") {
+        const newLaneKey = this.$firebaseRefs.lanes.push({sortOrder: 0}).key
+
+        thing.location = newLaneKey
+      } else if (targetKey) {
+        thing.location = targetKey
       } else {
-        const thing = {...this[type].find(thing => thing[".key"] === key)}
-        delete thing[".key"]
-
-        if (targetKey == "new-lane") {
-          const newLaneKey = this.$firebaseRefs.lanes.push({sortOrder: 0}).key
-
-          thing.location = newLaneKey
-        } else if (targetKey) {
-          thing.location = targetKey
-        } else {
-          thing.location = "unassigned"
-        }
-
-        this.$firebaseRefs[type].child(key).set(thing)
+        thing.location = "unassigned"
       }
 
+      this.$firebaseRefs[type].child(key).set(thing)
+      this.clearEmptylanes()
+    },
+
+    clearEmptylanes() {
       this.lanesWithData.forEach(lane => {
         if (lane.people.length === 0 && lane.tracks.length === 0 && lane.roles.length === 0) {
           this.removeLane(lane[".key"])
         }
       })
+    },
+
+    removePerson(key) {
+      this.$firebaseRefs.people.child(key).set(null)
+      this.clearEmptylanes()
+    },
+
+    removeRole(key) {
+      this.$firebaseRefs.roles.child(key).set(null)
+      this.clearEmptylanes()
+    },
+
+    removeTrack(key) {
+      this.$firebaseRefs.tracks.child(key).set(null)
+      this.clearEmptylanes()
     },
 
     removeLane(key) {
@@ -624,47 +632,6 @@ export default {
   min-height: 122px;
 }
 
-.delete-zone {
-  transition: opacity 0.3s linear;
-
-  text-align: center;
-  position: fixed;
-  bottom: 0;
-  z-index: 100;
-  right: 0;
-  height: 100vh;
-  width: 8rem;
-  background: linear-gradient(to left, rgba(100, 0, 0, 0.4) 0%,rgba(255,255,255,0) 100%);
-  opacity: 0;
-  display: none;
-
-  &.drop-target {
-    background: linear-gradient(to left, rgba(100, 0, 0, 0.6) 0%,rgba(255,255,255,0) 100%);
-
-    .delete-icon:before {
-      color: rgb(200, 0, 0);
-    }
-  }
-
-  .delete-icon:before {
-    transition: top 0.3s linear;
-    top: 45vh;
-    left: 100px;
-    position: absolute;
-    font-size: 100px;
-    color: rgba(200, 0, 0, 0.7);
-  }
-
-  &.visible {
-    display: block;
-    opacity: 1;
-
-    .delete-icon:before {
-      left: -20px;
-    }
-  }
-}
-
 .dragging {
   z-index: 200;
   position: relative;
@@ -684,8 +651,7 @@ export default {
   padding: 10px;
   padding-top: 20px;
   padding-right: 30px;
-  background-color: white;
-  min-height: 60vh;
+  min-height: 90vh;
 }
 
 #app .lanes {

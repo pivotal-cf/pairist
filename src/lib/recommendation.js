@@ -3,19 +3,19 @@ import _ from "lodash"
 
 const TIME_SCALE_DIVISOR = process.env.NODE_ENV === "production" ? 3600000 : 360
 
-function findBestPairingSync({history, people, solos, lanes}) {
-  if ((2 * lanes.length - 1) > people.length) {
+function findBestPairingSync({history, people: currentPeople, solos, lanes}) {
+  if ((2 * lanes.length - 1) > currentPeople.length) {
     return
   }
 
   let lastPairings = {}
   const today = new Date()
 
-  people.forEach(left => {
+  currentPeople.forEach(left => {
     lastPairings[left[".key"]] = {}
     lastPairings[left[".key"]][undefined] = scaleDate(new Date().setDate(today.getDate()-31))
 
-    people.forEach(right => {
+    currentPeople.forEach(right => {
       lastPairings[left[".key"]][right[".key"]] = scaleDate(new Date().setDate(today.getDate()-31))
     })
   })
@@ -25,7 +25,8 @@ function findBestPairingSync({history, people, solos, lanes}) {
     const people = Object.keys(state.people).map(key =>
       Object.assign({".key": key}, state.people[key])
     ).filter(person =>
-      person.location != "out" && person.location != "available"
+      person.location != "out" && person.location != "unassigned" &&
+      currentPeople.some(currentPerson => person[".key"] == currentPerson[".key"])
     )
     const groups = _.groupBy(people, "location")
 
@@ -55,7 +56,7 @@ function findBestPairingSync({history, people, solos, lanes}) {
   let bestCost = Infinity
   let bestPairing
 
-  const possiblePairings = permutations(people.map(person => person[".key"]))
+  const possiblePairings = permutations(currentPeople.map(person => person[".key"]))
   _.shuffle(possiblePairings).forEach(pairing => {
     pairing = _.chunk(pairing, 2)
     const cost = _.sum(_.map(pairing, pair =>
@@ -73,9 +74,7 @@ function findBestPairingSync({history, people, solos, lanes}) {
 
 export function findBestPairing(...args) {
   return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(findBestPairingSync(...args))
-    }, 100)
+    resolve(findBestPairingSync(...args))
   })
 }
 
