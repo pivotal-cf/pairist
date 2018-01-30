@@ -430,7 +430,7 @@ export default {
     saveHistory() {
       this.savingHistory = true
 
-      const key = scaleDate(new Date()).getTime()
+      const key = scaleDate(new Date().getTime())
       this.$firebaseRefs.history.child(key).set(this.team.current).then(() => {
         this.savingHistory = false
 
