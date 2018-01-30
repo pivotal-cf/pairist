@@ -15,16 +15,18 @@
       </div>
     </v-card-text>
 
-    <ContextMenu @remove="$emit('remove')" ref="menu" />
+    <ContextMenu @remove="$emit('remove')" :show-edit="true" @edit="edit" ref="menu" />
+    <PersonDialog ref="personDialog" :person="Object.assign({}, person)" @save="save"/>
   </v-card>
 </template>
 
 <script>
 import ContextMenu from "@/components/ContextMenu"
+import PersonDialog from "@/components/PersonDialog"
 
 export default {
   name: "Person",
-  components: { ContextMenu },
+  components: { ContextMenu, PersonDialog },
 
   props: {
     person: {
@@ -59,6 +61,14 @@ export default {
 
     openMenu(event) {
       this.$refs.menu.open(event)
+    },
+
+    edit() {
+      this.$refs.personDialog.open()
+    },
+
+    save(person) {
+      this.$emit("save", person)
     },
   },
 }

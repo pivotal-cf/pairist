@@ -52,6 +52,7 @@
             <Lane
               class="dropzone"
               v-for="lane in lanesWithData"
+              @savePerson="savePerson"
               @removePerson="removePerson"
               @removeRole="removeRole"
               @removeTrack="removeTrack"
@@ -158,45 +159,14 @@
             <div class="people unassigned">
               <h2>
                 People
-                <v-dialog v-model="newPersonDialog" max-width="500px">
-                  <v-btn color="secondary" small dark slot="activator" icon>
-                    <v-icon>mdi-plus</v-icon>
-                  </v-btn>
-                  <v-card v-if="newPersonDialog">
-                    <v-card-title>
-                      <span class="headline">New Person</span>
-                    </v-card-title>
-                    <v-card-text>
-                      <v-container grid-list-md>
-                        <v-layout wrap>
-                          <v-flex xs12 sm6>
-                            <v-text-field
-                              v-model="newPersonName"
-                              label="Name"
-                              @keyup.native.enter="addPerson"
-                              autofocus
-                              required/>
-                          </v-flex>
-                          <v-flex xs12 sm6>
-                            <v-text-field
-                              v-model="newPersonPicture"
-                              @keyup.native.enter="addPerson"
-                              type="url"
-                              label="Picture URL"/>
-                          </v-flex>
-                        </v-layout>
-                      </v-container>
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-spacer/>
-                      <v-btn color="secondary darken-2" flat @click.native="newPersonDialog = false">Close</v-btn>
-                      <v-btn color="secondary darken-2" flat @click.native="addPerson">Save</v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
+                <v-btn color="secondary" small dark @click="openPersonDialog" icon>
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+                <PersonDialog ref="personDialog" :action-type="'New'" @save="savePerson"/>
               </h2>
               <Person
                 v-for="person in unassignedPeople"
+                @save="savePerson"
                 @remove="removePerson(person['.key'])"
                 :person="person"
                 :key="person['.key']"
@@ -211,6 +181,7 @@
 
               <Person
                 v-for="person in outPeople"
+                @save="savePerson"
                 @remove="remoevPerson(person['.key'])"
                 :person="person"
                 :key="person['.key']"
@@ -247,13 +218,14 @@ import Person from "@/components/Person"
 import Role from "@/components/Role"
 import TrackComponent from "@/components/Track"
 import Lane from "@/components/Lane"
+import PersonDialog from "@/components/PersonDialog"
 
 import { findBestPairing, findMatchingLanes, scaleDate } from "@/lib/recommendation"
 
 export default {
   name: "Team",
   components: {
-    Person, Role, TrackComponent, Lane,
+    Person, Role, TrackComponent, Lane, PersonDialog,
   },
 
   firebase() {
@@ -280,12 +252,9 @@ export default {
       snackbar: false,
       snackbarText: "",
 
-      newPersonDialog: false,
       newRoleDialog: false,
       newTrackDialog: false,
 
-      newPersonName: "",
-      newPersonPicture: "",
       newTrackName: "",
       newRoleName: "",
       savingHistory: false,
@@ -450,6 +419,10 @@ export default {
   },
 
   methods: {
+    openPersonDialog() {
+      this.$refs.personDialog.open()
+    },
+
     logout(event) {
       event.preventDefault()
       firebaseApp.auth().signOut()
@@ -505,7 +478,7 @@ export default {
       })
 
       let getNextLane = () => {
-        const emptyLane = this.lanesWithData.find(lane => lane.people.length === 0)
+        const emptyLane = this.lanesWithData.find(lane => !lane.locked && lane.people.length === 0)
         if (emptyLane) {
           return emptyLane[".key"]
         }
@@ -518,18 +491,23 @@ export default {
       })
     },
 
-    addPerson() {
-      if (this.newPersonName === "") {
+    savePerson(person) {
+      if (person.name === "") {
         return
       }
-      this.$firebaseRefs.people.push({
-        name: this.newPersonName,
-        picture: this.newPersonPicture,
-        location: "unassigned",
-      })
-      this.newPersonName = ""
-      this.newPersonPicture = ""
-      this.newPersonDialog = false
+
+      if (person[".key"]) {
+        const personKey = person[".key"]
+        delete person[".key"]
+
+        this.$firebaseRefs.people.child(personKey).set(person)
+      } else {
+        this.$firebaseRefs.people.push({
+          name: person.name,
+          picture: person.picture || "",
+          location: "unassigned",
+        })
+      }
     },
 
     addTrack() {
@@ -657,7 +635,7 @@ export default {
     margin-left: 30px;
     padding: 10px;
     padding-top: 20px;
-    min-height: 90vh;
+    min-height: 92vh;
     width: 100%;
   }
 }

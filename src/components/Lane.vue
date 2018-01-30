@@ -8,6 +8,7 @@
         <v-flex>
           <Person
             v-for="person in lane.people"
+            @save="savePerson"
             @remove="$emit('removePerson', person['.key'])"
             :person="person"
             :key="person['.key']"
@@ -76,6 +77,10 @@ export default {
     toggleLock() {
       this.toggleLockLane(this.lane)
     },
+
+    savePerson(person) {
+      this.$emit("savePerson", person)
+    },
   },
 }
 </script>
@@ -111,7 +116,7 @@ export default {
 
     @media (min-width: 960px) {
       opacity: 0;
-      top: 35%;
+      top: 46px;
       right: -30px;
     }
 
