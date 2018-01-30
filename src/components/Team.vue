@@ -238,9 +238,9 @@ export default {
         asObject: true,
         cancelCallback: () => this.$router.push("/"),
       },
-      people: currentRef.child("people"),
-      tracks: currentRef.child("tracks"),
-      roles: currentRef.child("roles"),
+      people: currentRef.child("people").orderByChild("updatedAt"),
+      tracks: currentRef.child("tracks").orderByChild("updatedAt"),
+      roles: currentRef.child("roles").orderByChild("updatedAt"),
       lanes: currentRef.child("lanes"),
       history: teamRef.child("history").orderByKey().limitToLast(30),
     }
@@ -269,8 +269,8 @@ export default {
       return this.lanes.map(lane => {
         return Object.assign({
           people: this.people.filter(person => person.location == lane[".key"]),
-          tracks: this.tracks.filter(track => track.location == lane[".key"]),
-          roles: this.roles.filter(role => role.location == lane[".key"]),
+          tracks: this.tracks.filter(track => track.location == lane[".key"]).reverse(),
+          roles: this.roles.filter(role => role.location == lane[".key"]).reverse(),
         }, lane)
       })
     },
@@ -334,6 +334,14 @@ export default {
         self.showTrash = true
         event.target.classList.add("dragging")
         event.target.classList.add("elevation-10")
+
+        const width = event.target.offsetWidth
+
+        if (event.target.classList.contains("person")) {
+          event.target.style.marginRight = `-${width}px`
+        } else {
+          event.target.style.marginLeft = `-${width}px`
+        }
       },
 
       onmove(event) {
@@ -355,6 +363,9 @@ export default {
         target.classList.remove("elevation-10")
         target.style.left = ""
         target.style.top = ""
+
+        target.style.marginLeft = ""
+        target.style.marginRight = ""
 
         target.removeAttribute("data-x")
         target.removeAttribute("data-y")
@@ -437,7 +448,7 @@ export default {
     saveHistory() {
       this.savingHistory = true
 
-      const key = scaleDate((new Date()).getTime())
+      const key = scaleDate(new Date()).getTime()
       this.$firebaseRefs.history.child(key).set(this.team.current).then(() => {
         this.savingHistory = false
 
@@ -506,6 +517,7 @@ export default {
           name: person.name,
           picture: person.picture || "",
           location: "unassigned",
+          updatedAt: new Date().getTime(),
         })
       }
     },
@@ -517,6 +529,7 @@ export default {
       this.$firebaseRefs.tracks.push({
         name: this.newTrackName,
         location: "unassigned",
+        updatedAt: new Date().getTime(),
       })
       this.newTrackName = ""
       this.newTrackDialog = false
@@ -529,6 +542,7 @@ export default {
       this.$firebaseRefs.roles.push({
         name: this.newRoleName,
         location: "unassigned",
+        updatedAt: new Date().getTime(),
       })
       this.newRoleName = ""
       this.newRoleDialog = false
@@ -547,6 +561,8 @@ export default {
       } else {
         thing.location = "unassigned"
       }
+
+      thing.updatedAt = new Date().getTime()
 
       this.$firebaseRefs[type].child(key).set(thing)
       this.clearEmptylanes()
