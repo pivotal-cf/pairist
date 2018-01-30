@@ -378,20 +378,6 @@ export default {
       accept: ".person, .track, .role",
       overlap: 0.50,
 
-      ondropactivate(event) {
-        event.target.classList.add("drop-active")
-      },
-      ondragenter(event) {
-        const draggableElement = event.relatedTarget,
-          dropzoneElement = event.target
-
-        dropzoneElement.classList.add("drop-target")
-        draggableElement.classList.add("can-drop")
-      },
-      ondragleave(event) {
-        event.target.classList.remove("drop-target")
-        event.relatedTarget.classList.remove("can-drop")
-      },
       ondrop(event) {
         const key = event.relatedTarget.dataset.key,
           targetKey = event.target.dataset.key
@@ -407,10 +393,6 @@ export default {
         }
 
         self.move(type, key, targetKey)
-      },
-      ondropdeactivate(event) {
-        event.target.classList.remove("drop-active")
-        event.target.classList.remove("drop-target")
       },
     })
   },
@@ -549,6 +531,10 @@ export default {
     },
 
     move(type, key, targetKey) {
+      if (type !== "people" && targetKey === "out") {
+        return
+      }
+
       const thing = {...this[type].find(thing => thing[".key"] === key)}
       delete thing[".key"]
 
@@ -603,14 +589,6 @@ export default {
 </script>
 
 <style lang="scss">
-.drop-target {
-  background-color: hsl(0, 0%, 98%);
-}
-
-.lane.drop-target {
-  border: 10px solid green !important;
-}
-
 .field.is-expanded {
   height: 26px;
 }
@@ -640,11 +618,18 @@ export default {
   transform: rotate(4deg);
 }
 
+.out {
+  flex: 1 1 auto;
+}
+
 .deleting {
   opacity: 0.8;
 }
 
 #app .sidebar {
+  display: flex;
+  flex-flow: column;
+
   @media (min-width: 960px) {
     position: relative;
     top: -20px;
