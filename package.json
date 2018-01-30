@@ -13,10 +13,11 @@
     "e2e": "node test/e2e/runner.js",
     "test": "yarn unit && yarn e2e",
     "lint": "eslint --fix --ext .js,.vue build config src test/unit test/e2e/specs",
-    "build": "node build/build.js",
+    "build:dev": "node build/build-dev.js",
+    "build:production": "node build/build.js",
     "deploy:env": "firebase deploy -P",
-    "deploy:dev": "yarn build && yarn deploy:env dev",
-    "deploy:production": "yarn deploy:env production"
+    "deploy:dev": "yarn build:dev && yarn deploy:env dev",
+    "deploy:production": "yarn build:production && deploy:env production"
   },
   "lint-staged": {
     "src/**/*.{js,vue,jsx,json,css}": [

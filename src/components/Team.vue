@@ -13,8 +13,7 @@
         </span>
       </v-toolbar-title>
       <v-spacer/>
-      <v-toolbar-side-icon class="hidden-md-and-up"/>
-      <v-toolbar-items class="hidden-sm-and-down">
+      <v-toolbar-items>
         <v-btn
           :loading="recommending"
           :disabled="recommending"
@@ -653,10 +652,6 @@ export default {
     padding-top: 20px;
     padding-right: 30px;
     min-height: 90vh;
-  }
-
-  @media (max-width: 960px) {
-    margin-bottom: 42px;
   }
 }
 
