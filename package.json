@@ -17,7 +17,7 @@
     "build:production": "node build/build.js",
     "deploy:env": "firebase deploy -P",
     "deploy:dev": "yarn build:dev && yarn deploy:env dev",
-    "deploy:production": "yarn build:production && deploy:env production"
+    "deploy:production": "yarn build:production && yarn deploy:env production"
   },
   "lint-staged": {
     "src/**/*.{js,vue,jsx,json,css}": [
