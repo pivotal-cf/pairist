@@ -80,7 +80,7 @@ export default {
       teamRules: [
         (v) => !!v || "Team name is required",
         (v) => v && v.length <= 25 || "Team name must be less than 15 characters",
-        (v) => v && /^[A-Za-z\-0-9]+$/.test(v) || "Team name must only contails letters numbers or dashes",
+        (v) => v && /^[A-Za-z\-0-9]+$/.test(v) || "Team name must only contain letters numbers or dashes",
       ],
       password: "",
       passwordRules: [

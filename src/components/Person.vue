@@ -10,7 +10,9 @@
           @error="fixPicture"
         >
       </v-avatar>
-      <div class="name">{{ person.name }}</div>
+      <div class="name" >
+        <span :style="{ 'font-size': fontSize }">{{ person.name }}</span>
+      </div>
     </v-card-text>
 
     <ContextMenu @remove="$emit('remove')" ref="menu" />
@@ -38,6 +40,16 @@ export default {
       }
       return require("../assets/no-picture.svg")
     },
+
+    fontSize() {
+      if (this.person.name.length < 10) {
+        return "20px"
+      } else if (this.person.name.length < 15) {
+        return "14px"
+      } else {
+        return "11px"
+      }
+    },
   },
 
   methods: {
@@ -56,13 +68,20 @@ export default {
 .person {
   display: inline-block;
   margin-right: 10px;
+  margin-top: 5px;
   text-align: center;
+
+  @media (min-width: 960px) {
+    height: 143px !important;
+    width: 120px;
+  }
 
   .card__text {
     padding: 15px;
 
     .name {
       margin-top: 7px;
+      height: 20px;
     }
   }
 

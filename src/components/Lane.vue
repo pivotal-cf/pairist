@@ -92,7 +92,7 @@ export default {
 
   .list__tile {
   height: auto;
-  padding: 5px 10px;
+  padding: 0 5px 10px 10px;
 
   .list__tile__content {
     overflow: visible !important;
