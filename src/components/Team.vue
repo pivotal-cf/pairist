@@ -35,7 +35,7 @@
             <v-icon>more_vert</v-icon>
           </v-btn>
           <v-list>
-            <v-list-tile @click="logout" >
+            <v-list-tile @click="logout">
               <v-list-tile-title>
                 Logout <v-icon>mdi-logout</v-icon>
               </v-list-tile-title>
@@ -47,7 +47,7 @@
 
     <v-container class="dropzone" grid-list-md fluid>
       <v-layout row wrap>
-        <v-flex class="lanes" elevation-2 xs12 md8>
+        <v-flex class="lanes" xs12 md8 elevation-2>
           <v-list>
             <Lane
               class="dropzone"
@@ -69,151 +69,153 @@
           </v-list>
         </v-flex>
 
-        <v-flex xs12 md4 elevation-8 background sidebar>
-          <div class="tracks unassigned">
-            <h2>
-              Tracks
-              <v-dialog v-model="newTrackDialog" max-width="300px">
-                <v-btn color="secondary" small dark slot="activator" icon>
-                  <v-icon>mdi-plus</v-icon>
-                </v-btn>
-                <v-card v-if="newTrackDialog">
-                  <v-card-title>
-                    <span class="headline">New Track</span>
-                  </v-card-title>
-                  <v-card-text>
-                    <v-container grid-list-md>
-                      <v-layout wrap>
-                        <v-flex xs12>
-                          <v-text-field
-                            v-model="newTrackName"
-                            label="Name"
-                            @keyup.native.enter="addTrack"
-                            autofocus
-                            required/>
-                        </v-flex>
-                      </v-layout>
-                    </v-container>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer/>
-                    <v-btn color="secondary darken-2" flat @click.native="newTrackDialog = false">Close</v-btn>
-                    <v-btn color="secondary darken-2" flat @click.native="addTrack">Save</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-            </h2>
+        <v-flex xs12 md4>
+          <div class="elevation-8 background sidebar">
+            <div class="tracks unassigned">
+              <h2>
+                Tracks
+                <v-dialog v-model="newTrackDialog" max-width="300px">
+                  <v-btn color="secondary" small dark slot="activator" icon>
+                    <v-icon>mdi-plus</v-icon>
+                  </v-btn>
+                  <v-card v-if="newTrackDialog">
+                    <v-card-title>
+                      <span class="headline">New Track</span>
+                    </v-card-title>
+                    <v-card-text>
+                      <v-container grid-list-md>
+                        <v-layout wrap>
+                          <v-flex xs12>
+                            <v-text-field
+                              v-model="newTrackName"
+                              label="Name"
+                              @keyup.native.enter="addTrack"
+                              autofocus
+                              required/>
+                          </v-flex>
+                        </v-layout>
+                      </v-container>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer/>
+                      <v-btn color="secondary darken-2" flat @click.native="newTrackDialog = false">Close</v-btn>
+                      <v-btn color="secondary darken-2" flat @click.native="addTrack">Save</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </h2>
 
-            <TrackComponent
-              v-for="track in unassignedTracks"
-              @remove="removeTrack(track['.key'])"
-              :track="track"
-              :key="track['.key']"
-            />
-          </div>
+              <TrackComponent
+                v-for="track in unassignedTracks"
+                @remove="removeTrack(track['.key'])"
+                :track="track"
+                :key="track['.key']"
+              />
+            </div>
 
-          <div class="roles unassigned">
-            <h2>
-              Roles
-              <v-dialog v-model="newRoleDialog" max-width="300px">
-                <v-btn color="secondary" small dark slot="activator" icon>
-                  <v-icon>mdi-plus</v-icon>
-                </v-btn>
-                <v-card v-if="newRoleDialog">
-                  <v-card-title>
-                    <span class="headline">New Role</span>
-                  </v-card-title>
-                  <v-card-text>
-                    <v-container grid-list-md>
-                      <v-layout wrap>
-                        <v-flex xs12>
-                          <v-text-field
-                            v-model="newRoleName"
-                            label="Name"
-                            @keyup.native.enter="addRole"
-                            autofocus
-                            required/>
-                        </v-flex>
-                      </v-layout>
-                    </v-container>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer/>
-                    <v-btn color="secondary darken-2" flat @click.native="newRoleDialog = false">Close</v-btn>
-                    <v-btn color="secondary darken-2" flat @click.native="addRole">Save</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-            </h2>
+            <div class="roles unassigned">
+              <h2>
+                Roles
+                <v-dialog v-model="newRoleDialog" max-width="300px">
+                  <v-btn color="secondary" small dark slot="activator" icon>
+                    <v-icon>mdi-plus</v-icon>
+                  </v-btn>
+                  <v-card v-if="newRoleDialog">
+                    <v-card-title>
+                      <span class="headline">New Role</span>
+                    </v-card-title>
+                    <v-card-text>
+                      <v-container grid-list-md>
+                        <v-layout wrap>
+                          <v-flex xs12>
+                            <v-text-field
+                              v-model="newRoleName"
+                              label="Name"
+                              @keyup.native.enter="addRole"
+                              autofocus
+                              required/>
+                          </v-flex>
+                        </v-layout>
+                      </v-container>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer/>
+                      <v-btn color="secondary darken-2" flat @click.native="newRoleDialog = false">Close</v-btn>
+                      <v-btn color="secondary darken-2" flat @click.native="addRole">Save</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </h2>
 
-            <Role
-              v-for="role in unassignedRoles"
-              @remove="removeRole(role['.key'])"
-              :role="role"
-              :key="role['.key']"
-            />
-          </div>
+              <Role
+                v-for="role in unassignedRoles"
+                @remove="removeRole(role['.key'])"
+                :role="role"
+                :key="role['.key']"
+              />
+            </div>
 
-          <div class="people unassigned">
-            <h2>
-              People
-              <v-dialog v-model="newPersonDialog" max-width="500px">
-                <v-btn color="secondary" small dark slot="activator" icon>
-                  <v-icon>mdi-plus</v-icon>
-                </v-btn>
-                <v-card v-if="newPersonDialog">
-                  <v-card-title>
-                    <span class="headline">New Person</span>
-                  </v-card-title>
-                  <v-card-text>
-                    <v-container grid-list-md>
-                      <v-layout wrap>
-                        <v-flex xs12 sm6>
-                          <v-text-field
-                            v-model="newPersonName"
-                            label="Name"
-                            @keyup.native.enter="addPerson"
-                            autofocus
-                            required/>
-                        </v-flex>
-                        <v-flex xs12 sm6>
-                          <v-text-field
-                            v-model="newPersonPicture"
-                            @keyup.native.enter="addPerson"
-                            type="url"
-                            label="Picture URL"/>
-                        </v-flex>
-                      </v-layout>
-                    </v-container>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer/>
-                    <v-btn color="secondary darken-2" flat @click.native="newPersonDialog = false">Close</v-btn>
-                    <v-btn color="secondary darken-2" flat @click.native="addPerson">Save</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-            </h2>
-            <Person
-              v-for="person in unassignedPeople"
-              @remove="removePerson(person['.key'])"
-              :person="person"
-              :key="person['.key']"
-            />
-          </div>
+            <div class="people unassigned">
+              <h2>
+                People
+                <v-dialog v-model="newPersonDialog" max-width="500px">
+                  <v-btn color="secondary" small dark slot="activator" icon>
+                    <v-icon>mdi-plus</v-icon>
+                  </v-btn>
+                  <v-card v-if="newPersonDialog">
+                    <v-card-title>
+                      <span class="headline">New Person</span>
+                    </v-card-title>
+                    <v-card-text>
+                      <v-container grid-list-md>
+                        <v-layout wrap>
+                          <v-flex xs12 sm6>
+                            <v-text-field
+                              v-model="newPersonName"
+                              label="Name"
+                              @keyup.native.enter="addPerson"
+                              autofocus
+                              required/>
+                          </v-flex>
+                          <v-flex xs12 sm6>
+                            <v-text-field
+                              v-model="newPersonPicture"
+                              @keyup.native.enter="addPerson"
+                              type="url"
+                              label="Picture URL"/>
+                          </v-flex>
+                        </v-layout>
+                      </v-container>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer/>
+                      <v-btn color="secondary darken-2" flat @click.native="newPersonDialog = false">Close</v-btn>
+                      <v-btn color="secondary darken-2" flat @click.native="addPerson">Save</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </h2>
+              <Person
+                v-for="person in unassignedPeople"
+                @remove="removePerson(person['.key'])"
+                :person="person"
+                :key="person['.key']"
+              />
+            </div>
 
-          <div
-            class="people out dropzone"
-            data-key="out"
-          >
-            <h2>PM / Out</h2>
+            <div
+              class="people out dropzone"
+              data-key="out"
+            >
+              <h2>PM / Out</h2>
 
-            <Person
-              v-for="person in outPeople"
-              @remove="remoevPerson(person['.key'])"
-              :person="person"
-              :key="person['.key']"
-            />
+              <Person
+                v-for="person in outPeople"
+                @remove="remoevPerson(person['.key'])"
+                :person="person"
+                :key="person['.key']"
+              />
+            </div>
           </div>
         </v-flex>
       </v-layout>
@@ -349,10 +351,15 @@ export default {
 
   created() {
     const self = this
+
     Interact(".person, .track, .role").draggable({
       inertia: false,
-      restrict: false,
-      autoScroll: false,
+      restrict: {
+        restriction: "main",
+        elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
+        endOnly: false,
+      },
+      autoScroll: true,
 
       onstart(event) {
         self.showTrash = true
@@ -470,7 +477,7 @@ export default {
 
     recommendPairs() {
       this.recommending = true
-      this.$nextTick(async () => {
+      setTimeout(async () => {
         const bestPairing = await findBestPairing({
           history: this.history,
           people: this.availablePeople,
@@ -487,7 +494,7 @@ export default {
           })
         }
         this.recommending = false
-      })
+      }, 100)
     },
 
     applyPairing(pairing) {
@@ -647,16 +654,20 @@ export default {
   @media (min-width: 960px) {
     position: relative;
     top: -20px;
-    left: 30px;
+    margin-left: 30px;
     padding: 10px;
     padding-top: 20px;
-    padding-right: 30px;
     min-height: 90vh;
+    width: 100%;
   }
 }
 
 #app .lanes {
   height: fit-content;
   padding: 0;
+}
+
+#app {
+  overflow-x: hidden;
 }
 </style>
