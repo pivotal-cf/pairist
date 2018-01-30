@@ -65,5 +65,21 @@ export default {
       margin-top: 7px;
     }
   }
+
+  @media (max-width: 960px) {
+    margin: 5px;
+    .card__text {
+      padding: 5px;
+
+      .avatar {
+        height: 70px !important;
+        width: 70px !important;
+      }
+    }
+
+    .name {
+      display: inline-block;
+    }
+  }
 }
 </style>

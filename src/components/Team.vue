@@ -48,7 +48,7 @@
 
     <v-container class="dropzone" grid-list-md fluid>
       <v-layout row wrap>
-        <v-flex class="lanes" elevation-2 xs8>
+        <v-flex class="lanes" elevation-2 xs12 md8>
           <v-list>
             <Lane
               class="dropzone"
@@ -70,7 +70,7 @@
           </v-list>
         </v-flex>
 
-        <v-flex xs4 elevation-8 background sidebar>
+        <v-flex xs12 md4 elevation-8 background sidebar>
           <div class="tracks unassigned">
             <h2>
               Tracks
@@ -645,13 +645,19 @@ export default {
 }
 
 #app .sidebar {
-  position: relative;
-  top: -20px;
-  left: 30px;
-  padding: 10px;
-  padding-top: 20px;
-  padding-right: 30px;
-  min-height: 90vh;
+  @media (min-width: 960px) {
+    position: relative;
+    top: -20px;
+    left: 30px;
+    padding: 10px;
+    padding-top: 20px;
+    padding-right: 30px;
+    min-height: 90vh;
+  }
+
+  @media (max-width: 960px) {
+    margin-bottom: 42px;
+  }
 }
 
 #app .lanes {

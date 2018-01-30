@@ -5,7 +5,7 @@
       class="lane"
     >
       <v-layout row justify-space-between>
-        <v-flex >
+        <v-flex>
           <Person
             v-for="person in lane.people"
             @remove="$emit('removePerson', person['.key'])"
@@ -35,6 +35,7 @@
           small
           :color="lane.locked? 'pink' : 'accent'"
           @click="toggleLock"
+          v-if="toggleLockLane"
         >
           <v-icon v-if="lane.locked">mdi-lock</v-icon>
           <v-icon v-else>mdi-lock-open</v-icon>
@@ -85,7 +86,9 @@ export default {
 }
 
 .lane {
-  height: 155px !important;
+  @media (min-width: 960px) {
+    height: 155px !important;
+  }
 
   .list__tile {
   height: auto;
@@ -102,10 +105,15 @@ export default {
 
   .lock-button {
     transition: opacity .1s linear;
-    opacity: 0;
     position: absolute;
-    top: 35%;
-    right: -30px;
+    bottom: 10px;
+    right: 10px;
+
+    @media (min-width: 960px) {
+      opacity: 0;
+      top: 35%;
+      right: -30px;
+    }
 
     &.is-locked {
       opacity: 1;
