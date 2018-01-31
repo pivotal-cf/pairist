@@ -2,6 +2,7 @@
   "projects": {
     "default": "pairist-9de4d",
     "dev": "pairist-dev",
-    "production": "pairist-9de4d"
+    "production": "pairist-9de4d",
+    "test": "pairist-test"
   }
 }

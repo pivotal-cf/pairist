@@ -13,10 +13,12 @@
     "e2e": "node test/e2e/runner.js",
     "test": "yarn unit && yarn e2e",
     "lint": "eslint --fix --ext .js,.vue build config src test/unit test/e2e/specs",
-    "build:dev": "node build/build-dev.js",
-    "build:production": "node build/build.js",
     "deploy:env": "firebase deploy -P",
+    "build:dev": "node build/build-dev.js",
+    "build:test": "node build/build-test.js",
+    "build:production": "node build/build.js",
     "deploy:dev": "yarn build:dev && yarn deploy:env dev",
+    "deploy:test": "yarn build:test && yarn deploy:env test",
     "deploy:production": "yarn build:production && yarn deploy:env production"
   },
   "lint-staged": {
@@ -27,7 +29,7 @@
   },
   "dependencies": {
     "firebase": "^4.9.0",
-    "firebase-admin": "^5.8.1",
+    "firebase-admin": "^5.8.2",
     "firebase-functions": "^0.8.1",
     "interact.js": "^1.2.8",
     "lodash": "^4.17.4",
@@ -57,6 +59,7 @@
     "copy-webpack-plugin": "^4.0.1",
     "cross-spawn": "^5.0.1",
     "css-loader": "^0.28.0",
+    "es6-promise": "^4.2.4",
     "eslint": "^4.15.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-friendly-formatter": "^3.0.0",

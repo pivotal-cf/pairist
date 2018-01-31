@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 require("./check-versions")()
 
-process.env.NODE_ENV = "development"
+process.env.NODE_ENV = "testing"
 
 const ora = require("ora")
 const rm = require("rimraf")
@@ -12,7 +12,7 @@ const webpack = require("webpack")
 const config = require("../config")
 const webpackConfig = require("./webpack.prod.conf")
 
-const spinner = ora("building for development...")
+const spinner = ora("building for testing...")
 spinner.start()
 
 rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {

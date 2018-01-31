@@ -58,7 +58,9 @@ export default {
   methods: {
     save() {
       this.show = false
-      this.$emit("save", this.person)
+      this.$emit("save", Object.assign({}, this.person))
+      this.person.name = ""
+      this.person.picture = ""
     },
 
     open() {
