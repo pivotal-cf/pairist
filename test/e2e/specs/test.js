@@ -34,7 +34,7 @@ module.exports = {
 
     Promise.all([deleteUsers, clearDB]).then(() => done()).catch(done)
   },
-  //
+
   journey(client) {
     const devServer = client.globals.devServerURL
 
@@ -75,6 +75,23 @@ module.exports = {
         .to.be.visible
         .before(1000)
     }
+
+    team.movePersonToLane("person-1", "last()")
+    team.movePersonToLane("person-2", "1")
+    team.movePersonToLane("person-3", "last()")
+    team.movePersonToLane("person-4", "2")
+    team.movePersonToLane("person-2", "2")
+    team.movePersonToLane("person-4", "1")
+
+    team.movePersonToOut("person-6")
+
+    team.expectLaneHasPerson("1", "person-4")
+    team.expectLaneHasPerson("2", "person-2")
+    team.expectLaneHasPerson("2", "person-3")
+    team.expectLaneHasPerson("1", "person-1")
+
+    team.expectPersonIsUnassigned("person-5")
+    team.expectPersonIsOut("person-6")
 
     client.end()
   },
