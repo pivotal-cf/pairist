@@ -4656,6 +4656,10 @@ is-plain-object@^2.0.1, is-plain-object@^2.0.3, is-plain-object@^2.0.4:
   dependencies:
     isobject "^3.0.1"
 
+is-port-available@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/is-port-available/-/is-port-available-0.1.5.tgz#3bc552feb33b7b30d517cda6a0d27fdb2a026732"
+
 is-posix-bracket@^0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/is-posix-bracket/-/is-posix-bracket-0.1.1.tgz#3334dc79774368e92f016e6fbc0a88f5cd6e6bc4"
