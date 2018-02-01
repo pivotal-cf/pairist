@@ -334,14 +334,6 @@ export default {
         self.showTrash = true
         event.target.classList.add("dragging")
         event.target.classList.add("elevation-10")
-
-        const width = event.target.offsetWidth
-
-        if (event.target.classList.contains("person")) {
-          event.target.style.marginRight = `-${width}px`
-        } else {
-          event.target.style.marginLeft = `-${width}px`
-        }
       },
 
       onmove(event) {
@@ -363,9 +355,6 @@ export default {
         target.classList.remove("elevation-10")
         target.style.left = ""
         target.style.top = ""
-
-        target.style.marginLeft = ""
-        target.style.marginRight = ""
 
         target.removeAttribute("data-x")
         target.removeAttribute("data-y")
