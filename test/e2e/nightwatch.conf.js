@@ -26,6 +26,12 @@ module.exports = {
       globals: {
         devServerURL: "http://localhost:" + (process.env.PORT || config.test.port),
       },
+      screenshots: {
+        enabled: true,
+        on_failure: true,
+        on_error: true,
+        path: "/tmp/nightwatchscreenshots",
+      },
     },
 
     chrome: {
@@ -33,6 +39,14 @@ module.exports = {
         browserName: "chrome",
         javascriptEnabled: true,
         acceptSslCerts: true,
+        chromeOptions: {
+          args: [
+            "headless",
+            "disable-web-security",
+            "ignore-certificate-errors",
+            "window-size=1280,1696",
+          ],
+        },
       },
     },
 

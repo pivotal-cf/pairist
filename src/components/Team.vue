@@ -259,7 +259,6 @@ export default {
       newRoleName: "",
       savingHistory: false,
       recommending: false,
-      showTrash: false,
       teamName: this.$route.params.team.toLowerCase(),
     }
   },
@@ -331,7 +330,6 @@ export default {
       autoScroll: true,
 
       onstart(event) {
-        self.showTrash = true
         event.target.classList.add("dragging")
         event.target.classList.add("elevation-10")
       },
@@ -358,8 +356,6 @@ export default {
 
         target.removeAttribute("data-x")
         target.removeAttribute("data-y")
-
-        self.showTrash = false
       },
     })
 

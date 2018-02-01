@@ -1,6 +1,6 @@
 <template>
   <v-menu class="context-menu" offset-y v-model="showMenu" absolute :position-x="x" :position-y="y">
-    <v-list>
+    <v-list v-if="showMenu">
       <v-list-tile @click="$emit('edit')" v-if="showEdit">
         <v-list-tile-title>
           <v-icon>mdi-pencil</v-icon>
@@ -15,7 +15,7 @@
       </v-list-tile>
     </v-list>
 
-    <v-dialog v-model="dialog" max-width="290">
+    <v-dialog v-if="dialog" v-model="dialog" max-width="290">
       <v-card>
         <v-card-title class="headline">Are you sure?</v-card-title>
         <v-card-actions>

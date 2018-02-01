@@ -1,7 +1,6 @@
 <template>
   <v-chip class="role" outline color="accent" :data-key="role['.key']" @contextmenu="openMenu">
-    {{ role.name }}
-
+    <span>{{ role.name }}</span>
     <ContextMenu @remove="$emit('remove')" ref="menu" />
   </v-chip>
 </template>

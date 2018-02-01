@@ -1,7 +1,6 @@
 <template>
   <v-chip class="track" color="accent" text-color="white" :data-key="track['.key']" @contextmenu="openMenu">
-    {{ track.name }}
-
+    <span>{{ track.name }}</span>
     <ContextMenu @remove="$emit('remove')" ref="menu" />
   </v-chip>
 </template>
