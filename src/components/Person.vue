@@ -1,23 +1,25 @@
 <template>
-  <v-card class="person title" dark color="secondary" :data-key="person['.key']" @contextmenu="openMenu">
-    <v-card-text>
-      <v-avatar
-        size="86px"
-        class="grey lighten-4"
-      >
-        <img
-          :src="picture"
-          @error="fixPicture"
+  <transition name="highlight">
+    <v-card class="person title" dark color="secondary" :data-key="person['.key']" @contextmenu="openMenu">
+      <v-card-text>
+        <v-avatar
+          size="86px"
+          class="grey lighten-4"
         >
-      </v-avatar>
-      <div class="name" >
-        <span :style="{ 'font-size': fontSize }">{{ person.name }}</span>
-      </div>
-    </v-card-text>
+          <img
+            :src="picture"
+            @error="fixPicture"
+          >
+        </v-avatar>
+        <div class="name" >
+          <span :style="{ 'font-size': fontSize }">{{ person.name }}</span>
+        </div>
+      </v-card-text>
 
-    <ContextMenu @remove="$emit('remove')" :show-edit="true" @edit="edit" ref="menu" />
-    <PersonDialog ref="personDialog" :person="Object.assign({}, person)" @save="save"/>
-  </v-card>
+      <ContextMenu @remove="$emit('remove')" :show-edit="true" @edit="edit" ref="menu" />
+      <PersonDialog ref="personDialog" :person="Object.assign({}, person)" @save="save"/>
+    </v-card>
+  </transition>
 </template>
 
 <script>
@@ -44,10 +46,18 @@ export default {
     },
 
     fontSize() {
-      if (this.person.name.length < 10) {
+      if (this.person.name.length < 8) {
         return "20px"
-      } else if (this.person.name.length < 15) {
+      } else if (this.person.name.length < 9) {
+        return "18px"
+      } else if (this.person.name.length < 10) {
+        return "17px"
+      } else if (this.person.name.length < 12) {
         return "14px"
+      } else if (this.person.name.length < 15) {
+        return "13px"
+      } else if (this.person.name.length < 18) {
+        return "12px"
       } else {
         return "11px"
       }

@@ -1,8 +1,10 @@
 <template>
-  <v-chip class="role" outline color="accent" :data-key="role['.key']" @contextmenu="openMenu">
-    <span>{{ role.name }}</span>
-    <ContextMenu @remove="$emit('remove')" ref="menu" />
-  </v-chip>
+  <transition name="highlight">
+    <v-chip class="role" outline color="accent" :data-key="role['.key']" @contextmenu="openMenu">
+      <span>{{ role.name }}</span>
+      <ContextMenu @remove="$emit('remove')" ref="menu" />
+    </v-chip>
+  </transition>
 </template>
 
 <script>

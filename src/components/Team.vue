@@ -31,7 +31,7 @@
           <v-icon dark>mdi-content-save</v-icon>
         </v-btn>
         <v-menu bottom left>
-          <v-btn icon slot="activator" dark>
+          <v-btn pa-0 flat slot="activator" dark>
             <v-icon>more_vert</v-icon>
           </v-btn>
           <v-list>
@@ -191,7 +191,7 @@
         </v-flex>
       </v-layout>
       <v-snackbar
-        :timeout="5000"
+        :timeout="3000"
         :color="snackbarColor"
         v-model="snackbar"
         top
@@ -463,10 +463,22 @@ export default {
         return this.$firebaseRefs.lanes.push({sortOrder: 0}).key
       }
 
+      let actionsTaken = 0
       pairsAndLanes.forEach(({pair, lane}) => {
         lane = lane || getNextLane()
-        pair.forEach(person => this.move("people", person[".key"], lane))
+        pair.forEach(person => {
+          if (person.location !== lane) {
+            this.move("people", person[".key"], lane)
+            actionsTaken++
+          }
+        })
       })
+      if (actionsTaken === 0) {
+        this.snackbarOpen({
+          message: "Pairing setting is already the optimal one. No actoins taken",
+          color: "accent",
+        })
+      }
     },
 
     savePerson(person) {
@@ -633,5 +645,14 @@ export default {
 
 #app {
   overflow-x: hidden;
+}
+
+.highlight-enter-active {
+  transition: transform 0.2s, filter 0.2s, -webkit-filter 0.2s;
+}
+
+.highlight-enter {
+  transform: rotate(5deg);
+  filter: brightness(140%);
 }
 </style>

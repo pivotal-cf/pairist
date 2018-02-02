@@ -155,7 +155,7 @@ module.exports = {
 
     team.recommendPairs()
 
-    team.expectError("Cannot make a valid pairing assignment. Do you have too many lanes?")
+    team.expectMessage("Cannot make a valid pairing assignment. Do you have too many lanes?", "error")
 
     team.person("person-3").moveToUnassigned()
 
@@ -167,10 +167,51 @@ module.exports = {
     team.person("person-4").toBeInLane("2")
     team.person("person-3").toBeInLane("2")
 
+    team.recommendPairs()
+    team.expectMessage("Pairing setting is already the optimal one. No actoins taken", "accent")
+
     team.saveHistory()
   },
 
-  "DAY 3: close browser"(client) {
-    client.end()
+  "DAY 3: navigating back, logout, login"(client) {
+    const devServer = client.globals.devServerURL
+    client.url(devServer)
+    client.pause(1000)
+
+    var team = client.page.team()
+    team.waitForElementVisible("@title", 1000)
+    team.expect.element("@title").text.to.contain("MY-TEAM")
+
+    client.assert.urlContains("my-team")
+
+    team.logout()
+    team.waitForElementNotPresent("@moreMenuButton", 1000)
+
+    var home = client.page.home()
+    home.setValue("@teamNameInput", "my-team")
+    home.setValue("@passwordInput", "password")
+    home.click("@loginButton")
+    home.waitForElementNotPresent("@loginButton", 2000)
+
+    team.waitForElementVisible("@title", 1000)
+    team.expect.element("@title").text.to.contain("MY-TEAM")
+
+    client.assert.urlContains("my-team")
+  },
+
+  "DAY 4: locks and recommend"(client) {
+    var team = client.page.team()
+
+    team.lockLane("1")
+    team.person("person-2").moveToUnassigned()
+
+    team.recommendPairs()
+
+    team.person("renamed-1").toBeInLane("1")
+
+    team.person("person-3").toBeInLane("2")
+    team.person("person-2").toBeInLane("2")
+
+    team.person("person-4").toBeInLane("3")
   },
 }

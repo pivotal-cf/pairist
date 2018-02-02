@@ -15,23 +15,44 @@ module.exports = {
       return this.entity("people", name)
     },
 
-    saveHistory() {
-      this.click("@saveHistoryButton")
-      this.api.pause(2000)
-
-      this.api.useCss()
-        .expect
-        .element(".snack div")
-        .text.to.contain("History recorded!")
-        .before(2000)
+    logout() {
+      this.click("@moreMenuButton")
+      this.api
+        .useXpath()
+        .waitForElementPresent("//a//div[contains(text(), 'Logout')]", 2000)
+        .pause(500)
+        .click("//a//div[contains(text(), 'Logout')]")
+        .pause(500)
     },
 
-    expectError(errorMsg) {
+    lockLane(lane) {
+      this.api
+        .useXpath()
+        .moveToElement(this.el("@lane", lane),  50,  50)
+        .pause(300)
+        .click(this.el("@lane", lane) + "//i[contains(@class, 'mdi-lock-open')]//ancestor::button")
+        .useCss()
+        .waitForElementVisible(".lock-button.is-locked", 2000)
+        .pause(300)
+    },
+
+    saveHistory() {
+      this.click("@saveHistoryButton")
+      this.expectMessage("History recorded!", "success")
+    },
+
+    expectMessage(msg, type) {
+      this.api.pause(300)
       this.api.useCss()
-        .expect
-        .element(".snack div")
-        .text.to.contain(errorMsg)
-        .before(2000)
+        .waitForElementPresent(".snack .mdi-close", 2000)
+
+      this.api.useCss()
+        .assert
+        .containsText(".snack div", msg)
+
+      this.api.useCss()
+        .assert
+        .cssClassPresent(".snack", type)
     },
 
     recommendPairs() {
@@ -47,7 +68,7 @@ module.exports = {
     },
 
     assertChildOf(child, parent) {
-      return this.api.useXpath().expect.element(parent + child).to.be.present.before(2000)
+      return this.api.useXpath().waitForElementPresent(parent + child, 2000)
     },
 
     move(el, destination) {
@@ -56,6 +77,7 @@ module.exports = {
         .mouseButtonDown(0)
         .moveToElement(destination,  50,  50)
         .mouseButtonUp(0)
+        .pause(500)
     },
 
     rightClick(el) {
@@ -134,7 +156,7 @@ module.exports = {
         },
 
         notToExist() {
-          return self.api.useXpath().expect.element(element).to.not.be.present
+          return self.api.useXpath().waitForElementNotPresent(element, 2000)
         },
 
         toBeOut() {
@@ -166,6 +188,11 @@ module.exports = {
 
     recommendPairsButton: {
       selector: "//nav[contains(@class, 'toolbar')]//i[contains(@class, 'mdi-shuffle-variant')]//ancestor::button",
+      locateStrategy: "xpath",
+    },
+
+    moreMenuButton: {
+      selector: "//nav[contains(@class, 'toolbar')]//i[text()='more_vert']//ancestor::button",
       locateStrategy: "xpath",
     },
 
