@@ -29,8 +29,9 @@ module.exports = {
     Promise.all([deleteUsers, clearDB]).then(() => done()).catch(done)
   },
 
-  after() {
+  after(client) {
     admin.app().delete()
+    client.end()
   },
 
   "DAY 0: create account"(client) {
@@ -144,7 +145,6 @@ module.exports = {
 
     team.person("person-1").edit("renamed-1")
     team.person("person-1").notToExist()
-    team.person("renamed-1").toBeInLane("1")
 
     team.person("renamed-1").toBeInLane("1")
 
@@ -155,7 +155,7 @@ module.exports = {
 
     team.recommendPairs()
 
-    // TODO too many lanes
+    team.expectError("Cannot make a valid pairing assignment. Do you have too many lanes?")
 
     team.person("person-3").moveToUnassigned()
 

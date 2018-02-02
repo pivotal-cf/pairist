@@ -17,11 +17,20 @@ module.exports = {
 
     saveHistory() {
       this.click("@saveHistoryButton")
+      this.api.pause(2000)
 
       this.api.useCss()
         .expect
         .element(".snack div")
         .text.to.contain("History recorded!")
+        .before(2000)
+    },
+
+    expectError(errorMsg) {
+      this.api.useCss()
+        .expect
+        .element(".snack div")
+        .text.to.contain(errorMsg)
         .before(2000)
     },
 
@@ -92,9 +101,11 @@ module.exports = {
           self.api
             .useXpath()
             .waitForElementPresent("//a//div[contains(text(), 'Edit')]", 2000)
+            .pause(500)
             .click("//a//div[contains(text(), 'Edit')]")
             .useCss()
             .waitForElementVisible("input[type='text']", 2000)
+            .pause(500)
             .clearValue("input[type='text']")
             .setValue("input[type='text']", newName)
 
@@ -106,6 +117,7 @@ module.exports = {
 
           return self.api.keys([self.api.Keys.ENTER])
             .waitForElementNotPresent("input[type='text']", 1000)
+            .pause(500)
         },
 
         delete() {
@@ -113,8 +125,10 @@ module.exports = {
           self.api
             .useXpath()
             .waitForElementPresent("//a//div[contains(text(), 'Remove')]", 2000)
+            .pause(500)
             .click("//a//div[contains(text(), 'Remove')]")
             .waitForElementPresent("//button//div[text()='Yes']", 2000)
+            .pause(500)
             .click("//button//div[text()='Yes']")
             .waitForElementNotPresent("//button//div[text()='Yes']", 2000)
         },
