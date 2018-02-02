@@ -1,7 +1,7 @@
 <template>
   <v-content>
     <v-toolbar
-      class="primary"
+      class="primary logo"
       dark
     >
       <v-toolbar-title>
@@ -148,3 +148,13 @@ export default {
   },
 }
 </script>
+
+<style lang=scss>
+#app .logo {
+  background: url("../assets/pairist.svg");
+  background-size: 45px;
+  background-repeat: no-repeat;
+  background-position: 10px 50%;
+  padding-left: 40px !important;
+}
+</style>

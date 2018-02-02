@@ -1,7 +1,7 @@
 <template>
   <v-content>
     <v-toolbar
-      class="primary"
+      class="primary logo"
       fixed
       dark
       app
@@ -654,5 +654,13 @@ export default {
 .highlight-enter {
   transform: rotate(5deg);
   filter: brightness(140%);
+}
+
+#app .logo {
+  background-image: url("../assets/pairist.svg");
+  background-size: 45px;
+  background-repeat: no-repeat;
+  background-position: 10px 50%;
+  padding-left: 40px !important;
 }
 </style>
