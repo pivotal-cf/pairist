@@ -404,29 +404,29 @@ export default {
           })
         }
         this.recommending = false
-      }, 100)
+      }, 200)
     },
 
-    async applyPairing(pairing) {
-      await this.$store.dispatch("applyPairing", pairing)
+    applyPairing(pairing) {
+      this.$store.dispatch("applyPairing", pairing)
     },
 
-    async addTrack() {
-      await this.$store.dispatch("addTrack", { name: this.newTrackName })
+    addTrack() {
+      this.$store.dispatch("addTrack", { name: this.newTrackName })
 
       this.newTrackDialog = false
       this.newTrackName = ""
     },
 
-    async addRole() {
-      await this.$store.dispatch("addRole", { name: this.newRoleName })
+    addRole() {
+      this.$store.dispatch("addRole", { name: this.newRoleName })
 
       this.newRoleDialog = false
       this.newRoleName = ""
     },
 
-    async move(type, key, targetKey) {
-      await this.$store.dispatch("move", { type, key, targetKey })
+    move(type, key, targetKey) {
+      this.$store.dispatch("move", { type, key, targetKey })
     },
   },
 }

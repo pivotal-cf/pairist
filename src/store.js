@@ -21,7 +21,6 @@ const store = new Vuex.Store({
     snackbarColor: "",
     snackbarText: "",
 
-
     rolesRef: null,
   },
 
@@ -210,7 +209,7 @@ const store = new Vuex.Store({
       return state.lanesRef.push({ sortOrder: 0 })
     },
 
-    async move({ dispatch, state }, { type, key, targetKey }) {
+    move({ dispatch, state }, { type, key, targetKey }) {
       let ref, collection
       switch (type) {
       case "people":
@@ -237,7 +236,7 @@ const store = new Vuex.Store({
       delete thing[".key"]
 
       if (targetKey == "new-lane") {
-        const newLaneKey = await state.lanesRef.push({ sortOrder: 0 }).key
+        const newLaneKey = state.lanesRef.push({ sortOrder: 0 }).key
 
         thing.location = newLaneKey
       } else if (targetKey) {
@@ -252,7 +251,7 @@ const store = new Vuex.Store({
       dispatch("clearEmptylanes")
     },
 
-    async applyPairing({ commit, dispatch, state, getters }, pairing) {
+    applyPairing({ commit, dispatch, state, getters }, pairing) {
       const pairsAndLanes = findMatchingLanes({
         pairing,
         lanes: getters.lanes.filter(({ locked }) => !locked),
@@ -285,7 +284,7 @@ const store = new Vuex.Store({
       }
     },
 
-    async toggleLockLane({ state }, lane) {
+    toggleLockLane({ state }, lane) {
       return state.lanesRef.child(lane[".key"]).child("locked").set(!lane.locked)
     },
   },

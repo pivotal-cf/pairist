@@ -77,8 +77,8 @@ export default {
       this.$refs.personDialog.open()
     },
 
-    async remove() {
-      await this.$store.dispatch("removePerson", this.person[".key"])
+    remove() {
+      this.$store.dispatch("removePerson", this.person[".key"])
     },
   },
 }

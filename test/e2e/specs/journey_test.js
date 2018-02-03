@@ -187,15 +187,26 @@ module.exports = {
     team.logout()
     team.waitForElementNotPresent("@moreMenuButton", 1000)
 
+    client.url(`${devServer}/my-team`)
+    client.pause(1000)
+
     var home = client.page.home()
+    home.waitForElementPresent("@teamNameInput", 1000)
+
     home.setValue("@teamNameInput", "my-team")
     home.setValue("@passwordInput", "password")
     home.click("@loginButton")
     home.waitForElementNotPresent("@loginButton", 2000)
 
     team.waitForElementVisible("@title", 1000)
-    team.expect.element("@title").text.to.contain("MY-TEAM")
+    team.assert.containsText("@title", "MY-TEAM")
+    client.assert.urlContains("my-team")
 
+    client.url(`${devServer}/your-team`)
+    client.pause(1000)
+
+    team.waitForElementVisible("@title", 1000)
+    team.assert.containsText("@title", "MY-TEAM")
     client.assert.urlContains("my-team")
   },
 

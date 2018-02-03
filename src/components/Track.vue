@@ -26,8 +26,8 @@ export default {
       this.$refs.menu.open(event)
     },
 
-    async remove() {
-      await this.$store.dispatch("removeTrack", this.track[".key"])
+    remove() {
+      this.$store.dispatch("removeTrack", this.track[".key"])
     },
   },
 }
