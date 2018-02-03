@@ -73,9 +73,7 @@ function findBestPairingSync({history, people: currentPeople, solos, lanes}) {
 }
 
 export function findBestPairing(...args) {
-  return new Promise(resolve => {
-    resolve(findBestPairingSync(...args))
-  })
+  return findBestPairingSync(...args)
 }
 
 export function scaleDate(date) {

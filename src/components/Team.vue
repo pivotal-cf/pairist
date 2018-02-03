@@ -7,24 +7,26 @@
       app
     >
       <v-toolbar-title>
-        Pairist
-        <span v-if="team">
+        <span>
+          Pairist
+        </span>
+        <span v-if="current">
           - {{ teamName.toUpperCase() }}
         </span>
       </v-toolbar-title>
-      <v-spacer/>
+      <v-spacer class="ml-3">
+        <v-progress-linear indeterminate v-if="loading" class="d-inline-flex" color="accent"/>
+      </v-spacer>
       <v-toolbar-items>
         <v-btn
-          :loading="recommending"
-          :disabled="recommending"
+          :disabled="loading"
           @click="recommendPairs"
           flat
         >
           <v-icon dark>mdi-shuffle-variant</v-icon>
         </v-btn>
         <v-btn
-          :loading="savingHistory"
-          :disabled="savingHistory"
+          :disabled="loading"
           @click="saveHistory"
           flat
         >
@@ -199,10 +201,7 @@
 
 <script>
 import Interact from "interact.js"
-import {
-  db,
-  firebaseApp,
-} from "@/firebase"
+import { firebaseApp } from "@/firebase"
 
 import Person from "@/components/Person"
 import Role from "@/components/Role"
@@ -215,11 +214,6 @@ import {
   mapState,
 } from "vuex"
 
-import {
-  findBestPairing,
-  scaleDate,
-} from "@/lib/recommendation"
-
 export default {
   name: "Team",
   components: {
@@ -230,28 +224,13 @@ export default {
     PersonDialog,
   },
 
-  firebase() {
-    const teamRef = db.ref(`/teams/${this.teamName}`)
-
-    return {
-      team: {
-        source: teamRef,
-        asObject: true,
-        cancelCallback: () => this.$router.push("/"),
-      },
-      history: teamRef.child("history").orderByKey().limitToLast(30),
-    }
-  },
-
   data() {
     return {
       newTrackDialog: false,
       newRoleDialog: false,
-
       newTrackName: "",
       newRoleName: "",
-      savingHistory: false,
-      recommending: false,
+
       teamName: this.$route.params.team.toLowerCase(),
     }
   },
@@ -262,7 +241,7 @@ export default {
       set(value) { return this.$store.commit("set-snackbar", value) },
     },
     ...mapState([
-      "snackbarText", "snackbarColor",
+      "snackbarText", "snackbarColor", "current", "loading",
     ]),
     ...mapGetters([
       "roles", "unassignedRoles",
@@ -343,18 +322,26 @@ export default {
   },
 
   beforeCreate() {
-    this.$store.dispatch("switchToTeam", this.$route.params.team.toLowerCase())
-    firebaseApp.auth().onAuthStateChanged(user => {
+    firebaseApp.auth().onAuthStateChanged(async user => {
       if (!user) {
         this.$router.push("/")
-        this.snackbarOpen({
+        this.$store.commit("notify", {
           message: "You need to be logged in to access this page.",
           color: "error",
         })
-        return false
+        return
+      }
+
+      try {
+        await this.$store.dispatch("switchToTeam", this.$route.params.team.toLowerCase())
+      } catch(error) {
+        this.$router.push("/")
+        this.$store.commit("notify", {
+          message: "You do not have access to this team.",
+          color: "error",
+        })
       }
     })
-    return true
   },
 
   methods: {
@@ -372,39 +359,11 @@ export default {
     },
 
     saveHistory() {
-      this.savingHistory = true
-
-      const key = scaleDate(new Date().getTime())
-      this.$firebaseRefs.history.child(key).set(this.team.current).then(() => {
-        this.savingHistory = false
-
-        this.snackbarOpen({
-          message: "History recorded!",
-          color: "success",
-        })
-      })
+      this.$store.dispatch("saveHistory")
     },
 
     recommendPairs() {
-      this.recommending = true
-      setTimeout(async () => {
-        const bestPairing = await findBestPairing({
-          history: this.history,
-          people: this.availablePeople,
-          lanes: this.lanes.filter(({ locked }) => !locked),
-          solos: this.solos,
-        })
-
-        if (bestPairing) {
-          this.applyPairing(bestPairing)
-        } else {
-          this.snackbarOpen({
-            message: "Cannot make a valid pairing assignment. Do you have too many lanes?",
-            color: "error",
-          })
-        }
-        this.recommending = false
-      }, 200)
+      this.$store.dispatch("recommendPairs")
     },
 
     applyPairing(pairing) {

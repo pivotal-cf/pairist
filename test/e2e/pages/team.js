@@ -103,7 +103,7 @@ module.exports = {
           }
 
           return self.api.keys([self.api.Keys.ENTER])
-            .waitForElementNotPresent("input[type='text']", 1000)
+            .waitForElementNotPresent("input[type='text']", 2000)
         },
 
         moveToLane(lane) {
@@ -138,7 +138,7 @@ module.exports = {
           }
 
           return self.api.keys([self.api.Keys.ENTER])
-            .waitForElementNotPresent("input[type='text']", 1000)
+            .waitForElementNotPresent("input[type='text']", 2000)
             .pause(500)
         },
 
@@ -179,7 +179,7 @@ module.exports = {
   }],
 
   elements: {
-    title: "nav .toolbar__title",
+    title: "nav .toolbar__title span:nth-child(2)",
 
     saveHistoryButton: {
       selector: "//nav[contains(@class, 'toolbar')]//i[contains(@class, 'mdi-content-save')]//ancestor::button",

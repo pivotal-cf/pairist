@@ -65,15 +65,15 @@
 
 <script>
 import { db, firebaseApp } from "@/firebase"
+import {
+  mapState,
+} from "vuex"
+
 
 export default {
   name: "Hello",
   data() {
     return {
-      snackbarColor: "",
-      snackbar: false,
-      snackbarText: "",
-
       valid: true,
       user: "",
       team: "",
@@ -89,6 +89,17 @@ export default {
       ],
     }
   },
+
+  computed: {
+    snackbar: {
+      get() { return this.$store.state.snackbar },
+      set(value) { return this.$store.commit("set-snackbar", value) },
+    },
+    ...mapState([
+      "snackbarText", "snackbarColor", "loading",
+    ]),
+  },
+
   beforeCreate() {
     firebaseApp.auth().onAuthStateChanged(firebaseUser => {
       if (firebaseUser) {
@@ -100,13 +111,8 @@ export default {
       }
     })
   },
-  methods: {
-    snackbarOpen({color, message}) {
-      this.snackbarColor = color
-      this.snackbarText = message
-      this.snackbar = true
-    },
 
+  methods: {
     login() {
       if (this.$refs.form.validate()) {
         const auth = firebaseApp.auth()
@@ -114,7 +120,7 @@ export default {
         const password = this.password
 
         auth.signInWithEmailAndPassword(email, password).catch(error => {
-          this.snackbarOpen({
+          this.$store.commit("notify", {
             message: error.message.replace("email address", "name"),
             color: "error",
           })
@@ -132,13 +138,13 @@ export default {
           db.ref(`/teams/${this.team}`).child("ownerUID").set(event.uid).catch(() => {
             firebaseApp.auth().signOut()
             this.$router.push("/")
-            this.snackbarOpen({
+            this.$store.commit("notify", {
               message: "You don't have permissions to view this team.",
               color: "error",
             })
           })
         }).catch(error => {
-          this.snackbarOpen({
+          this.$store.commit("notify", {
             message: error.message.replace("email address", "name"),
             color: "error",
           })

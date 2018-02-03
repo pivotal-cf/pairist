@@ -38,7 +38,7 @@ module.exports = {
     const devServer = client.globals.devServerURL
 
     client.url(devServer)
-    client.expect.element("body").to.be.present.before(1000)
+    client.waitForElementPresent("body", 1000)
 
     var home = client.page.home()
     home.setValue("@teamNameInput", "my-team")
@@ -49,9 +49,8 @@ module.exports = {
 
   "DAY 0: create team members and tracks"(client) {
     var team = client.page.team()
-    team.waitForElementVisible("@title", 1000)
-
-    team.expect.element("@title").text.to.contain("MY-TEAM")
+    team.waitForElementPresent("@title", 2000)
+    team.assert.containsText("@title", "MY-TEAM")
 
     team.track("track-1").add()
     team.track("track-2").add()
@@ -155,7 +154,7 @@ module.exports = {
 
     team.recommendPairs()
 
-    team.expectMessage("Cannot make a valid pairing assignment. Do you have too many lanes?", "error")
+    team.expectMessage("Cannot make a valid pairing assignment. Do you have too many lanes?", "warning")
 
     team.person("person-3").moveToUnassigned()
 
@@ -168,7 +167,7 @@ module.exports = {
     team.person("person-3").toBeInLane("2")
 
     team.recommendPairs()
-    team.expectMessage("Pairing setting is already the optimal one. No actoins taken", "accent")
+    team.expectMessage("Pairing setting is already the optimal one. No actions taken", "accent")
 
     team.saveHistory()
   },
@@ -179,33 +178,34 @@ module.exports = {
     client.pause(1000)
 
     var team = client.page.team()
-    team.waitForElementVisible("@title", 1000)
-    team.expect.element("@title").text.to.contain("MY-TEAM")
+    team.waitForElementPresent("@title", 2000)
+    team.assert.containsText("@title", "MY-TEAM")
 
     client.assert.urlContains("my-team")
 
     team.logout()
-    team.waitForElementNotPresent("@moreMenuButton", 1000)
+    team.waitForElementNotPresent("@moreMenuButton", 2000)
 
     client.url(`${devServer}/my-team`)
-    client.pause(1000)
+    team.expectMessage("You need to be logged in to access this page.", "error")
+    team.waitForElementNotPresent("@title", 2000)
 
     var home = client.page.home()
-    home.waitForElementPresent("@teamNameInput", 1000)
+    home.waitForElementPresent("@teamNameInput", 2000)
 
     home.setValue("@teamNameInput", "my-team")
     home.setValue("@passwordInput", "password")
     home.click("@loginButton")
     home.waitForElementNotPresent("@loginButton", 2000)
 
-    team.waitForElementVisible("@title", 1000)
+    team.waitForElementPresent("@title", 2000)
     team.assert.containsText("@title", "MY-TEAM")
     client.assert.urlContains("my-team")
 
     client.url(`${devServer}/your-team`)
-    client.pause(1000)
+    team.expectMessage("You do not have access to this team.", "error")
+    team.waitForElementPresent("@title", 2000)
 
-    team.waitForElementVisible("@title", 1000)
     team.assert.containsText("@title", "MY-TEAM")
     client.assert.urlContains("my-team")
   },

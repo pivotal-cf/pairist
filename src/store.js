@@ -5,13 +5,15 @@ import _ from "lodash"
 
 import { db } from "@/firebase"
 
-import { findMatchingLanes } from "@/lib/recommendation"
-
+import { findBestPairing, findMatchingLanes, scaleDate } from "@/lib/recommendation"
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
+    current: null,
+    history: [],
+
     roles: [],
     tracks: [],
     people: [],
@@ -21,15 +23,18 @@ const store = new Vuex.Store({
     snackbarColor: "",
     snackbarText: "",
 
+    loading: false,
+
     rolesRef: null,
   },
 
   mutations: {
-    "set-refs": (state, refs) => {
-      state.rolesRef = refs.roles
-      state.tracksRef = refs.tracks
-      state.peopleRef = refs.people
-      state.lanesRef = refs.lanes
+    "set-ref": (state, {name, ref}) => {
+      state[`${name}Ref`] = ref
+    },
+
+    "loading": (state, value) => {
+      state.loading = value
     },
 
     "set-snackbar": (state, value) => {
@@ -111,70 +116,83 @@ const store = new Vuex.Store({
   },
 
   actions: {
-    switchToTeam: firebaseAction(({ bindFirebaseRef, commit }, teamName) => {
-      const teamRef = db.ref(`/teams/${teamName}`)
-      const currentRef = teamRef.child("current")
-      const people = currentRef.child("people").orderByChild("updatedAt")
-      const tracks = currentRef.child("tracks").orderByChild("updatedAt")
-      const roles = currentRef.child("roles").orderByChild("updatedAt")
-      const lanes = currentRef.child("lanes")
+    switchToTeam: async ({ commit, dispatch }, teamName) => {
+      commit("loading", true)
+      const currentRef = db.ref(`/teams/${teamName}/current`)
+      const historyRef = db.ref(`/teams/${teamName}/history`)
 
-      commit("set-refs", {
-        roles: roles.ref,
-        tracks: tracks.ref,
-        people: people.ref,
-        lanes: lanes.ref,
-      })
-      bindFirebaseRef("roles", roles, { wait: true })
-      bindFirebaseRef("tracks", tracks, { wait: true })
-      bindFirebaseRef("people", people, { wait: true })
-      bindFirebaseRef("lanes", lanes, { wait: true })
+      const refs = {
+        current: currentRef,
+        people: currentRef.child("people").orderByChild("updatedAt"),
+        tracks: currentRef.child("tracks").orderByChild("updatedAt"),
+        roles: currentRef.child("roles").orderByChild("updatedAt"),
+        lanes: currentRef.child("lanes"),
+        history: historyRef.orderByKey().limitToLast(30),
+      }
+
+      for (const name in refs) {
+        dispatch("setRef", { name, ref: refs[name].ref })
+      }
+
+      await currentRef.once("value")
+      commit("loading", false)
+    },
+
+    setRef: firebaseAction(({ bindFirebaseRef, commit }, { name, ref }) => {
+      bindFirebaseRef(name , ref, { wait: true })
+      commit("set-ref", { name, ref })
     }),
 
-    savePerson({ state }, person) {
+    async savePerson({ commit, state }, person) {
       if (person.name === "") {
         return
       }
 
+      commit("loading", true)
       if (person[".key"]) {
         const personKey = person[".key"]
         delete person[".key"]
 
-        state.peopleRef.child(personKey).set(person)
+        await state.peopleRef.child(personKey).set(person)
       } else {
-        state.peopleRef.push({
+        await state.peopleRef.push({
           name: person.name,
           picture: person.picture || "",
           location: "unassigned",
           updatedAt: new Date().getTime(),
         })
       }
+      commit("loading", false)
     },
 
-    addRole({ state }, { name }) {
+    async addRole({ commit, state }, { name }) {
       if (name === "") {
         return
       }
 
-      return state.rolesRef
+      commit("loading", true)
+      await state.rolesRef
         .push({
           name,
           location: "unassigned",
           updatedAt: new Date().getTime(),
         })
+      commit("loading", false)
     },
 
-    addTrack({ state }, { name }) {
+    async addTrack({ commit, state }, { name }) {
       if (name === "") {
         return
       }
 
-      return state.tracksRef
+      commit("loading", true)
+      await state.tracksRef
         .push({
           name,
           location: "unassigned",
           updatedAt: new Date().getTime(),
         })
+      commit("loading", false)
     },
 
     removeRole({ dispatch, state }, key ) {
@@ -278,7 +296,7 @@ const store = new Vuex.Store({
       })
       if (actionsTaken === 0) {
         commit("notify", {
-          message: "Pairing setting is already the optimal one. No actoins taken",
+          message: "Pairing setting is already the optimal one. No actions taken",
           color: "accent",
         })
       }
@@ -286,6 +304,55 @@ const store = new Vuex.Store({
 
     toggleLockLane({ state }, lane) {
       return state.lanesRef.child(lane[".key"]).child("locked").set(!lane.locked)
+    },
+
+    async saveHistory({ commit, state }) {
+      commit("loading", true)
+      const key = scaleDate(new Date().getTime())
+      try {
+        const current = Object.assign({}, state.current)
+        delete current[".key"]
+        await state.historyRef.child(key).set(current)
+        commit("notify", {
+          message: "History recorded!",
+          color: "success",
+        })
+      } catch(error) {
+        commit("notify", {
+          message: "Error recording history.",
+          color: "error",
+        })
+        console.error(error)
+      }
+      commit("loading", false)
+    },
+
+    async recommendPairs({ commit, dispatch, state, getters }) {
+      commit("loading", true)
+      try {
+        const bestPairing = await findBestPairing({
+          history: state.history,
+          people: getters.availablePeople,
+          lanes: getters.lanes.filter(({ locked }) => !locked),
+          solos: getters.solos,
+        })
+
+        if (bestPairing) {
+          await dispatch("applyPairing", bestPairing)
+        } else {
+          commit("notify", {
+            message: "Cannot make a valid pairing assignment. Do you have too many lanes?",
+            color: "warning",
+          })
+        }
+      } catch(error) {
+        commit("notify", {
+          message: "Error finding best pair setting.",
+          color: "error",
+        })
+        console.error(error)
+      }
+      commit("loading", false)
     },
   },
 })
