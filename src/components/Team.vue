@@ -51,12 +51,7 @@
           <v-list>
             <Lane
               class="dropzone"
-              v-for="lane in lanesWithData"
-              @savePerson="savePerson"
-              @removePerson="removePerson"
-              @removeRole="removeRole"
-              @removeTrack="removeTrack"
-              :toggle-lock-lane="toggleLockLane"
+              v-for="lane in lanes"
               :lane="lane"
               :key="lane['.key']"
               :data-key="lane['.key']"
@@ -108,7 +103,6 @@
 
               <TrackComponent
                 v-for="track in unassignedTracks"
-                @remove="removeTrack(track['.key'])"
                 :track="track"
                 :key="track['.key']"
               />
@@ -150,7 +144,6 @@
 
               <Role
                 v-for="role in unassignedRoles"
-                @remove="removeRole(role['.key'])"
                 :role="role"
                 :key="role['.key']"
               />
@@ -162,12 +155,9 @@
                 <v-btn color="secondary" small dark @click="openPersonDialog" icon>
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
-                <PersonDialog ref="personDialog" :action-type="'New'" @save="savePerson"/>
-              </h2>
+              <PersonDialog ref="personDialog" :action-type="'New'"/></h2>
               <Person
                 v-for="person in unassignedPeople"
-                @save="savePerson"
-                @remove="removePerson(person['.key'])"
                 :person="person"
                 :key="person['.key']"
               />
@@ -181,8 +171,6 @@
 
               <Person
                 v-for="person in outPeople"
-                @save="savePerson"
-                @remove="remoevPerson(person['.key'])"
                 :person="person"
                 :key="person['.key']"
               />
@@ -211,8 +199,10 @@
 
 <script>
 import Interact from "interact.js"
-import { db, firebaseApp } from "@/firebase"
-import _ from "lodash"
+import {
+  db,
+  firebaseApp,
+} from "@/firebase"
 
 import Person from "@/components/Person"
 import Role from "@/components/Role"
@@ -220,40 +210,43 @@ import TrackComponent from "@/components/Track"
 import Lane from "@/components/Lane"
 import PersonDialog from "@/components/PersonDialog"
 
-import { findBestPairing, findMatchingLanes, scaleDate } from "@/lib/recommendation"
+import {
+  mapGetters,
+  mapState,
+} from "vuex"
+
+import {
+  findBestPairing,
+  scaleDate,
+} from "@/lib/recommendation"
 
 export default {
   name: "Team",
   components: {
-    Person, Role, TrackComponent, Lane, PersonDialog,
+    Person,
+    Role,
+    TrackComponent,
+    Lane,
+    PersonDialog,
   },
 
   firebase() {
     const teamRef = db.ref(`/teams/${this.teamName}`)
-    const currentRef = teamRef.child("current")
 
     return {
-      team:  {
+      team: {
         source: teamRef,
         asObject: true,
         cancelCallback: () => this.$router.push("/"),
       },
-      people: currentRef.child("people").orderByChild("updatedAt"),
-      tracks: currentRef.child("tracks").orderByChild("updatedAt"),
-      roles: currentRef.child("roles").orderByChild("updatedAt"),
-      lanes: currentRef.child("lanes"),
       history: teamRef.child("history").orderByKey().limitToLast(30),
     }
   },
 
   data() {
     return {
-      snackbarColor: "",
-      snackbar: false,
-      snackbarText: "",
-
-      newRoleDialog: false,
       newTrackDialog: false,
+      newRoleDialog: false,
 
       newTrackName: "",
       newRoleName: "",
@@ -264,57 +257,19 @@ export default {
   },
 
   computed: {
-    lanesWithData() {
-      return this.lanes.map(lane => {
-        return Object.assign({
-          people: this.people.filter(person => person.location == lane[".key"]),
-          tracks: this.tracks.filter(track => track.location == lane[".key"]).reverse(),
-          roles: this.roles.filter(role => role.location == lane[".key"]).reverse(),
-        }, lane)
-      })
+    snackbar: {
+      get() { return this.$store.state.snackbar },
+      set(value) { return this.$store.commit("set-snackbar", value) },
     },
-
-    lockedLaneKeys() {
-      return this.lanes.filter(({locked}) => locked).map(lane => lane[".key"])
-    },
-
-    unassignedPeople() {
-      return this.people.filter(person => person.location == "unassigned")
-    },
-
-    outPeople() {
-      return this.people.filter(person => person.location == "out")
-    },
-
-    unassignedTracks() {
-      return this.tracks.filter(track => track.location == "unassigned")
-    },
-
-    unassignedRoles() {
-      return this.roles.filter(role => role.location == "unassigned")
-    },
-
-    availablePeople() {
-      return this.people.filter(person =>
-        person.location != "out" &&
-        !this.lockedLaneKeys.some(laneKey => laneKey == person.location)
-      )
-    },
-
-    peopleInLanes() {
-      return this.people.filter(person =>
-        person.location != "out" &&
-        person.location != "unassigned" &&
-        !this.lockedLaneKeys.some(laneKey => laneKey == person.location)
-      )
-    },
-
-    solos() {
-      return _.flatten(
-        Object.values(_.groupBy(this.peopleInLanes, "location"))
-          .filter(group => group.length === 1)
-      )
-    },
+    ...mapState([
+      "snackbarText", "snackbarColor",
+    ]),
+    ...mapGetters([
+      "roles", "unassignedRoles",
+      "tracks", "unassignedTracks",
+      "people", "unassignedPeople", "outPeople", "availablePeople", "solos",
+      "lanes",
+    ]),
   },
 
   created() {
@@ -324,7 +279,12 @@ export default {
       inertia: false,
       restrict: {
         restriction: "main",
-        elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
+        elementRect: {
+          top: 0,
+          left: 0,
+          bottom: 1,
+          right: 1,
+        },
         endOnly: false,
       },
       autoScroll: true,
@@ -383,6 +343,7 @@ export default {
   },
 
   beforeCreate() {
+    this.$store.dispatch("switchToTeam", this.$route.params.team.toLowerCase())
     firebaseApp.auth().onAuthStateChanged(user => {
       if (!user) {
         this.$router.push("/")
@@ -401,15 +362,13 @@ export default {
       this.$refs.personDialog.open()
     },
 
+    snackbarOpen(args) {
+      this.$store.commit("notify", args)
+    },
+
     logout(event) {
       event.preventDefault()
       firebaseApp.auth().signOut()
-    },
-
-    snackbarOpen({color, message}) {
-      this.snackbarColor = color
-      this.snackbarText = message
-      this.snackbar = true
     },
 
     saveHistory() {
@@ -432,7 +391,7 @@ export default {
         const bestPairing = await findBestPairing({
           history: this.history,
           people: this.availablePeople,
-          lanes: this.lanesWithData.filter(({locked}) => !locked),
+          lanes: this.lanes.filter(({ locked }) => !locked),
           solos: this.solos,
         })
 
@@ -448,219 +407,107 @@ export default {
       }, 100)
     },
 
-    applyPairing(pairing) {
-      const pairsAndLanes = findMatchingLanes({
-        pairing,
-        lanes: this.lanesWithData.filter(({locked}) => !locked),
-        people: this.availablePeople,
-      })
-
-      let getNextLane = () => {
-        const emptyLane = this.lanesWithData.find(lane => !lane.locked && lane.people.length === 0)
-        if (emptyLane) {
-          return emptyLane[".key"]
-        }
-        return this.$firebaseRefs.lanes.push({sortOrder: 0}).key
-      }
-
-      let actionsTaken = 0
-      pairsAndLanes.forEach(({pair, lane}) => {
-        lane = lane || getNextLane()
-        pair.forEach(person => {
-          if (person.location !== lane) {
-            this.move("people", person[".key"], lane)
-            actionsTaken++
-          }
-        })
-      })
-      if (actionsTaken === 0) {
-        this.snackbarOpen({
-          message: "Pairing setting is already the optimal one. No actoins taken",
-          color: "accent",
-        })
-      }
+    async applyPairing(pairing) {
+      await this.$store.dispatch("applyPairing", pairing)
     },
 
-    savePerson(person) {
-      if (person.name === "") {
-        return
-      }
+    async addTrack() {
+      await this.$store.dispatch("addTrack", { name: this.newTrackName })
 
-      if (person[".key"]) {
-        const personKey = person[".key"]
-        delete person[".key"]
-
-        this.$firebaseRefs.people.child(personKey).set(person)
-      } else {
-        this.$firebaseRefs.people.push({
-          name: person.name,
-          picture: person.picture || "",
-          location: "unassigned",
-          updatedAt: new Date().getTime(),
-        })
-      }
-    },
-
-    addTrack() {
-      if (this.newTrackName === "") {
-        return
-      }
-      this.$firebaseRefs.tracks.push({
-        name: this.newTrackName,
-        location: "unassigned",
-        updatedAt: new Date().getTime(),
-      })
-      this.newTrackName = ""
       this.newTrackDialog = false
+      this.newTrackName = ""
     },
 
-    addRole() {
-      if (this.newRoleName === "") {
-        return
-      }
-      this.$firebaseRefs.roles.push({
-        name: this.newRoleName,
-        location: "unassigned",
-        updatedAt: new Date().getTime(),
-      })
-      this.newRoleName = ""
+    async addRole() {
+      await this.$store.dispatch("addRole", { name: this.newRoleName })
+
       this.newRoleDialog = false
+      this.newRoleName = ""
     },
 
-    move(type, key, targetKey) {
-      if (type !== "people" && targetKey === "out") {
-        return
-      }
-
-      const thing = {...this[type].find(thing => thing[".key"] === key)}
-      delete thing[".key"]
-
-      if (targetKey == "new-lane") {
-        const newLaneKey = this.$firebaseRefs.lanes.push({sortOrder: 0}).key
-
-        thing.location = newLaneKey
-      } else if (targetKey) {
-        thing.location = targetKey
-      } else {
-        thing.location = "unassigned"
-      }
-
-      thing.updatedAt = new Date().getTime()
-
-      this.$firebaseRefs[type].child(key).set(thing)
-      this.clearEmptylanes()
-    },
-
-    clearEmptylanes() {
-      this.lanesWithData.forEach(lane => {
-        if (lane.people.length === 0 && lane.tracks.length === 0 && lane.roles.length === 0) {
-          this.removeLane(lane[".key"])
-        }
-      })
-    },
-
-    removePerson(key) {
-      this.$firebaseRefs.people.child(key).set(null)
-      this.clearEmptylanes()
-    },
-
-    removeRole(key) {
-      this.$firebaseRefs.roles.child(key).set(null)
-      this.clearEmptylanes()
-    },
-
-    removeTrack(key) {
-      this.$firebaseRefs.tracks.child(key).set(null)
-      this.clearEmptylanes()
-    },
-
-    removeLane(key) {
-      this.$firebaseRefs.lanes.child(key).remove()
-    },
-
-    toggleLockLane(lane) {
-      this.$firebaseRefs.lanes.child(lane[".key"]).child("locked").set(!lane.locked)
+    async move(type, key, targetKey) {
+      await this.$store.dispatch("move", { type, key, targetKey })
     },
   },
 }
 </script>
 
 <style lang="scss">
-.field.is-expanded {
-  height: 26px;
-}
+  .field.is-expanded {
+    height: 26px;
+  }
 
-.dropzone {
-  min-height: 100px;
-  width: 100%;
-}
-
-.people.unassigned {
-  min-height: 221px;
-}
-
-.tracks.unassigned {
-  min-height: 136px;
-}
-
-.roles.unassigned {
-  min-height: 122px;
-}
-
-.dragging {
-  z-index: 200;
-  position: relative;
-  transition: transform 0.4s ease-in-out,
-              box-shadow 0.4s ease-in-out;
-  transform: rotate(4deg);
-}
-
-.out {
-  flex: 1 1 auto;
-}
-
-.deleting {
-  opacity: 0.8;
-}
-
-#app .sidebar {
-  display: flex;
-  flex-flow: column;
-
-  @media (min-width: 960px) {
-    position: relative;
-    top: -20px;
-    margin-left: 30px;
-    padding: 10px;
-    padding-top: 20px;
-    min-height: 92vh;
+  .dropzone {
+    min-height: 100px;
     width: 100%;
   }
-}
 
-#app .lanes {
-  height: fit-content;
-  padding: 0;
-}
+  .people.unassigned {
+    min-height: 221px;
+  }
 
-#app {
-  overflow-x: hidden;
-}
+  .tracks.unassigned {
+    min-height: 136px;
+  }
 
-.highlight-enter-active {
-  transition: transform 0.2s, filter 0.2s, -webkit-filter 0.2s;
-}
+  .roles.unassigned {
+    min-height: 122px;
+  }
 
-.highlight-enter {
-  transform: rotate(5deg);
-  filter: brightness(140%);
-}
+  .dragging {
+    z-index: 200;
+    position: relative;
+    transition: transform 0.4s ease-in-out,
+    box-shadow 0.4s ease-in-out;
+    transform: rotate(4deg);
+  }
 
-#app .logo {
-  background-image: url("../assets/pairist.svg");
-  background-size: 45px;
-  background-repeat: no-repeat;
-  background-position: 10px 50%;
-  padding-left: 40px !important;
-}
+  .out {
+    flex: 1 1 auto;
+  }
+
+  .deleting {
+    opacity: 0.8;
+  }
+
+  #app .sidebar {
+    display: flex;
+    flex-flow: column;
+
+    @media (min-width: 960px) {
+      position: relative;
+      top: -20px;
+      margin-left: 30px;
+      padding: 10px;
+      padding-top: 20px;
+      min-height: 92vh;
+      width: 100%;
+    }
+  }
+
+  #app .lanes {
+    height: fit-content;
+    padding: 0;
+  }
+
+  #app {
+    overflow-x: hidden;
+  }
+
+  .highlight-enter-active {
+    transition: transform 0.2s, filter 0.2s, -webkit-filter 0.2s;
+  }
+
+  .highlight-enter {
+    transform: rotate(5deg);
+    filter: brightness(140%);
+  }
+
+  #app .logo {
+    background-image: url("../assets/pairist.svg");
+    background-size: 45px;
+    background-repeat: no-repeat;
+    background-position: 10px 50%;
+    padding-left: 40px !important;
+  }
 </style>

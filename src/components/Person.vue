@@ -16,8 +16,8 @@
         </div>
       </v-card-text>
 
-      <ContextMenu @remove="$emit('remove')" :show-edit="true" @edit="edit" ref="menu" />
-      <PersonDialog ref="personDialog" :person="Object.assign({}, person)" @save="save"/>
+      <ContextMenu @remove="remove" :show-edit="true" @edit="edit" ref="menu" />
+      <PersonDialog ref="personDialog" :person="Object.assign({}, person)"/>
     </v-card>
   </transition>
 </template>
@@ -77,8 +77,8 @@ export default {
       this.$refs.personDialog.open()
     },
 
-    save(person) {
-      this.$emit("save", person)
+    async remove() {
+      await this.$store.dispatch("removePerson", this.person[".key"])
     },
   },
 }

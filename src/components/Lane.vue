@@ -8,8 +8,6 @@
         <v-flex>
           <Person
             v-for="person in lane.people"
-            @save="savePerson"
-            @remove="$emit('removePerson', person['.key'])"
             :person="person"
             :key="person['.key']"
           />
@@ -17,13 +15,11 @@
         <v-flex class="text-xs-right">
           <Role
             v-for="role in lane.roles"
-            @remove="$emit('removeRole', role['.key'])"
             :role="role"
             :key="role['.key']"
           />
           <TrackComponent
             v-for="track in lane.tracks"
-            @remove="$emit('removeTrack', track['.key'])"
             :track="track"
             :key="track['.key']"
           />
@@ -36,7 +32,7 @@
           small
           :color="lane.locked? 'pink' : 'accent'"
           @click="toggleLock"
-          v-if="toggleLockLane"
+          v-if="lane['.key'] !== 'new-lane'"
         >
           <v-icon v-if="lane.locked">mdi-lock</v-icon>
           <v-icon v-else>mdi-lock-open</v-icon>
@@ -75,11 +71,7 @@ export default {
   },
   methods: {
     toggleLock() {
-      this.toggleLockLane(this.lane)
-    },
-
-    savePerson(person) {
-      this.$emit("savePerson", person)
+      this.$store.dispatch("toggleLockLane", this.lane)
     },
   },
 }

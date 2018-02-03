@@ -2,7 +2,7 @@
   <transition name="highlight">
     <v-chip class="role" outline color="accent" :data-key="role['.key']" @contextmenu="openMenu">
       <span>{{ role.name }}</span>
-      <ContextMenu @remove="$emit('remove')" ref="menu" />
+      <ContextMenu @remove="remove" ref="menu" />
     </v-chip>
   </transition>
 </template>
@@ -24,6 +24,10 @@ export default {
   methods: {
     openMenu(event) {
       this.$refs.menu.open(event)
+    },
+
+    async remove() {
+      await this.$store.dispatch("removeRole", this.role[".key"])
     },
   },
 }

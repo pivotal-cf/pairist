@@ -17,5 +17,6 @@ module.exports = {
     "quotes": ["error", "double"],
     "semi": ["error", "never"],
     "vue/max-attributes-per-line": [5, "multiline"],
+    "no-debugger": "off",
   },
 }

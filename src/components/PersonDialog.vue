@@ -56,9 +56,10 @@ export default {
   },
 
   methods: {
-    save() {
+    async save() {
+      await this.$store.dispatch("savePerson", Object.assign({}, this.person))
+
       this.show = false
-      this.$emit("save", Object.assign({}, this.person))
       this.person.name = ""
       this.person.picture = ""
     },
