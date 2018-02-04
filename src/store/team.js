@@ -117,7 +117,7 @@ export default {
         tracks: currentRef.child("tracks").orderByChild("updatedAt"),
         roles: currentRef.child("roles").orderByChild("updatedAt"),
         lanes: currentRef.child("lanes"),
-        history: historyRef.orderByKey().limitToLast(30),
+        history: historyRef.orderByKey().limitToLast(100),
       }
 
       for (const name in refs) {
@@ -278,7 +278,7 @@ export default {
       pairsAndLanes.forEach(({ pair, lane }) => {
         lane = lane || getNextLane()
         pair.forEach(person => {
-          if (person.location !== lane) {
+          if (person && person.location !== lane) {
             dispatch("move", { type: "people", key: person[".key"], targetKey: lane })
             actionsTaken++
           }

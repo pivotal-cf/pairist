@@ -38,7 +38,6 @@
                   required
                 />
               </v-form>
-
             </v-card-text>
 
             <v-card-actions>

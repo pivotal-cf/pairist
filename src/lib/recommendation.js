@@ -1,4 +1,4 @@
-import { pairs, permutations } from "@/lib/combinatorics"
+import { pairs, pairings, permutations } from "@/lib/combinatorics"
 import _ from "lodash"
 
 const TIME_SCALE_DIVISOR = process.env.NODE_ENV === "production" ? 3600000 : 360
@@ -13,7 +13,7 @@ function findBestPairingSync({history, people: currentPeople, solos, lanes}) {
 
   currentPeople.forEach(left => {
     lastPairings[left[".key"]] = {}
-    lastPairings[left[".key"]][undefined] = scaleDate(new Date().setDate(today.getDate()-31))
+    lastPairings[left[".key"]][null] = scaleDate(new Date().setDate(today.getDate()-31))
 
     currentPeople.forEach(right => {
       lastPairings[left[".key"]][right[".key"]] = scaleDate(new Date().setDate(today.getDate()-31))
@@ -32,16 +32,16 @@ function findBestPairingSync({history, people: currentPeople, solos, lanes}) {
 
     Object.values(groups).forEach(group => {
       const personKeys = group.map(person => person[".key"])
-      // solos are 'undefined' in the map of last pairings.
+      // solos are 'null' in the map of last pairings.
       // this allows us to not have to special case it on the cost computation below
       if (personKeys.length === 1) {
-        lastPairings[personKeys[0]][undefined] = epoch
+        lastPairings[personKeys[0]][null] = epoch
         return
       }
       pairs(personKeys).forEach(pair => {
         if (
-          lastPairings[pair[0]] === undefined ||
-              lastPairings[pair[1]] === undefined
+          lastPairings[pair[0]] === null ||
+              lastPairings[pair[1]] === null
         ) {
           return
         }
@@ -56,7 +56,7 @@ function findBestPairingSync({history, people: currentPeople, solos, lanes}) {
   let bestCost = Infinity
   let bestPairing
 
-  const possiblePairings = permutations(currentPeople.map(person => person[".key"]))
+  const possiblePairings = pairings(currentPeople.map(person => person[".key"]))
   _.shuffle(possiblePairings).forEach(pairing => {
     pairing = _.chunk(pairing, 2)
     const cost = _.sum(_.map(pairing, pair =>
@@ -87,7 +87,7 @@ export function findMatchingLanes({pairing, lanes, people}) {
   const match = orders.find(pairing =>
     laneKeys.every((laneKey, i) => {
       if (!pairing[i]) { return false }
-      return pairing[i].some(person => person.location === laneKey)
+      return pairing[i].some(person => person && person.location === laneKey)
     })
   )
   if (!match) {
