@@ -220,9 +220,9 @@ module.exports = {
 
     team.person("renamed-1").toBeInLane("1")
 
-    team.person("person-3").toBeInLane("2")
-    team.person("person-2").toBeInLane("2")
+    team.person("person-4").toBeInLane("2")
 
-    team.person("person-4").toBeInLane("3")
+    team.person("person-3").toBeInLane("3")
+    team.person("person-2").toBeInLane("3")
   },
 }

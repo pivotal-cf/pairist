@@ -3,7 +3,17 @@ import _ from "lodash"
 
 import { db } from "@/firebase"
 
-import { findBestPairing, findMatchingLanes, scaleDate } from "@/lib/recommendation"
+import Recommendation from "@/lib/recommendation"
+
+const HISTORY_CHUNK_DURATION = process.env.NODE_ENV === "production"
+  ? 3600000 // 1 hour
+  : process.env.NODE_ENV === "testing"
+    ? 1000  // 1 second
+    : 10000 // 10 seconds
+
+const recommendation = new Recommendation({
+  historyChunkDuration: HISTORY_CHUNK_DURATION,
+})
 
 export default {
   state: {
@@ -259,7 +269,7 @@ export default {
     },
 
     applyPairing({ commit, dispatch, state, getters }, pairing) {
-      const pairsAndLanes = findMatchingLanes({
+      const pairsAndLanes = recommendation.findMatchingLanes({
         pairing,
         lanes: getters.lanes.filter(({ locked }) => !locked),
         people: getters.availablePeople,
@@ -297,7 +307,7 @@ export default {
 
     async saveHistory({ commit, state }) {
       commit("loading", true)
-      const key = scaleDate(new Date().getTime())
+      const key = recommendation.scaleDate(new Date())
       try {
         const current = Object.assign({}, state.current)
         delete current[".key"]
@@ -319,11 +329,12 @@ export default {
     async recommendPairs({ commit, dispatch, state, getters }) {
       commit("loading", true)
       try {
-        const bestPairing = await findBestPairing({
+        const bestPairing = recommendation.findBestPairing({
           history: state.history,
-          people: getters.availablePeople,
-          lanes: getters.lanes.filter(({ locked }) => !locked),
-          solos: getters.solos,
+          current: {
+            people: getters.people,
+            lanes: getters.lanes.filter(({ locked }) => !locked),
+          },
         })
 
         if (bestPairing) {

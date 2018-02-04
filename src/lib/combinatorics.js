@@ -1,26 +1,26 @@
-function permutations(array) {
-  var permArr = [],
-    usedChars = []
+export const permutations = (array) => {
+  var results = [],
+    used = []
 
-  function permute(input) {
+  let permute = (input) => {
     var i, ch
     for (i = 0; i < input.length; i++) {
       ch = input.splice(i, 1)[0]
-      usedChars.push(ch)
+      used.push(ch)
       if (input.length == 0) {
-        permArr.push(usedChars.slice())
+        results.push(used.slice())
       }
       permute(input)
       input.splice(i, 0, ch)
-      usedChars.pop()
+      used.pop()
     }
-    return permArr
+    return results
   }
 
   return permute(array)
 }
 
-function pairs(array) {
+export const pairs = (array) => {
   let results = []
 
   for (let i = 0; i < array.length - 1; i++) {
@@ -32,7 +32,7 @@ function pairs(array) {
   return results
 }
 
-function pairings(array) {
+export const pairings = (array) => {
   array = array.slice()
   if (array.length % 2 === 1) {
     array.push(null)
@@ -57,5 +57,3 @@ function pairings(array) {
 
   return results
 }
-
-module.exports = {pairings, permutations, pairs}
