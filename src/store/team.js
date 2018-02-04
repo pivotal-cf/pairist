@@ -93,7 +93,20 @@ export default {
   },
 
   actions: {
-    switchToTeam: async ({ commit, dispatch }, teamName) => {
+    async canRead({ commit }, teamName) {
+      try {
+        await db.ref(`/teams/${teamName}/public`).once("value")
+        return true
+      } catch(error) {
+        commit("notify", {
+          message: "You don't have permissions to view this team.",
+          color: "error",
+        })
+        return false
+      }
+    },
+
+    async loadTeam({ commit, dispatch }, teamName)  {
       commit("loading", true)
       const currentRef = db.ref(`/teams/${teamName}/current`)
       const historyRef = db.ref(`/teams/${teamName}/history`)

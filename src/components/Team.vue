@@ -187,7 +187,6 @@
 
 <script>
 import Interact from "interact.js"
-import { firebaseApp } from "@/firebase"
 
 import Lane from "@/components/Lane"
 import Notification from "@/components/Notification"
@@ -304,39 +303,11 @@ export default {
     })
   },
 
-  beforeCreate() {
-    firebaseApp.auth().onAuthStateChanged(async user => {
-      if (!user) {
-        this.$router.push("/")
-        this.$store.commit("notify", {
-          message: "You need to be logged in to access this page.",
-          color: "error",
-        })
-        return
-      }
-
-      try {
-        await this.$store.dispatch("switchToTeam", this.$route.params.team.toLowerCase())
-      } catch(error) {
-        this.$router.push("/")
-        this.$store.commit("notify", {
-          message: "You do not have access to this team.",
-          color: "error",
-        })
-      }
-    })
-  },
-
   methods: {
-    ...mapActions(["saveHistory", "recommendPairs", "move", "clearNotification"]),
+    ...mapActions(["saveHistory", "recommendPairs", "move", "clearNotification", "logout"]),
 
     openPersonDialog() {
       this.$refs.personDialog.open()
-    },
-
-    logout(event) {
-      event.preventDefault()
-      firebaseApp.auth().signOut()
     },
 
     addTrack() {

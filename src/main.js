@@ -19,14 +19,23 @@ Vue.use(Vuetify, {
 import App from "./App"
 import router from "./router"
 import { store } from "./store"
+import { firebaseApp } from "./firebase"
+
+const auth = firebaseApp.auth()
 
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
-new Vue({
-  el: "#app",
-  store,
-  router,
-  components: { App },
-  template: "<App/>",
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    store.dispatch("autoLogin", user)
+  }
+
+  new Vue({
+    el: "#app",
+    store,
+    router,
+    components: { App },
+    template: "<App/>",
+  })
 })

@@ -2,6 +2,7 @@ import Vue from "vue"
 import Router from "vue-router"
 import Home from "@/components/Home"
 import Team from "@/components/Team"
+import { Auth, RedirectToTeam } from "@/router/auth"
 
 Vue.use(Router)
 
@@ -12,11 +13,13 @@ const router = new Router({
       path: "/",
       name: "Home",
       component: Home,
+      beforeEnter: RedirectToTeam,
     },
     {
       path: "/:team",
       name: "Team",
       component: Team,
+      beforeEnter: Auth,
     },
   ],
 })

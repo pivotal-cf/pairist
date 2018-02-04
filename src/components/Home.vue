@@ -17,8 +17,8 @@
           <v-form v-model="valid" ref="form">
             <v-text-field
               label="Team Name"
-              v-model="team"
-              :rules="teamRules"
+              v-model="name"
+              :rules="nameRules"
               :counter="25"
               @keyup.native.enter="login"
               required
@@ -32,11 +32,11 @@
               required
             />
 
-            <v-btn @click="create" color="secondary" :disabled="!create">
+            <v-btn @click="create" color="secondary" :disabled="loading">
               <v-icon>mdi-plus</v-icon>
               create
             </v-btn>
-            <v-btn @click="login" color="primary" :disabled="!create">
+            <v-btn @click="login" color="primary" :disabled="loading">
               <v-icon>mdi-check</v-icon>
               login
             </v-btn>
@@ -50,8 +50,7 @@
 </template>
 
 <script>
-import { db, firebaseApp } from "@/firebase"
-import { mapState } from "vuex"
+import { mapState, mapActions } from "vuex"
 
 import Notification from "@/components/Notification"
 
@@ -66,8 +65,8 @@ export default {
     return {
       valid: true,
       user: "",
-      team: "",
-      teamRules: [
+      name: "",
+      nameRules: [
         (v) => !!v || "Team name is required",
         (v) => v && v.length <= 25 || "Team name must be less than 15 characters",
         (v) => v && /^[A-Za-z\-0-9]+$/.test(v) || "Team name must only contain letters numbers or dashes",
@@ -84,55 +83,18 @@ export default {
     ...mapState(["loading"]),
   },
 
-  beforeCreate() {
-    firebaseApp.auth().onAuthStateChanged(firebaseUser => {
-      if (firebaseUser) {
-        this.user = firebaseUser
-        this.$router.push({ name: "Team", params: { team: this.user.email.replace("@pair.ist", "") } })
-      } else {
-        this.$router.push("/")
-        this.user = ""
-      }
-    })
-  },
-
   methods: {
+    ...mapActions(["signup", "signin"]),
+
     login() {
       if (this.$refs.form.validate()) {
-        const auth = firebaseApp.auth()
-        const email = `${this.team}@pair.ist`
-        const password = this.password
-
-        auth.signInWithEmailAndPassword(email, password).catch(error => {
-          this.$store.commit("notify", {
-            message: error.message.replace("email address", "name"),
-            color: "error",
-          })
-        })
+        this.signin({ name: this.name, password: this. password })
       }
     },
 
     create() {
       if (this.$refs.form.validate()) {
-        const auth = firebaseApp.auth()
-        const email = `${this.team}@pair.ist`
-        const password = this.password
-
-        auth.createUserWithEmailAndPassword(email, password).then(event => {
-          db.ref(`/teams/${this.team}`).child("ownerUID").set(event.uid).catch(() => {
-            firebaseApp.auth().signOut()
-            this.$router.push("/")
-            this.$store.commit("notify", {
-              message: "You don't have permissions to view this team.",
-              color: "error",
-            })
-          })
-        }).catch(error => {
-          this.$store.commit("notify", {
-            message: error.message.replace("email address", "name"),
-            color: "error",
-          })
-        })
+        this.signup({ name: this.name, password: this.password })
       }
     },
   },
