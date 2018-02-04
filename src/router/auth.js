@@ -3,7 +3,6 @@ import { store } from "@/store"
 export const Auth = async (to, from, next) => {
   if (store.getters.user)
     if (await store.dispatch("canRead", to.params.team)) {
-      console.log("loading", to.params.team)
       await store.dispatch("loadTeam", to.params.team)
       next()
       return

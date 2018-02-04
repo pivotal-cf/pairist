@@ -1,56 +1,67 @@
 <template>
   <v-content>
-    <v-toolbar
-      class="primary logo"
-      dark
-    >
-      <v-toolbar-title>
-        Pairist
-      </v-toolbar-title>
-    </v-toolbar>
+    <v-container fill-height>
+      <v-layout align-center justify-center>
+        <v-flex xs12 sm8 md4>
+          <v-card class="elevation-12">
+            <v-container fill-height v-if="loading" class="loading-home">
+              <v-progress-circular indeterminate :size="150" :width="6" color="accent"/>
+            </v-container>
 
-    <v-container class="dropzone" grid-list-md>
-      <v-layout row wrap>
-        <v-flex xs3/>
-        <v-flex xs6>
-          <h3 class="display-2 grey--text text--darken-1">Login/Create Team</h3>
-          <v-form v-model="valid" ref="form">
-            <v-text-field
-              label="Team Name"
-              v-model="name"
-              :rules="nameRules"
-              :counter="25"
-              @keyup.native.enter="login"
-              required
-            />
-            <v-text-field
-              label="Password"
-              v-model="password"
-              type="password"
-              :rules="passwordRules"
-              @keyup.native.enter="login"
-              required
-            />
+            <v-toolbar
+              class="primary logo"
+              dark
+            >
+              <v-toolbar-title>
+                Pairist - Create Team / Login
+              </v-toolbar-title>
+            </v-toolbar>
 
-            <v-btn @click="create" color="secondary" :disabled="loading">
-              <v-icon>mdi-plus</v-icon>
-              create
-            </v-btn>
-            <v-btn @click="login" color="primary" :disabled="loading">
-              <v-icon>mdi-check</v-icon>
-              login
-            </v-btn>
-          </v-form>
+            <v-card-text>
+              <v-form v-model="valid" ref="form">
+                <v-text-field
+                  label="Team Name"
+                  prepend-icon="person"
+                  v-model="name"
+                  :rules="nameRules"
+                  :counter="25"
+                  @keyup.native.enter="login"
+                  required
+                />
+                <v-text-field
+                  label="Password"
+                  prepend-icon="lock"
+                  v-model="password"
+                  type="password"
+                  :rules="passwordRules"
+                  @keyup.native.enter="login"
+                  required
+                />
+              </v-form>
+
+            </v-card-text>
+
+            <v-card-actions>
+              <v-btn @click="create" color="secondary" :disabled="loading">
+                <v-icon>mdi-plus</v-icon>
+                create
+              </v-btn>
+              <v-spacer/>
+              <v-btn @click="login" color="primary" :disabled="loading">
+                <v-icon>mdi-check</v-icon>
+                login
+              </v-btn>
+            </v-card-actions>
+          </v-card>
         </v-flex>
       </v-layout>
     </v-container>
-
     <Notification/>
   </v-content>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex"
+import { mapGetters, mapActions } from "vuex"
 
 import Notification from "@/components/Notification"
 
@@ -80,7 +91,7 @@ export default {
   },
 
   computed: {
-    ...mapState(["loading"]),
+    ...mapGetters(["loading"]),
   },
 
   methods: {
@@ -108,5 +119,17 @@ export default {
   background-repeat: no-repeat;
   background-position: 10px 50%;
   padding-left: 40px !important;
+}
+
+.loading-home {
+  margin: auto;
+  position: absolute;
+  z-index: 100;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.3);
+
+  div {
+    margin: auto;
+  }
 }
 </style>
