@@ -180,21 +180,7 @@
           </div>
         </v-flex>
       </v-layout>
-      <v-snackbar
-        :timeout="3000"
-        :color="snackbarColor"
-        v-model="snackbar"
-        top
-      >
-        {{ snackbarText }}
-        <v-btn
-          dark
-          flat
-          @click.native="snackbar = false"
-        >
-          <v-icon dark>mdi-close</v-icon>
-        </v-btn>
-      </v-snackbar>
+      <Notification/>
     </v-container>
   </v-content>
 </template>
@@ -203,25 +189,27 @@
 import Interact from "interact.js"
 import { firebaseApp } from "@/firebase"
 
+import Lane from "@/components/Lane"
+import Notification from "@/components/Notification"
 import Person from "@/components/Person"
+import PersonDialog from "@/components/PersonDialog"
 import Role from "@/components/Role"
 import TrackComponent from "@/components/Track"
-import Lane from "@/components/Lane"
-import PersonDialog from "@/components/PersonDialog"
 
 import {
   mapGetters,
-  mapState,
+  mapActions,
 } from "vuex"
 
 export default {
   name: "Team",
   components: {
+    Lane,
+    Notification,
     Person,
+    PersonDialog,
     Role,
     TrackComponent,
-    Lane,
-    PersonDialog,
   },
 
   data() {
@@ -236,18 +224,13 @@ export default {
   },
 
   computed: {
-    snackbar: {
-      get() { return this.$store.state.snackbar },
-      set(value) { return this.$store.commit("set-snackbar", value) },
-    },
-    ...mapState([
-      "snackbarText", "snackbarColor", "current", "loading",
-    ]),
     ...mapGetters([
+      "loading",
+
       "roles", "unassignedRoles",
       "tracks", "unassignedTracks",
       "people", "unassignedPeople", "outPeople", "availablePeople", "solos",
-      "lanes",
+      "lanes", "current",
     ]),
   },
 
@@ -316,7 +299,7 @@ export default {
           type = "roles"
         }
 
-        self.move(type, key, targetKey)
+        self.move({ type, key, targetKey })
       },
     })
   },
@@ -345,29 +328,15 @@ export default {
   },
 
   methods: {
+    ...mapActions(["saveHistory", "recommendPairs", "move", "clearNotification"]),
+
     openPersonDialog() {
       this.$refs.personDialog.open()
-    },
-
-    snackbarOpen(args) {
-      this.$store.commit("notify", args)
     },
 
     logout(event) {
       event.preventDefault()
       firebaseApp.auth().signOut()
-    },
-
-    saveHistory() {
-      this.$store.dispatch("saveHistory")
-    },
-
-    recommendPairs() {
-      this.$store.dispatch("recommendPairs")
-    },
-
-    applyPairing(pairing) {
-      this.$store.dispatch("applyPairing", pairing)
     },
 
     addTrack() {
@@ -382,10 +351,6 @@ export default {
 
       this.newRoleDialog = false
       this.newRoleName = ""
-    },
-
-    move(type, key, targetKey) {
-      this.$store.dispatch("move", { type, key, targetKey })
     },
   },
 }

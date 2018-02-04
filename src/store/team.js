@@ -1,5 +1,3 @@
-import Vue from "vue"
-import Vuex from "vuex"
 import { firebaseMutations, firebaseAction } from "vuexfire"
 import _ from "lodash"
 
@@ -7,9 +5,7 @@ import { db } from "@/firebase"
 
 import { findBestPairing, findMatchingLanes, scaleDate } from "@/lib/recommendation"
 
-Vue.use(Vuex)
-
-const store = new Vuex.Store({
+export default {
   state: {
     current: null,
     history: [],
@@ -19,38 +15,19 @@ const store = new Vuex.Store({
     people: [],
     lanes: [],
 
-    snackbar: false,
-    snackbarColor: "",
-    snackbarText: "",
-
-    loading: false,
-
     rolesRef: null,
   },
 
   mutations: {
-    "set-ref": (state, {name, ref}) => {
-      state[`${name}Ref`] = ref
-    },
-
-    "loading": (state, value) => {
-      state.loading = value
-    },
-
-    "set-snackbar": (state, value) => {
-      state.snackbar = value
-    },
-
-    "notify": (state, { message, color }) => {
-      state.snackbarText = message
-      state.snackbarColor = color
-      state.snackbar = true
-    },
-
+    setRef(state, {name, ref}) { state[`${name}Ref`] = ref },
     ...firebaseMutations,
   },
 
   getters: {
+    current(state) {
+      return state.current
+    },
+
     roles(state) {
       return state.roles
     },
@@ -139,8 +116,8 @@ const store = new Vuex.Store({
     },
 
     setRef: firebaseAction(({ bindFirebaseRef, commit }, { name, ref }) => {
-      bindFirebaseRef(name , ref, { wait: true })
-      commit("set-ref", { name, ref })
+      bindFirebaseRef(name , ref)
+      commit("setRef", { name, ref })
     }),
 
     async savePerson({ commit, state }, person) {
@@ -355,6 +332,4 @@ const store = new Vuex.Store({
       commit("loading", false)
     },
   },
-})
-
-export default store
+}

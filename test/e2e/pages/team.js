@@ -53,6 +53,8 @@ module.exports = {
       this.api.useCss()
         .assert
         .cssClassPresent(".snack", type)
+
+      this.api.click(".snack .mdi-close")
     },
 
     recommendPairs() {

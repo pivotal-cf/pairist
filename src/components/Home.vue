@@ -45,33 +45,23 @@
       </v-layout>
     </v-container>
 
-    <v-snackbar
-      :timeout="5000"
-      :color="snackbarColor"
-      v-model="snackbar"
-      top
-    >
-      {{ snackbarText }}
-      <v-btn
-        dark
-        flat
-        @click.native="snackbar = false"
-      >
-        <v-icon dark>mdi-close</v-icon>
-      </v-btn>
-    </v-snackbar>
+    <Notification/>
   </v-content>
 </template>
 
 <script>
 import { db, firebaseApp } from "@/firebase"
-import {
-  mapState,
-} from "vuex"
+import { mapState } from "vuex"
 
+import Notification from "@/components/Notification"
 
 export default {
-  name: "Hello",
+  name: "Home",
+
+  components: {
+    Notification,
+  },
+
   data() {
     return {
       valid: true,
@@ -91,13 +81,7 @@ export default {
   },
 
   computed: {
-    snackbar: {
-      get() { return this.$store.state.snackbar },
-      set(value) { return this.$store.commit("set-snackbar", value) },
-    },
-    ...mapState([
-      "snackbarText", "snackbarColor", "loading",
-    ]),
+    ...mapState(["loading"]),
   },
 
   beforeCreate() {
