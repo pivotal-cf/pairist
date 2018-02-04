@@ -200,9 +200,8 @@ export default {
       dispatch("clearEmptylanes")
     },
 
-    removeLane({ dispatch, state }, key ) {
+    removeLane({ state }, key ) {
       state.lanesRef.child(key).remove()
-      dispatch("clearEmptylanes")
     },
 
     clearEmptylanes({ dispatch, getters }) {
