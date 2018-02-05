@@ -1,9 +1,9 @@
 import { firebaseMutations, firebaseAction } from "vuexfire"
-import _ from "lodash"
 
 import { db } from "@/firebase"
 
 import Recommendation from "@/lib/recommendation"
+import constants from "@/lib/constants"
 
 const HISTORY_CHUNK_DURATION = process.env.NODE_ENV === "production"
   ? 3600000 // 1 hour
@@ -42,7 +42,7 @@ export default {
       return state.roles
     },
     unassignedRoles(_, getters) {
-      return getters.rolesInLocation("unassigned")
+      return getters.rolesInLocation(constants.LOCATION.UNASSIGNED)
     },
     rolesInLocation(_, getters) {
       return location => (
@@ -54,7 +54,7 @@ export default {
       return state.tracks
     },
     unassignedTracks(_, getters) {
-      return getters.tracksInLocation("unassigned")
+      return getters.tracksInLocation(constants.LOCATION.UNASSIGNED)
     },
     tracksInLocation(_, getters) {
       return location => (
@@ -66,28 +66,14 @@ export default {
       return state.people
     },
     unassignedPeople(_, getters) {
-      return getters.peopleInLocation("unassigned")
+      return getters.peopleInLocation(constants.LOCATION.UNASSIGNED)
     },
     outPeople(_, getters) {
-      return getters.peopleInLocation("out")
-    },
-    availablePeople(_, getters) {
-      const people = getters.people.filter(person => person.location !== "out")
-      return people.filter(person => (
-        !getters.lanes.some(lane => lane[".key"] === person.location && lane.locked)
-      ))
+      return getters.peopleInLocation(constants.LOCATION.OUT)
     },
     peopleInLocation(_, getters) {
       return location => (
         getters.people.filter(person => person.location === location)
-      )
-    },
-
-    solos(__, getters) {
-      const people = getters.availablePeople.filter(person =>  person.location !== "unassigned")
-      return _.flatten(
-        Object.values(_.groupBy(people, "location"))
-          .filter(group => group.length === 1)
       )
     },
 
@@ -158,7 +144,7 @@ export default {
         await state.peopleRef.push({
           name: person.name,
           picture: person.picture || "",
-          location: "unassigned",
+          location: constants.LOCATION.UNASSIGNED,
           updatedAt: new Date().getTime(),
         })
       }
@@ -174,7 +160,7 @@ export default {
       await state.rolesRef
         .push({
           name,
-          location: "unassigned",
+          location: constants.LOCATION.UNASSIGNED,
           updatedAt: new Date().getTime(),
         })
       commit("loading", false)
@@ -189,7 +175,7 @@ export default {
       await state.tracksRef
         .push({
           name,
-          location: "unassigned",
+          location: constants.LOCATION.UNASSIGNED,
           updatedAt: new Date().getTime(),
         })
       commit("loading", false)
@@ -245,8 +231,8 @@ export default {
         return
       }
 
-      if (type !== "people" && targetKey === "out") {
-        targetKey = "unassigned"
+      if (type !== "people" && targetKey === constants.LOCATION.OUT) {
+        targetKey = constants.LOCATION.UNASSIGNED
       }
 
       const thing = { ...collection.find(thing => thing[".key"] === key) }
@@ -259,7 +245,7 @@ export default {
       } else if (targetKey) {
         thing.location = targetKey
       } else {
-        thing.location = "unassigned"
+        thing.location = constants.LOCATION.UNASSIGNED
       }
 
       thing.updatedAt = new Date().getTime()
@@ -319,14 +305,14 @@ export default {
       commit("loading", false)
     },
 
-    async recommendPairs({ commit, dispatch, state, getters }) {
+    async recommendPairs({ commit, dispatch, state }) {
       commit("loading", true)
       try {
         const bestPairing = recommendation.findBestPairing({
-          history: state.history,
+          history: state.history.slice(),
           current: {
-            people: getters.people,
-            lanes: getters.lanes.filter(({ locked }) => !locked),
+            people: state.people.slice(),
+            lanes: state.lanes.slice(),
           },
         })
 

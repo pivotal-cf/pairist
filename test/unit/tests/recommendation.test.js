@@ -1,6 +1,8 @@
-import Recommendation from "@/lib/recommendation"
 import assert from "assert"
 import _ from "lodash"
+
+import Recommendation from "@/lib/recommendation"
+import constants from "@/lib/constants"
 
 describe("Recommendation", () => {
   let recommendation
@@ -79,9 +81,9 @@ describe("Recommendation", () => {
         const bestPairing = recommendation.findBestPairing({
           current: {
             people: [
-              { ".key": "p1", "location": "unassigned" },
-              { ".key": "p2", "location": "unassigned" },
-              { ".key": "p3", "location": "unassigned" },
+              { ".key": "p1", "location": constants.LOCATION.UNASSIGNED },
+              { ".key": "p2", "location": constants.LOCATION.UNASSIGNED },
+              { ".key": "p3", "location": constants.LOCATION.UNASSIGNED },
             ],
             lanes: [{ ".key": "l1" }],
           },
@@ -109,15 +111,15 @@ describe("Recommendation", () => {
           {
             lane: "l1",
             pair: [
-              {".key": "p1", "location": "unassigned"},
+              {".key": "p1", "location": constants.LOCATION.UNASSIGNED},
               undefined,
             ],
           },
           {
             lane: "new-lane",
             pair: [
-              {".key": "p2", "location": "unassigned"},
-              {".key": "p3", "location": "unassigned"},
+              {".key": "p2", "location": constants.LOCATION.UNASSIGNED},
+              {".key": "p3", "location": constants.LOCATION.UNASSIGNED},
             ],
           },
         ])
@@ -129,9 +131,9 @@ describe("Recommendation", () => {
         const bestPairing = recommendation.findBestPairing({
           current: {
             people: [
-              { ".key": "p1", "location": "unassigned" },
-              { ".key": "p2", "location": "unassigned" },
-              { ".key": "p3", "location": "out" },
+              { ".key": "p1", "location": constants.LOCATION.UNASSIGNED },
+              { ".key": "p2", "location": constants.LOCATION.UNASSIGNED },
+              { ".key": "p3", "location": constants.LOCATION.OUT },
             ],
             lanes: [],
           },
@@ -159,8 +161,105 @@ describe("Recommendation", () => {
           {
             lane: "new-lane",
             pair: [
-              {".key": "p1", "location": "unassigned"},
-              {".key": "p2", "location": "unassigned"},
+              {".key": "p1", "location": constants.LOCATION.UNASSIGNED},
+              {".key": "p2", "location": constants.LOCATION.UNASSIGNED},
+            ],
+          },
+        ])
+      })
+    })
+
+    describe("with locked lanes", () => {
+      it("ignores locked lanes completely", () => {
+        const bestPairing = recommendation.findBestPairing({
+          current: {
+            people: [
+              { ".key": "p1", "location": "l1" },
+              { ".key": "p2", "location": "l1" },
+              { ".key": "p3", "location": "l2" },
+            ],
+            lanes: [
+              { ".key": "l1", "locked": true },
+              { ".key": "l2", "locked": false },
+            ],
+          },
+          history: [
+            {
+              ".key": "" + previousScore(recommendation, 2),
+              "people": [
+                { ".key": "p1", "location": "l1" },
+                { ".key": "p2", "location": "l2" },
+                { ".key": "p3", "location": "l1" },
+              ],
+            },
+            {
+              ".key": "" + previousScore(recommendation, 1),
+              "people": [
+                { ".key": "p1", "location": "l1" },
+                { ".key": "p2", "location": "l1" },
+                { ".key": "p3", "location": "l2" },
+              ],
+            },
+          ],
+        })
+
+        expect(bestPairing).toEqual([
+          {
+            lane: "l2",
+            pair: [
+              {".key": "p3", "location": "l2"},
+              undefined,
+            ],
+          },
+        ])
+      })
+
+      it("even when they're empty", () => {
+        const bestPairing = recommendation.findBestPairing({
+          current: {
+            people: [
+              { ".key": "p1", "location": constants.LOCATION.UNASSIGNED },
+              { ".key": "p2", "location": constants.LOCATION.UNASSIGNED },
+              { ".key": "p3", "location": "l2" },
+            ],
+            lanes: [
+              { ".key": "l1", "locked": true },
+              { ".key": "l2", "locked": false },
+            ],
+          },
+          history: [
+            {
+              ".key": "" + previousScore(recommendation, 2),
+              "people": [
+                { ".key": "p1", "location": "l1" },
+                { ".key": "p2", "location": "l2" },
+                { ".key": "p3", "location": "l1" },
+              ],
+            },
+            {
+              ".key": "" + previousScore(recommendation, 1),
+              "people": [
+                { ".key": "p1", "location": "l1" },
+                { ".key": "p2", "location": "l1" },
+                { ".key": "p3", "location": "l2" },
+              ],
+            },
+          ],
+        })
+
+        expect(bestPairing).toEqual([
+          {
+            lane: "l2",
+            pair: [
+              {".key": "p2", "location": constants.LOCATION.UNASSIGNED},
+              {".key": "p3", "location": "l2"},
+            ],
+          },
+          {
+            lane: "new-lane",
+            pair: [
+              {".key": "p1", "location": constants.LOCATION.UNASSIGNED},
+              undefined,
             ],
           },
         ])
@@ -247,7 +346,7 @@ const generateBoard = ({
     history: [],
   }
 
-  let locations = ["unassigned"]
+  let locations = [constants.LOCATION.UNASSIGNED]
   for (let i = 0; i < lanesCount; i++) {
     const id = guid()
     locations.push(id)
@@ -278,7 +377,7 @@ const generateBoard = ({
     for (let i = 0; i < outCount; i++) {
       assignment.push({
         ".key": people[people.length - outCount + i],
-        "location": "out",
+        "location": constants.LOCATION.OUT,
       })
     }
 

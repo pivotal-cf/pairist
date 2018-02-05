@@ -1,5 +1,6 @@
 import { pairs, pairings, permutations } from "@/lib/combinatorics"
 import _ from "lodash"
+import constants from "@/lib/constants"
 
 class Recommendation {
   constructor({ historyChunkDuration }) {
@@ -31,7 +32,7 @@ class Recommendation {
     const laneKeysWithPeople = _.uniq(people
       .map(({ location }) => location)
       .filter(location =>
-        location !== "out" && location !== "unassigned"
+        location !== constants.LOCATION.OUT && location !== constants.LOCATION.UNASSIGNED
       )
     )
     const emptyLaneKeys = _.difference(lanes.map(lane => lane[".key"]), laneKeysWithPeople)
@@ -56,12 +57,13 @@ class Recommendation {
 
   findBestPairing({history, current}) {
     const lanes = current.lanes
+      .filter(({ locked }) => !locked)
     const laneKeys = lanes.map(lane => lane[".key"])
     const availablePeople = current.people
       .filter(({ location }) =>
-        location === "unassigned" ||
+        location === constants.LOCATION.UNASSIGNED ||
         laneKeys.includes(location))
-    const peopleInLanes = availablePeople.filter(({ location }) =>  location !== "unassigned")
+    const peopleInLanes = availablePeople.filter(({ location }) =>  location !== constants.LOCATION.UNASSIGNED)
     const solos = _.flatten(
       Object.values(_.groupBy(peopleInLanes, "location"))
         .filter(group => group.length === 1)
@@ -93,7 +95,7 @@ class Recommendation {
       const people = Object.keys(state.people).map(key =>
         Object.assign({".key": key}, state.people[key])
       ).filter(person =>
-        person.location != "out" && person.location != "unassigned" &&
+        person.location != constants.LOCATION.OUT && person.location != constants.LOCATION.UNASSIGNED &&
       availablePeople.some(currentPerson => person[".key"] == currentPerson[".key"])
       )
       const groups = _.groupBy(people, "location")

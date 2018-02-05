@@ -167,7 +167,7 @@
 
             <div
               class="people out dropzone"
-              data-key="out"
+              :data-key="constants.LOCATION.OUT"
             >
               <h2>PM / Out</h2>
 
@@ -195,6 +195,8 @@ import PersonDialog from "@/components/PersonDialog"
 import Role from "@/components/Role"
 import TrackComponent from "@/components/Track"
 
+import constants from "@/lib/constants"
+
 import {
   mapGetters,
   mapActions,
@@ -219,6 +221,7 @@ export default {
       newRoleName: "",
 
       teamName: this.$route.params.team.toLowerCase(),
+      constants: constants,
     }
   },
 
