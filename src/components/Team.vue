@@ -47,7 +47,7 @@
       </v-toolbar-items>
     </v-toolbar>
 
-    <v-container class="dropzone" grid-list-md fluid>
+    <v-container class="dropzone" pt-0 pb-0 fluid fill-height>
       <v-layout row wrap>
         <v-flex class="lanes" xs12 md8 elevation-2>
           <v-list>
@@ -351,81 +351,77 @@ export default {
 </script>
 
 <style lang="scss">
-  .field.is-expanded {
-    height: 26px;
-  }
+.dropzone {
+  min-height: 100px;
+  width: 100%;
+}
 
-  .dropzone {
-    min-height: 100px;
+.people.unassigned {
+  min-height: 221px;
+}
+
+.tracks.unassigned {
+  min-height: 136px;
+}
+
+.roles.unassigned {
+  min-height: 122px;
+}
+
+.dragging {
+  z-index: 200;
+  position: relative;
+  transition: transform 0.4s ease-in-out,
+  box-shadow 0.4s ease-in-out;
+  transform: rotate(4deg);
+}
+
+.out {
+  flex: 1 1 auto;
+  min-height: 221px;
+}
+
+.deleting {
+  opacity: 0.8;
+}
+
+#app .sidebar {
+  display: flex;
+  flex-flow: column;
+  padding: 10px;
+
+  @media (min-width: 960px) {
+    position: relative;
+    margin-left: 25px;
+    height:100%;
     width: 100%;
   }
+}
 
-  .people.unassigned {
-    min-height: 221px;
-  }
+#app .lanes {
+  height: fit-content;
+  padding: 0;
+  z-index: 1;
+}
 
-  .tracks.unassigned {
-    min-height: 136px;
-  }
+#app {
+  overflow-x: hidden;
+}
 
-  .roles.unassigned {
-    min-height: 122px;
-  }
+.highlight-enter-active {
+  transition: transform 0.2s, filter 0.2s, -webkit-filter 0.2s;
+}
 
-  .dragging {
-    z-index: 200;
-    position: relative;
-    transition: transform 0.4s ease-in-out,
-    box-shadow 0.4s ease-in-out;
-    transform: rotate(4deg);
-  }
+.highlight-enter {
+  transform: rotate(5deg);
+  filter: brightness(140%);
+}
 
-  .out {
-    flex: 1 1 auto;
-  }
-
-  .deleting {
-    opacity: 0.8;
-  }
-
-  #app .sidebar {
-    display: flex;
-    flex-flow: column;
-
-    @media (min-width: 960px) {
-      position: relative;
-      top: -20px;
-      margin-left: 30px;
-      padding: 10px;
-      padding-top: 20px;
-      min-height: 92vh;
-      width: 100%;
-    }
-  }
-
-  #app .lanes {
-    height: fit-content;
-    padding: 0;
-  }
-
-  #app {
-    overflow-x: hidden;
-  }
-
-  .highlight-enter-active {
-    transition: transform 0.2s, filter 0.2s, -webkit-filter 0.2s;
-  }
-
-  .highlight-enter {
-    transform: rotate(5deg);
-    filter: brightness(140%);
-  }
-
-  #app .logo {
-    background-image: url("../assets/pairist.svg");
-    background-size: 45px;
-    background-repeat: no-repeat;
-    background-position: 10px 50%;
-    padding-left: 40px !important;
-  }
+#app .logo {
+  background-image: url("../assets/pairist.svg");
+  background-size: 45px;
+  background-repeat: no-repeat;
+  background-position: 10px 50%;
+  padding-left: 40px !important;
+}
 </style>
