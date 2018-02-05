@@ -31,7 +31,7 @@
           fab
           small
           :color="lane.locked? 'pink' : 'accent'"
-          @click="toggleLock"
+          @click="toggleLock(lane)"
           v-if="lane['.key'] !== 'new-lane'"
         >
           <v-icon v-if="lane.locked">mdi-lock</v-icon>
@@ -47,6 +47,10 @@
 import Person from "@/components/Person"
 import Role from "@/components/Role"
 import TrackComponent from "@/components/Track"
+
+import {
+  mapActions,
+} from "vuex"
 
 export default {
   name: "Lane",
@@ -70,9 +74,7 @@ export default {
     },
   },
   methods: {
-    toggleLock() {
-      this.$store.dispatch("toggleLockLane", this.lane)
-    },
+    ...mapActions("lanes", ["toggleLock"]),
   },
 }
 </script>

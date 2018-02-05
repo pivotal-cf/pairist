@@ -7,6 +7,7 @@ import constants from "@/lib/constants"
 import people from "./people"
 import roles from "./roles"
 import tracks from "./tracks"
+import lanes from "./lanes"
 
 const HISTORY_CHUNK_DURATION = process.env.NODE_ENV === "production"
   ? 3600000 // 1 hour
@@ -23,13 +24,12 @@ export default {
     people,
     roles,
     tracks,
+    lanes,
   },
 
   state: {
     current: null,
     history: [],
-
-    lanes: [],
   },
 
   mutations: {
@@ -40,16 +40,6 @@ export default {
   getters: {
     current(state) {
       return state.current
-    },
-
-    lanes(state, getters) {
-      return state.lanes.map(lane => (
-        Object.assign({
-          people: getters["people/inLocation"](lane[".key"]),
-          tracks: getters["tracks/inLocation"](lane[".key"]),
-          roles: getters["roles/inLocation"](lane[".key"]),
-        }, lane)
-      ))
     },
   },
 
@@ -74,7 +64,6 @@ export default {
 
       const refs = {
         current: currentRef,
-        lanes: currentRef.child("lanes"),
         history: historyRef.orderByKey().limitToLast(100),
       }
 
@@ -89,6 +78,9 @@ export default {
       dispatch("roles/setRef",
         currentRef.child("roles").orderByChild("updatedAt").ref)
 
+      dispatch("lanes/setRef",
+        currentRef.child("lanes").ref)
+
       await currentRef.once("value")
       commit("loading", false)
     },
@@ -98,23 +90,7 @@ export default {
       commit("setRef", { name, ref })
     }),
 
-    removeLane({ state }, key ) {
-      state.lanesRef.child(key).remove()
-    },
-
-    clearEmptylanes({ dispatch, getters }) {
-      getters.lanes.forEach(lane => {
-        if (lane.people.length === 0 && lane.tracks.length === 0 && lane.roles.length === 0) {
-          dispatch("removeLane", lane[".key"])
-        }
-      })
-    },
-
-    newLane({ state }) {
-      return state.lanesRef.push({ sortOrder: 0 })
-    },
-
-    move({ dispatch, state }, { type, key, targetKey }) {
+    async move({ getters, dispatch }, { type, key, targetKey }) {
       if (type !== "people" && targetKey === constants.LOCATION.OUT) {
         targetKey = constants.LOCATION.UNASSIGNED
       }
@@ -122,7 +98,8 @@ export default {
       let location
 
       if (targetKey == "new-lane") {
-        location = state.lanesRef.push({ sortOrder: 0 }).key
+        await dispatch("lanes/add")
+        location = getters["lanes/lastAddedKey"]
       } else if (targetKey) {
         location = targetKey
       } else {
@@ -130,14 +107,15 @@ export default {
       }
 
       dispatch(`${type}/move`, { key, location })
-      dispatch("clearEmptylanes")
+      dispatch("lanes/clearEmpty")
     },
 
-    applyPairing({ commit, dispatch, state }, pairsAndLanes) {
+    applyPairing({ commit, getters, dispatch }, pairsAndLanes) {
       let actionsTaken = 0
-      pairsAndLanes.forEach(({ pair, lane }) => {
+      pairsAndLanes.forEach(async ({ pair, lane }) => {
         if (lane === "new-lane") {
-          lane = state.lanesRef.push({ sortOrder: 0 }).key
+          await dispatch("lanes/add")
+          lane = getters["lanes/lastAddedKey"]
         }
 
         pair.forEach(person => {
@@ -157,10 +135,6 @@ export default {
           color: "accent",
         })
       }
-    },
-
-    toggleLockLane({ state }, lane) {
-      return state.lanesRef.child(lane[".key"]).child("locked").set(!lane.locked)
     },
 
     async saveHistory({ commit, state }) {
@@ -191,7 +165,7 @@ export default {
           history: state.history.slice(),
           current: {
             people: getters["people/all"].slice(),
-            lanes: state.lanes.slice(),
+            lanes: getters["lanes/all"].slice(),
           },
         })
 

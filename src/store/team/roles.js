@@ -51,7 +51,7 @@ export default {
 
     remove({ dispatch, state }, key ) {
       state.ref.child(key).remove()
-      dispatch("clearEmptylanes", null, { root: true })
+      dispatch("lanes/clearEmpty", null, { root: true })
     },
 
     move({ dispatch, state }, { key, location }) {
@@ -64,7 +64,7 @@ export default {
       delete role[".key"]
 
       state.ref.child(key).set(role)
-      dispatch("clearEmptylanes", null, { root: true })
+      dispatch("lanes/clearEmpty", null, { root: true })
     },
   },
 }

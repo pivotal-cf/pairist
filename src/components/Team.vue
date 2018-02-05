@@ -228,11 +228,12 @@ export default {
   computed: {
     ...mapGetters([
       "loading",
-
-      "lanes", "current",
+      "current",
     ]),
+    ...mapGetters("lanes",{
+      lanes: "all",
+    }),
     ...mapGetters("people",{
-      roles: "all",
       unassignedPeople: "unassigned",
       outPeople: "out",
     }),

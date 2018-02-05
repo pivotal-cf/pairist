@@ -51,7 +51,7 @@ export default {
 
     remove({ dispatch, state }, key ) {
       state.ref.child(key).remove()
-      dispatch("clearEmptylanes", null, { root: true })
+      dispatch("lanes/clearEmpty", null, { root: true })
     },
 
     move({ dispatch, state }, { key, location }) {
@@ -64,7 +64,7 @@ export default {
       delete track[".key"]
 
       state.ref.child(key).set(track)
-      dispatch("clearEmptylanes", null, { root: true })
+      dispatch("lanes/clearEmpty", null, { root: true })
     },
   },
 }
