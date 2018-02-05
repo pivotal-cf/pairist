@@ -319,7 +319,6 @@ export default {
 
   methods: {
     ...mapActions([
-      "saveHistory",
       "recommendPairs",
       "move",
       "clearNotification",
@@ -342,6 +341,10 @@ export default {
 
       this.newRoleDialog = false
       this.newRoleName = ""
+    },
+
+    saveHistory() {
+      this.$store.dispatch("history/save")
     },
   },
 }

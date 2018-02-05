@@ -2,22 +2,14 @@ import { firebaseMutations, firebaseAction } from "vuexfire"
 
 import { db } from "@/firebase"
 
-import Recommendation from "@/lib/recommendation"
 import constants from "@/lib/constants"
 import people from "./people"
 import roles from "./roles"
 import tracks from "./tracks"
 import lanes from "./lanes"
+import history from "./history"
 
-const HISTORY_CHUNK_DURATION = process.env.NODE_ENV === "production"
-  ? 3600000 // 1 hour
-  : process.env.NODE_ENV === "testing"
-    ? 1000  // 1 second
-    : 10000 // 10 seconds
-
-const recommendation = new Recommendation({
-  historyChunkDuration: HISTORY_CHUNK_DURATION,
-})
+import recommendation from "./recommendation"
 
 export default {
   modules: {
@@ -25,11 +17,11 @@ export default {
     roles,
     tracks,
     lanes,
+    history,
   },
 
   state: {
     current: null,
-    history: [],
   },
 
   mutations: {
@@ -57,19 +49,12 @@ export default {
       }
     },
 
-    async loadTeam({ commit, dispatch }, teamName)  {
+    loadTeam: firebaseAction(async ({ bindFirebaseRef, commit, dispatch }, teamName) => {
       commit("loading", true)
       const currentRef = db.ref(`/teams/${teamName}/current`)
       const historyRef = db.ref(`/teams/${teamName}/history`)
 
-      const refs = {
-        current: currentRef,
-        history: historyRef.orderByKey().limitToLast(100),
-      }
-
-      for (const name in refs) {
-        dispatch("setRef", { name, ref: refs[name].ref })
-      }
+      bindFirebaseRef("current" , currentRef)
 
       dispatch("people/setRef",
         currentRef.child("people").orderByChild("updatedAt").ref)
@@ -81,13 +66,11 @@ export default {
       dispatch("lanes/setRef",
         currentRef.child("lanes").ref)
 
+      dispatch("history/setRef",
+        historyRef.orderByKey().limitToLast(100).ref)
+
       await currentRef.once("value")
       commit("loading", false)
-    },
-
-    setRef: firebaseAction(({ bindFirebaseRef, commit }, { name, ref }) => {
-      bindFirebaseRef(name , ref)
-      commit("setRef", { name, ref })
     }),
 
     async move({ getters, dispatch }, { type, key, targetKey }) {
@@ -137,32 +120,11 @@ export default {
       }
     },
 
-    async saveHistory({ commit, state }) {
-      commit("loading", true)
-      const key = recommendation.scaleDate(new Date())
-      try {
-        const current = Object.assign({}, state.current)
-        delete current[".key"]
-        await state.historyRef.child(key).set(current)
-        commit("notify", {
-          message: "History recorded!",
-          color: "success",
-        })
-      } catch(error) {
-        commit("notify", {
-          message: "Error recording history.",
-          color: "error",
-        })
-        console.error(error)
-      }
-      commit("loading", false)
-    },
-
-    async recommendPairs({ commit, dispatch, state, getters}) {
+    async recommendPairs({ commit, dispatch, getters}) {
       commit("loading", true)
       try {
         const bestPairing = recommendation.findBestPairing({
-          history: state.history.slice(),
+          history: getters["history/all"].slice(),
           current: {
             people: getters["people/all"].slice(),
             lanes: getters["lanes/all"].slice(),
