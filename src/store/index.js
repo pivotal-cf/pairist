@@ -8,8 +8,8 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   modules: {
-    shared: shared,
-    team: team,
-    user: user,
+    shared,
+    team,
+    user,
   },
 })

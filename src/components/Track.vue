@@ -27,7 +27,7 @@ export default {
     },
 
     remove() {
-      this.$store.dispatch("removeTrack", this.track[".key"])
+      this.$store.dispatch("tracks/remove", this.track[".key"])
     },
   },
 }

@@ -78,7 +78,7 @@ export default {
     },
 
     remove() {
-      this.$store.dispatch("removePerson", this.person[".key"])
+      this.$store.dispatch("people/remove", this.person[".key"])
     },
   },
 }

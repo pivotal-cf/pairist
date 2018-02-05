@@ -27,7 +27,7 @@ export default {
     },
 
     remove() {
-      this.$store.dispatch("removeRole", this.role[".key"])
+      this.$store.dispatch("roles/remove", this.role[".key"])
     },
   },
 }

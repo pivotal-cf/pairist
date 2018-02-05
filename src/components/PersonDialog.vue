@@ -57,7 +57,7 @@ export default {
 
   methods: {
     async save() {
-      await this.$store.dispatch("savePerson", Object.assign({}, this.person))
+      await this.$store.dispatch("people/save", Object.assign({}, this.person))
 
       this.show = false
       this.person.name = ""

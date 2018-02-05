@@ -229,11 +229,21 @@ export default {
     ...mapGetters([
       "loading",
 
-      "roles", "unassignedRoles",
-      "tracks", "unassignedTracks",
-      "people", "unassignedPeople", "outPeople", "availablePeople", "solos",
       "lanes", "current",
     ]),
+    ...mapGetters("people",{
+      roles: "all",
+      unassignedPeople: "unassigned",
+      outPeople: "out",
+    }),
+    ...mapGetters("tracks",{
+      roles: "all",
+      unassignedTracks: "unassigned",
+    }),
+    ...mapGetters("roles",{
+      roles: "all",
+      unassignedRoles: "unassigned",
+    }),
   },
 
   created() {
@@ -307,21 +317,27 @@ export default {
   },
 
   methods: {
-    ...mapActions(["saveHistory", "recommendPairs", "move", "clearNotification", "logout"]),
+    ...mapActions([
+      "saveHistory",
+      "recommendPairs",
+      "move",
+      "clearNotification",
+      "logout",
+    ]),
 
     openPersonDialog() {
       this.$refs.personDialog.open()
     },
 
     addTrack() {
-      this.$store.dispatch("addTrack", { name: this.newTrackName })
+      this.$store.dispatch("tracks/add", { name: this.newTrackName })
 
       this.newTrackDialog = false
       this.newTrackName = ""
     },
 
     addRole() {
-      this.$store.dispatch("addRole", { name: this.newRoleName })
+      this.$store.dispatch("roles/add", { name: this.newRoleName })
 
       this.newRoleDialog = false
       this.newRoleName = ""

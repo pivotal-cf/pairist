@@ -4,6 +4,9 @@ import { db } from "@/firebase"
 
 import Recommendation from "@/lib/recommendation"
 import constants from "@/lib/constants"
+import people from "./people"
+import roles from "./roles"
+import tracks from "./tracks"
 
 const HISTORY_CHUNK_DURATION = process.env.NODE_ENV === "production"
   ? 3600000 // 1 hour
@@ -16,16 +19,17 @@ const recommendation = new Recommendation({
 })
 
 export default {
+  modules: {
+    people,
+    roles,
+    tracks,
+  },
+
   state: {
     current: null,
     history: [],
 
-    roles: [],
-    tracks: [],
-    people: [],
     lanes: [],
-
-    rolesRef: null,
   },
 
   mutations: {
@@ -38,51 +42,12 @@ export default {
       return state.current
     },
 
-    roles(state) {
-      return state.roles
-    },
-    unassignedRoles(_, getters) {
-      return getters.rolesInLocation(constants.LOCATION.UNASSIGNED)
-    },
-    rolesInLocation(_, getters) {
-      return location => (
-        getters.roles.filter(role => role.location === location)
-      )
-    },
-
-    tracks(state) {
-      return state.tracks
-    },
-    unassignedTracks(_, getters) {
-      return getters.tracksInLocation(constants.LOCATION.UNASSIGNED)
-    },
-    tracksInLocation(_, getters) {
-      return location => (
-        getters.tracks.filter(track => track.location === location)
-      )
-    },
-
-    people(state) {
-      return state.people
-    },
-    unassignedPeople(_, getters) {
-      return getters.peopleInLocation(constants.LOCATION.UNASSIGNED)
-    },
-    outPeople(_, getters) {
-      return getters.peopleInLocation(constants.LOCATION.OUT)
-    },
-    peopleInLocation(_, getters) {
-      return location => (
-        getters.people.filter(person => person.location === location)
-      )
-    },
-
     lanes(state, getters) {
       return state.lanes.map(lane => (
         Object.assign({
-          people: getters.peopleInLocation(lane[".key"]),
-          tracks: getters.tracksInLocation(lane[".key"]),
-          roles: getters.rolesInLocation(lane[".key"]),
+          people: getters["people/inLocation"](lane[".key"]),
+          tracks: getters["tracks/inLocation"](lane[".key"]),
+          roles: getters["roles/inLocation"](lane[".key"]),
         }, lane)
       ))
     },
@@ -109,9 +74,6 @@ export default {
 
       const refs = {
         current: currentRef,
-        people: currentRef.child("people").orderByChild("updatedAt"),
-        tracks: currentRef.child("tracks").orderByChild("updatedAt"),
-        roles: currentRef.child("roles").orderByChild("updatedAt"),
         lanes: currentRef.child("lanes"),
         history: historyRef.orderByKey().limitToLast(100),
       }
@@ -119,6 +81,13 @@ export default {
       for (const name in refs) {
         dispatch("setRef", { name, ref: refs[name].ref })
       }
+
+      dispatch("people/setRef",
+        currentRef.child("people").orderByChild("updatedAt").ref)
+      dispatch("tracks/setRef",
+        currentRef.child("tracks").orderByChild("updatedAt").ref)
+      dispatch("roles/setRef",
+        currentRef.child("roles").orderByChild("updatedAt").ref)
 
       await currentRef.once("value")
       commit("loading", false)
@@ -128,73 +97,6 @@ export default {
       bindFirebaseRef(name , ref)
       commit("setRef", { name, ref })
     }),
-
-    async savePerson({ commit, state }, person) {
-      if (person.name === "") {
-        return
-      }
-
-      commit("loading", true)
-      if (person[".key"]) {
-        const personKey = person[".key"]
-        delete person[".key"]
-
-        await state.peopleRef.child(personKey).set(person)
-      } else {
-        await state.peopleRef.push({
-          name: person.name,
-          picture: person.picture || "",
-          location: constants.LOCATION.UNASSIGNED,
-          updatedAt: new Date().getTime(),
-        })
-      }
-      commit("loading", false)
-    },
-
-    async addRole({ commit, state }, { name }) {
-      if (name === "") {
-        return
-      }
-
-      commit("loading", true)
-      await state.rolesRef
-        .push({
-          name,
-          location: constants.LOCATION.UNASSIGNED,
-          updatedAt: new Date().getTime(),
-        })
-      commit("loading", false)
-    },
-
-    async addTrack({ commit, state }, { name }) {
-      if (name === "") {
-        return
-      }
-
-      commit("loading", true)
-      await state.tracksRef
-        .push({
-          name,
-          location: constants.LOCATION.UNASSIGNED,
-          updatedAt: new Date().getTime(),
-        })
-      commit("loading", false)
-    },
-
-    removeRole({ dispatch, state }, key ) {
-      state.rolesRef.child(key).remove()
-      dispatch("clearEmptylanes")
-    },
-
-    removeTrack({ dispatch, state }, key ) {
-      state.tracksRef.child(key).remove()
-      dispatch("clearEmptylanes")
-    },
-
-    removePerson({ dispatch, state }, key ) {
-      state.peopleRef.child(key).remove()
-      dispatch("clearEmptylanes")
-    },
 
     removeLane({ state }, key ) {
       state.lanesRef.child(key).remove()
@@ -213,44 +115,21 @@ export default {
     },
 
     move({ dispatch, state }, { type, key, targetKey }) {
-      let ref, collection
-      switch (type) {
-      case "people":
-        ref = state.peopleRef
-        collection = state.people
-        break
-      case "roles":
-        ref = state.rolesRef
-        collection = state.roles
-        break
-      case "tracks":
-        ref = state.tracksRef
-        collection = state.tracks
-        break
-      default:
-        return
-      }
-
       if (type !== "people" && targetKey === constants.LOCATION.OUT) {
         targetKey = constants.LOCATION.UNASSIGNED
       }
 
-      const thing = { ...collection.find(thing => thing[".key"] === key) }
-      delete thing[".key"]
+      let location
 
       if (targetKey == "new-lane") {
-        const newLaneKey = state.lanesRef.push({ sortOrder: 0 }).key
-
-        thing.location = newLaneKey
+        location = state.lanesRef.push({ sortOrder: 0 }).key
       } else if (targetKey) {
-        thing.location = targetKey
+        location = targetKey
       } else {
-        thing.location = constants.LOCATION.UNASSIGNED
+        location = constants.LOCATION.UNASSIGNED
       }
 
-      thing.updatedAt = new Date().getTime()
-
-      ref.child(key).set(thing)
+      dispatch(`${type}/move`, { key, location })
       dispatch("clearEmptylanes")
     },
 
@@ -305,13 +184,13 @@ export default {
       commit("loading", false)
     },
 
-    async recommendPairs({ commit, dispatch, state }) {
+    async recommendPairs({ commit, dispatch, state, getters}) {
       commit("loading", true)
       try {
         const bestPairing = recommendation.findBestPairing({
           history: state.history.slice(),
           current: {
-            people: state.people.slice(),
+            people: getters["people/all"].slice(),
             lanes: state.lanes.slice(),
           },
         })
