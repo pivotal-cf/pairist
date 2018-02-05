@@ -268,27 +268,20 @@ export default {
       dispatch("clearEmptylanes")
     },
 
-    applyPairing({ commit, dispatch, state, getters }, pairing) {
-      const pairsAndLanes = recommendation.findMatchingLanes({
-        pairing,
-        lanes: getters.lanes.filter(({ locked }) => !locked),
-        people: getters.availablePeople,
-      })
-
-      let getNextLane = () => {
-        const emptyLane = getters.lanes.find(lane => !lane.locked && lane.people.length === 0)
-        if (emptyLane) {
-          return emptyLane[".key"]
-        }
-        return state.lanesRef.push({ sortOrder: 0 }).key
-      }
-
+    applyPairing({ commit, dispatch, state }, pairsAndLanes) {
       let actionsTaken = 0
       pairsAndLanes.forEach(({ pair, lane }) => {
-        lane = lane || getNextLane()
+        if (lane === "new-lane") {
+          lane = state.lanesRef.push({ sortOrder: 0 }).key
+        }
+
         pair.forEach(person => {
           if (person && person.location !== lane) {
-            dispatch("move", { type: "people", key: person[".key"], targetKey: lane })
+            dispatch("move", {
+              type: "people",
+              key: person[".key"],
+              targetKey: lane,
+            })
             actionsTaken++
           }
         })

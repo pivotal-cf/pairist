@@ -10,37 +10,57 @@ class Recommendation {
     return parseInt((date / this.historyChunkDuration).toFixed(0))
   }
 
-  previousScore(timeAgo) {
-    return this.scaleDate(new Date() - timeAgo*this.historyChunkDuration)
-  }
-
-  isPairingValid({pairing, solos}) {
+  _isPairingValid({pairing, solos}) {
     const soloKeys = solos.map(person => person[".key"])
-    return !pairing.some(pair => pair.every(personKey => soloKeys.includes(personKey)))
+    return !pairing
+      .some(pair => pair
+        .every(personKey => soloKeys
+          .includes(personKey)
+        )
+      )
   }
 
-  findMatchingLanes({pairing, lanes, people}) {
-    pairing = pairing.map(pair => pair.map(key => people.find(person => person[".key"] === key)))
-    const laneKeys = lanes.filter(lane => lane.people.length > 0).map(lane => lane[".key"])
+  _findMatchingLanes({pairing, lanes, people}) {
+    pairing = pairing
+      .map(pair => pair
+        .map(key => people
+          .find(person => person[".key"] === key)
+        )
+      )
+
+    const laneKeysWithPeople = _.uniq(people
+      .map(({ location }) => location)
+      .filter(location =>
+        location !== "out" && location !== "unassigned"
+      )
+    )
+    const emptyLaneKeys = _.difference(lanes.map(lane => lane[".key"]), laneKeysWithPeople)
     const orders = permutations(pairing)
     const match = orders.find(pairing =>
-      laneKeys.every((laneKey, i) => {
+      laneKeysWithPeople.every((laneKey, i) => {
         if (!pairing[i]) { return false }
-        return pairing[i].some(person => person && person.location === laneKey)
+        return pairing[i]
+          .some(person => person && person.location === laneKey)
       })
     )
     if (!match) {
-      return
+      return null
     }
 
-    return match.map((pair, i) => {
-      return { pair: pair, lane: laneKeys[i] }
+    const laneKeys = laneKeysWithPeople.concat(emptyLaneKeys)
+
+    return match.map((pair) => {
+      return { pair: pair, lane: laneKeys.shift() || "new-lane" }
     })
   }
 
   findBestPairing({history, current}) {
     const lanes = current.lanes
-    const availablePeople = current.people.filter(({ location }) => location !== "out")
+    const laneKeys = lanes.map(lane => lane[".key"])
+    const availablePeople = current.people
+      .filter(({ location }) =>
+        location === "unassigned" ||
+        laneKeys.includes(location))
     const peopleInLanes = availablePeople.filter(({ location }) =>  location !== "unassigned")
     const solos = _.flatten(
       Object.values(_.groupBy(peopleInLanes, "location"))
@@ -111,11 +131,23 @@ class Recommendation {
         lastPairings[pair[0]][pair[1]]
       ))
 
-      if (this.isPairingValid({pairing, solos}) && cost < bestCost) {
-        bestCost = cost
-        bestPairing = pairing
+      if (this._isPairingValid({pairing, solos}) && cost < bestCost) {
+        const pairingWithLanes = this._findMatchingLanes({
+          pairing: pairing,
+          lanes,
+          people: availablePeople,
+        })
+
+        if (pairingWithLanes) {
+          bestCost = cost
+          bestPairing = pairingWithLanes
+        }
       }
     })
+
+    if (!bestPairing) {
+      return null
+    }
 
     return bestPairing
   }

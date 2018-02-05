@@ -11,16 +11,44 @@ describe("Recommendation", () => {
     })
   })
 
+  describe("_isPairingValid", () => {
+    it("is always valid without solos", () => {
+      expect(recommendation._isPairingValid({ pairing: [], solos: [] })).toBeTruthy()
+    })
+
+    it("is invalid if pairing two solos but not together", () => {
+      expect(recommendation._isPairingValid({
+        pairing: [[1, 3], [2, 4]],
+        solos: [{ ".key": 1 }, { ".key": 2 }],
+      })).toBeTruthy()
+    })
+
+    it("is invalid if pairing two solos together", () => {
+      expect(recommendation._isPairingValid({
+        pairing: [[1, 2]],
+        solos: [{ ".key": 1 }, { ".key": 2 }],
+      })).toBeFalsy()
+    })
+  })
+
   describe("findBestPairing", () => {
     it("does not blow up if history is not set", () => {
       const bestPairing = recommendation.findBestPairing({
         current: {
           people: [ { ".key": "p1", "location": "l1" } ],
-          lanes: ["l1"],
+          lanes: [{ ".key": "l1" }],
         },
       })
 
-      expect(bestPairing).toEqual([["p1", null]])
+      expect(bestPairing).toEqual([
+        {
+          lane: "l1",
+          pair: [
+            {".key": "p1", "location": "l1"},
+            undefined,
+          ],
+        },
+      ])
     })
 
     it("returns the single possibility if there's only one", () => {
@@ -30,12 +58,20 @@ describe("Recommendation", () => {
             { ".key": "p1", "location": "l1" },
             { ".key": "p2", "location": "l1" },
           ],
-          lanes: ["l1"],
+          lanes: [{ ".key": "l1" }],
         },
         history: [],
       })
 
-      expect(bestPairing).toEqual([["p1", "p2"]])
+      expect(bestPairing).toEqual([
+        {
+          lane: "l1",
+          pair: [
+            {".key": "p1", "location": "l1"},
+            {".key": "p2", "location": "l1"},
+          ],
+        },
+      ])
     })
 
     describe("with 3 people", () => {
@@ -47,11 +83,11 @@ describe("Recommendation", () => {
               { ".key": "p2", "location": "unassigned" },
               { ".key": "p3", "location": "unassigned" },
             ],
-            lanes: ["l1"],
+            lanes: [{ ".key": "l1" }],
           },
           history: [
             {
-              ".key": "" + recommendation.previousScore(2),
+              ".key": "" + previousScore(recommendation, 2),
               "people": [
                 { ".key": "p1", "location": "l1" },
                 { ".key": "p2", "location": "l2" },
@@ -59,7 +95,7 @@ describe("Recommendation", () => {
               ],
             },
             {
-              ".key": "" + recommendation.previousScore(1),
+              ".key": "" + previousScore(recommendation, 1),
               "people": [
                 { ".key": "p1", "location": "l1" },
                 { ".key": "p2", "location": "l1" },
@@ -69,7 +105,22 @@ describe("Recommendation", () => {
           ],
         })
 
-        expect(bestPairing).toEqual([["p1", null], ["p2", "p3"]])
+        expect(bestPairing).toEqual([
+          {
+            lane: "l1",
+            pair: [
+              {".key": "p1", "location": "unassigned"},
+              undefined,
+            ],
+          },
+          {
+            lane: "new-lane",
+            pair: [
+              {".key": "p2", "location": "unassigned"},
+              {".key": "p3", "location": "unassigned"},
+            ],
+          },
+        ])
       })
     })
 
@@ -82,11 +133,11 @@ describe("Recommendation", () => {
               { ".key": "p2", "location": "unassigned" },
               { ".key": "p3", "location": "out" },
             ],
-            lanes: ["l1"],
+            lanes: [],
           },
           history: [
             {
-              ".key": "" + recommendation.previousScore(1),
+              ".key": "" + previousScore(recommendation, 1),
               "people": [
                 { ".key": "p1", "location": "l1" },
                 { ".key": "p2", "location": "l1" },
@@ -94,7 +145,7 @@ describe("Recommendation", () => {
               ],
             },
             {
-              ".key": "" + recommendation.previousScore(2),
+              ".key": "" + previousScore(recommendation, 2),
               "people": [
                 { ".key": "p1", "location": "l1" },
                 { ".key": "p2", "location": "l2" },
@@ -104,12 +155,20 @@ describe("Recommendation", () => {
           ],
         })
 
-        expect(bestPairing).toEqual([["p1", "p2"]])
+        expect(bestPairing).toEqual([
+          {
+            lane: "new-lane",
+            pair: [
+              {".key": "p1", "location": "unassigned"},
+              {".key": "p2", "location": "unassigned"},
+            ],
+          },
+        ])
       })
     })
 
     describe("fuzz", () => {
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 200; i++) {
         it(`fuzz #${i}`, () => {
           const peopleCount = randomInt(10)
           const outCount = randomInt(4)
@@ -128,30 +187,13 @@ describe("Recommendation", () => {
           const bestPairing = recommendation.findBestPairing(board)
           if (lanesCount*2-1 > peopleCount || peopleCount === 0) {
             // too many lanes
-            assert.equal(bestPairing, undefined, JSON.stringify(config))
+            assert.equal(bestPairing, undefined, JSON.stringify({config, current: board.current}))
           } else {
-            assert.ok(bestPairing, JSON.stringify(config))
+            assert.ok(bestPairing, JSON.stringify({config, current: board.current}))
             expect(bestPairing.length).toBeGreaterThanOrEqual(1)
           }
         })
       }
-    })
-  })
-
-  describe("previousScore", () => {
-    it("returns a score based on the current time", () => {
-      expect(recommendation.previousScore(0)).
-        toEqual(recommendation.scaleDate(new Date()))
-    })
-
-    it("returns a score based on the current time", () => {
-      expect(recommendation.previousScore(1))
-        .toEqual(recommendation.scaleDate(new Date()) - 1)
-    })
-
-    it("returns a score based on the current time", () => {
-      expect(recommendation.previousScore(321))
-        .toEqual(recommendation.scaleDate(new Date()) - 321)
     })
   })
 
@@ -209,10 +251,7 @@ const generateBoard = ({
   for (let i = 0; i < lanesCount; i++) {
     const id = guid()
     locations.push(id)
-    board.current.lanes.push({
-      ".key": id,
-      "locked": randomInt(10) === 0,
-    })
+    board.current.lanes.push({ ".key": id })
   }
 
   let people = []
@@ -238,7 +277,7 @@ const generateBoard = ({
 
     for (let i = 0; i < outCount; i++) {
       assignment.push({
-        ".key": people[people.length + i],
+        ".key": people[people.length - outCount + i],
         "location": "out",
       })
     }
@@ -256,6 +295,10 @@ const generateBoard = ({
   }
 
   return board
+}
+
+const  previousScore = (recommendation, timeAgo) => {
+  return recommendation.scaleDate(new Date() - timeAgo*recommendation.historyChunkDuration)
 }
 
 const randomInt = (max) => {
