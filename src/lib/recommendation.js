@@ -55,23 +55,7 @@ class Recommendation {
     })
   }
 
-  findBestPairing({history, current}) {
-    const lanes = current.lanes
-      .filter(({ locked }) => !locked)
-    const laneKeys = lanes.map(lane => lane[".key"])
-    const availablePeople = current.people
-      .filter(({ location }) =>
-        location === constants.LOCATION.UNASSIGNED ||
-        laneKeys.includes(location))
-    const peopleInLanes = availablePeople.filter(({ location }) =>  location !== constants.LOCATION.UNASSIGNED)
-    const solos = _.flatten(
-      Object.values(_.groupBy(peopleInLanes, "location"))
-        .filter(group => group.length === 1)
-    )
-
-    if ((2 * lanes.length - 1) > availablePeople.length) {
-      return
-    }
+  _calculateScores(availablePeople, history) {
     if (!history) {
       history = []
     }
@@ -122,6 +106,29 @@ class Recommendation {
         })
       })
     })
+
+    return lastPairings
+  }
+
+  findBestPairing({history, current}) {
+    const lanes = current.lanes
+      .filter(({ locked }) => !locked)
+    const laneKeys = lanes.map(lane => lane[".key"])
+    const availablePeople = current.people
+      .filter(({ location }) =>
+        location === constants.LOCATION.UNASSIGNED ||
+        laneKeys.includes(location))
+    const peopleInLanes = availablePeople.filter(({ location }) =>  location !== constants.LOCATION.UNASSIGNED)
+    const solos = _.flatten(
+      Object.values(_.groupBy(peopleInLanes, "location"))
+        .filter(group => group.length === 1)
+    )
+
+    if ((2 * lanes.length - 1) > availablePeople.length) {
+      return
+    }
+
+    const lastPairings = this._calculateScores(availablePeople, history)
 
     let bestCost = Infinity
     let bestPairing
