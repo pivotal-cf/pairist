@@ -86,7 +86,7 @@ export default {
 
 .lane {
   @media (min-width: 960px) {
-    height: 155px !important;
+    min-height: 155px !important;
   }
 
   .list__tile {

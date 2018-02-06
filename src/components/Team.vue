@@ -392,7 +392,7 @@ export default {
 
   @media (min-width: 960px) {
     position: relative;
-    margin-left: 25px;
+    margin-left: 30px;
     height:100%;
     width: 100%;
   }
