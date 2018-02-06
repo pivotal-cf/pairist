@@ -16,13 +16,14 @@ export default {
   },
 
   getters: {
-    all(state, getters, _, rootGetters) {
+    all(state, _getters, _rootState, rootGetters) {
       return state.lanes.map(lane => (
-        Object.assign({
+        {
           people: rootGetters["people/inLocation"](lane[".key"]),
           tracks: rootGetters["tracks/inLocation"](lane[".key"]),
           roles: rootGetters["roles/inLocation"](lane[".key"]),
-        }, lane)
+          ...lane,
+        }
       ))
     },
 
@@ -44,6 +45,10 @@ export default {
       state.ref.child(key).remove()
     },
 
+    setLocked({ state }, { key, locked }) {
+      state.ref.child(key).update({ locked })
+    },
+
     clearEmpty({ dispatch, getters }) {
       getters.all.forEach(lane => {
         if (lane.people.length === 0 && lane.tracks.length === 0 && lane.roles.length === 0) {
@@ -52,8 +57,5 @@ export default {
       })
     },
 
-    toggleLock({ state }, lane) {
-      return state.ref.child(lane[".key"]).child("locked").set(!lane.locked)
-    },
   },
 }
