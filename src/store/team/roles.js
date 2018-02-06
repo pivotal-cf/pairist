@@ -21,7 +21,7 @@ export default {
     unassigned(_, getters) {
       return getters.inLocation(constants.LOCATION.UNASSIGNED)
     },
-    inLocation(state, getters) {
+    inLocation(_, getters) {
       return location => (
         getters.all.filter(role => role.location === location)
       )
@@ -34,19 +34,15 @@ export default {
       commit("setRef",  ref)
     }),
 
-    async add({ commit, state }, { name }) {
-      if (name === "") {
-        return
-      }
+    add({ state }, { name }) {
+      if (name === "") { return }
 
-      commit("loading", true, { root: true })
-      await state.ref
+      state.ref
         .push({
           name,
           location: constants.LOCATION.UNASSIGNED,
-          updatedAt: new Date().getTime(),
+          updatedAt: Date.now(),
         })
-      commit("loading", false, { root: true })
     },
 
     remove({ dispatch, state }, key ) {
@@ -55,12 +51,13 @@ export default {
     },
 
     move({ dispatch, state }, { key, location }) {
-      const role = Object.assign(
-        {},
-        state.roles.find(role => role[".key"] === key),
-      )
-      role.location = location
-      role.updatedAt = new Date().getTime()
+      let role = state.roles.find(role => role[".key"] === key)
+      if (!role) { return }
+      role = {
+        ...role,
+        location,
+        updatedAt: Date.now(),
+      }
       delete role[".key"]
 
       state.ref.child(key).set(role)

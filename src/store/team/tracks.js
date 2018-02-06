@@ -21,7 +21,7 @@ export default {
     unassigned(_, getters) {
       return getters.inLocation(constants.LOCATION.UNASSIGNED)
     },
-    inLocation(state, getters) {
+    inLocation(_, getters) {
       return location => (
         getters.all.filter(track => track.location === location)
       )
@@ -34,19 +34,15 @@ export default {
       commit("setRef",  ref)
     }),
 
-    async add({ commit, state }, { name }) {
-      if (name === "") {
-        return
-      }
+    add({ state }, { name }) {
+      if (name === "") { return }
 
-      commit("loading", true, { root: true })
-      await state.ref
+      state.ref
         .push({
           name,
           location: constants.LOCATION.UNASSIGNED,
-          updatedAt: new Date().getTime(),
+          updatedAt: Date.now(),
         })
-      commit("loading", false, { root: true })
     },
 
     remove({ dispatch, state }, key ) {
@@ -55,12 +51,14 @@ export default {
     },
 
     move({ dispatch, state }, { key, location }) {
-      const track = Object.assign(
-        {},
-        state.tracks.find(track => track[".key"] === key),
-      )
-      track.location = location
-      track.updatedAt = new Date().getTime()
+      let track = state.tracks.find(track => track[".key"] === key)
+      if (!track) { return }
+      track = {
+        ...track,
+        location,
+        updatedAt: Date.now(),
+      }
+
       delete track[".key"]
 
       state.ref.child(key).set(track)
