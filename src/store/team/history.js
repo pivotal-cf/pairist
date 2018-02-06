@@ -25,23 +25,17 @@ export default {
 
     async save({ commit, state, rootGetters }) {
       commit("loading", true, { root: true })
-      const key = recommendation.scaleDate(new Date())
-      try {
-        const current = Object.assign({}, rootGetters.current)
-        delete current[".key"]
 
-        await state.ref.child(key).set(current)
-        commit("notify", {
-          message: "History recorded!",
-          color: "success",
-        }, { root: true })
-      } catch(error) {
-        commit("notify", {
-          message: "Error recording history.",
-          color: "error",
-        }, { root: true })
-        console.error(error)
-      }
+      const key = recommendation.scaleDate(Date.now())
+      const current = { ...rootGetters.current }
+      delete current[".key"]
+
+      await state.ref.child(key).set(current)
+      commit("notify", {
+        message: "History recorded!",
+        color: "success",
+      }, { root: true })
+
       commit("loading", false, { root: true })
     },
   },
