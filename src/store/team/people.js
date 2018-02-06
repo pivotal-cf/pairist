@@ -37,26 +37,22 @@ export default {
       commit("setRef",  ref)
     }),
 
-    async save({ commit, state }, person) {
-      if (person.name === "") {
-        return
-      }
+    save({ state }, person) {
+      if (person.name === "") { return }
 
-      commit("loading", true, { root: true })
       if (person[".key"]) {
         const key = person[".key"]
         delete person[".key"]
 
-        await state.ref.child(key).set(person)
+        state.ref.child(key).set(person)
       } else {
-        await state.ref.push({
+        state.ref.push({
           name: person.name,
           picture: person.picture || "",
           location: constants.LOCATION.UNASSIGNED,
-          updatedAt: new Date().getTime(),
+          updatedAt: Date.now(),
         })
       }
-      commit("loading", false, { root: true })
     },
 
     remove({ dispatch, state }, key ) {
@@ -65,12 +61,14 @@ export default {
     },
 
     move({ dispatch, state }, { key, location }) {
-      const person = Object.assign(
-        {},
-        state.people.find(person => person[".key"] === key),
-      )
-      person.location = location
-      person.updatedAt = new Date().getTime()
+      let person = state.people.find(person => person[".key"] === key)
+      if (!person) { return }
+      person = {
+        ...person,
+        location,
+        updatedAt: Date.now(),
+      }
+
       delete person[".key"]
 
       state.ref.child(key).set(person)
