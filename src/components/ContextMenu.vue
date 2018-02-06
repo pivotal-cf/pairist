@@ -47,7 +47,25 @@ export default {
     }
   },
 
+  watch: {
+    dialog(value) {
+      if (value) {
+        window.addEventListener("keyup", this.handleKeyPress)
+      } else {
+        window.removeEventListener("keyup", this.handleKeyPress)
+      }
+    },
+  },
+
   methods: {
+    handleKeyPress(event) {
+      if (event.keyCode == 13 && this.dialog === true) {
+        this.confirmRemove()
+      } else if (event.keyCode === 27) {
+        this.dialog = false
+      }
+    },
+
     open(event) {
       event.preventDefault()
       this.showMenu = false
