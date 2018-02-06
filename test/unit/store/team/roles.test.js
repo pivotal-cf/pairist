@@ -106,55 +106,35 @@ describe("Roles Store", () => {
 
     describe("move", () => {
       it("moves existing role to location", () => {
-        const role = { ".key": "key", "location": "old", "updatedAt": 123, "something": "else" }
-          , otherRole = { ".key": "otherKey" }
-
         const dispatch = jest.fn()
-          , set = jest.fn()
-          , child = jest.fn().mockReturnValue({ set })
-          , state = { roles: [role, otherRole], ref: { child } }
+          , update = jest.fn()
+          , child = jest.fn().mockReturnValue({ update })
+          , state = { ref: { child } }
 
         const updatedAt = 123456789
         Date.now = jest.fn().mockReturnValue(updatedAt)
 
         const key = "key", location = "location"
-        const expectedRole = { ...role, location, updatedAt }
-        delete expectedRole[".key"]
+        const payload = { location, updatedAt }
 
         store.actions.move({ dispatch, state }, { key, location })
         expect(child).toHaveBeenCalledTimes(1)
         expect(child).toHaveBeenCalledWith("key")
-        expect(set).toHaveBeenCalledTimes(1)
-        expect(set).toHaveBeenCalledWith(expectedRole)
+        expect(update).toHaveBeenCalledTimes(1)
+        expect(update).toHaveBeenCalledWith(payload)
       })
 
       it("dispatches a clear lanes action", () => {
-        const role = { ".key": "key", "something": "else" }
-
         const dispatch = jest.fn()
-          , set = jest.fn()
-          , child = jest.fn().mockReturnValue({ set })
-          , state = { roles: [role], ref: { child } }
+          , update = jest.fn()
+          , child = jest.fn().mockReturnValue({ update })
+          , state = { ref: { child } }
 
         const key = "key", location = "location"
 
         store.actions.move({ dispatch, state }, { key, location })
         expect(dispatch).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledWith("lanes/clearEmpty", null, { root: true })
-      })
-
-      it("skips actions if it can't find the role", () => {
-        const dispatch = jest.fn()
-          , set = jest.fn()
-          , child = jest.fn().mockReturnValue({ set })
-          , state = { roles: [], ref: { child } }
-
-        const key = "key", location = "location"
-
-        store.actions.move({ dispatch, state }, { key, location })
-        expect(child).toHaveBeenCalledTimes(0)
-        expect(set).toHaveBeenCalledTimes(0)
-        expect(dispatch).toHaveBeenCalledTimes(0)
       })
     })
   })

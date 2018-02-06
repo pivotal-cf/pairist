@@ -31,7 +31,7 @@
           fab
           small
           :color="lane.locked? 'pink' : 'accent'"
-          @click="toggleLock(lane)"
+          @click="setLocked({ key: lane['.key'], locked: !lane.locked })"
           v-if="lane['.key'] !== 'new-lane'"
         >
           <v-icon v-if="lane.locked">mdi-lock</v-icon>
@@ -62,11 +62,6 @@ export default {
       type: Object,
       required: true,
     },
-    toggleLockLane: {
-      type: Function,
-      required: false,
-      default: undefined,
-    },
     divider: {
       type: Boolean,
       required: false,
@@ -74,7 +69,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions("lanes", ["toggleLock"]),
+    ...mapActions("lanes", ["setLocked"]),
   },
 }
 </script>

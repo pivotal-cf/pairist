@@ -95,18 +95,37 @@ describe("People Store", () => {
             "updatedAt": 123,
             "location": "l1",
           }
-          , set = jest.fn()
-          , child = jest.fn().mockReturnValue({ set })
+          , update = jest.fn()
+          , child = jest.fn().mockReturnValue({ update })
           , state = { people: [existingPerson], ref: { child } }
 
         store.actions.save({ state }, { ".key": "p1", "name": "smith", "picture": "picture" })
         expect(child).toHaveBeenCalledTimes(1)
         expect(child).toHaveBeenCalledWith("p1")
-        expect(set).toHaveBeenCalledTimes(1)
-        expect(set).toHaveBeenCalledWith({
+        expect(update).toHaveBeenCalledTimes(1)
+        expect(update).toHaveBeenCalledWith({
           name: "smith",
           picture: "picture",
         })
+      })
+
+      it("only submints updated fields", () => {
+        const existingPerson = {
+            ".key": "p2",
+            "name": "john",
+            "picture": "",
+            "updatedAt": 123,
+            "location": "l1",
+          }
+          , update = jest.fn()
+          , child = jest.fn().mockReturnValue({ update })
+          , state = { people: [existingPerson], ref: { child } }
+
+        store.actions.save({ state }, { ".key": "p2", "name": "smith" })
+        expect(child).toHaveBeenCalledTimes(1)
+        expect(child).toHaveBeenCalledWith("p1")
+        expect(update).toHaveBeenCalledTimes(1)
+        expect(update).toHaveBeenCalledWith({ name: "smith" })
       })
 
       it("doesn't do anything if name is empty", () => {
@@ -146,34 +165,30 @@ describe("People Store", () => {
 
     describe("move", () => {
       it("moves existing person to location", () => {
-        const person = { ".key": "key", "location": "old", "updatedAt": 123, "something": "else" }
-          , otherPerson = { ".key": "otherKey" }
-
         const dispatch = jest.fn()
-          , set = jest.fn()
-          , child = jest.fn().mockReturnValue({ set })
-          , state = { people: [person, otherPerson], ref: { child } }
+          , update = jest.fn()
+          , child = jest.fn().mockReturnValue({ update })
+          , state = { ref: { child } }
 
         const updatedAt = 123456789
         Date.now = jest.fn().mockReturnValue(updatedAt)
 
         const key = "key", location = "location"
-        const expectedPerson = { ...person, location, updatedAt }
-        delete expectedPerson[".key"]
+        const payload = { location, updatedAt }
 
         store.actions.move({ dispatch, state }, { key, location })
         expect(child).toHaveBeenCalledTimes(1)
         expect(child).toHaveBeenCalledWith("key")
-        expect(set).toHaveBeenCalledTimes(1)
-        expect(set).toHaveBeenCalledWith(expectedPerson)
+        expect(update).toHaveBeenCalledTimes(1)
+        expect(update).toHaveBeenCalledWith(payload)
       })
 
       it("dispatches a clear lanes action", () => {
         const person = { ".key": "key", "something": "else" }
 
         const dispatch = jest.fn()
-          , set = jest.fn()
-          , child = jest.fn().mockReturnValue({ set })
+          , update = jest.fn()
+          , child = jest.fn().mockReturnValue({ update })
           , state = { people: [person], ref: { child } }
 
         const key = "key", location = "location"
@@ -181,20 +196,6 @@ describe("People Store", () => {
         store.actions.move({ dispatch, state }, { key, location })
         expect(dispatch).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledWith("lanes/clearEmpty", null, { root: true })
-      })
-
-      it("skips actions if it can't find the person", () => {
-        const dispatch = jest.fn()
-          , set = jest.fn()
-          , child = jest.fn().mockReturnValue({ set })
-          , state = { people: [], ref: { child } }
-
-        const key = "key", location = "location"
-
-        store.actions.move({ dispatch, state }, { key, location })
-        expect(child).toHaveBeenCalledTimes(0)
-        expect(set).toHaveBeenCalledTimes(0)
-        expect(dispatch).toHaveBeenCalledTimes(0)
       })
     })
   })

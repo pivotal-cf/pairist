@@ -51,17 +51,12 @@ export default {
     },
 
     move({ dispatch, state }, { key, location }) {
-      let track = state.tracks.find(track => track[".key"] === key)
-      if (!track) { return }
-      track = {
-        ...track,
+      const payload = {
         location,
         updatedAt: Date.now(),
       }
 
-      delete track[".key"]
-
-      state.ref.child(key).set(track)
+      state.ref.child(key).update(payload)
       dispatch("lanes/clearEmpty", null, { root: true })
     },
   },

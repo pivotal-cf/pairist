@@ -51,16 +51,12 @@ export default {
     },
 
     move({ dispatch, state }, { key, location }) {
-      let role = state.roles.find(role => role[".key"] === key)
-      if (!role) { return }
-      role = {
-        ...role,
+      const payload = {
         location,
         updatedAt: Date.now(),
       }
-      delete role[".key"]
 
-      state.ref.child(key).set(role)
+      state.ref.child(key).update(payload)
       dispatch("lanes/clearEmpty", null, { root: true })
     },
   },

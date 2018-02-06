@@ -106,55 +106,35 @@ describe("Tracks Store", () => {
 
     describe("move", () => {
       it("moves existing track to location", () => {
-        const track = { ".key": "key", "location": "old", "updatedAt": 123, "something": "else" }
-          , otherTrack = { ".key": "otherKey" }
-
         const dispatch = jest.fn()
-          , set = jest.fn()
-          , child = jest.fn().mockReturnValue({ set })
-          , state = { tracks: [track, otherTrack], ref: { child } }
+          , update = jest.fn()
+          , child = jest.fn().mockReturnValue({ update })
+          , state = { ref: { child } }
 
         const updatedAt = 123456789
         Date.now = jest.fn().mockReturnValue(updatedAt)
 
         const key = "key", location = "location"
-        const expectedTrack = { ...track, location, updatedAt }
-        delete expectedTrack[".key"]
+        const payload = { location, updatedAt }
 
         store.actions.move({ dispatch, state }, { key, location })
         expect(child).toHaveBeenCalledTimes(1)
         expect(child).toHaveBeenCalledWith("key")
-        expect(set).toHaveBeenCalledTimes(1)
-        expect(set).toHaveBeenCalledWith(expectedTrack)
+        expect(update).toHaveBeenCalledTimes(1)
+        expect(update).toHaveBeenCalledWith(payload)
       })
 
       it("dispatches a clear lanes action", () => {
-        const track = { ".key": "key", "something": "else" }
-
         const dispatch = jest.fn()
-          , set = jest.fn()
-          , child = jest.fn().mockReturnValue({ set })
-          , state = { tracks: [track], ref: { child } }
+          , update = jest.fn()
+          , child = jest.fn().mockReturnValue({ update })
+          , state = { ref: { child } }
 
         const key = "key", location = "location"
 
         store.actions.move({ dispatch, state }, { key, location })
         expect(dispatch).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledWith("lanes/clearEmpty", null, { root: true })
-      })
-
-      it("skips actions if it can't find the track", () => {
-        const dispatch = jest.fn()
-          , set = jest.fn()
-          , child = jest.fn().mockReturnValue({ set })
-          , state = { tracks: [], ref: { child } }
-
-        const key = "key", location = "location"
-
-        store.actions.move({ dispatch, state }, { key, location })
-        expect(child).toHaveBeenCalledTimes(0)
-        expect(set).toHaveBeenCalledTimes(0)
-        expect(dispatch).toHaveBeenCalledTimes(0)
       })
     })
   })

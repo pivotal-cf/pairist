@@ -44,7 +44,7 @@ export default {
         const key = person[".key"]
         delete person[".key"]
 
-        state.ref.child(key).set(person)
+        state.ref.child(key).update(person)
       } else {
         state.ref.push({
           name: person.name,
@@ -61,17 +61,12 @@ export default {
     },
 
     move({ dispatch, state }, { key, location }) {
-      let person = state.people.find(person => person[".key"] === key)
-      if (!person) { return }
-      person = {
-        ...person,
+      const payload = {
         location,
         updatedAt: Date.now(),
       }
 
-      delete person[".key"]
-
-      state.ref.child(key).set(person)
+      state.ref.child(key).update(payload)
       dispatch("lanes/clearEmpty", null, { root: true })
     },
   },
