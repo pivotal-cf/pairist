@@ -34,6 +34,7 @@
     "firebase-functions": "^0.8.1",
     "interact.js": "^1.2.8",
     "lodash": "^4.17.4",
+    "pluralize": "^7.0.0",
     "vue": "^2.5.13",
     "vue-router": "^3.0.1",
     "vuetify": "^0.17.6",
