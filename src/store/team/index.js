@@ -22,10 +22,16 @@ export default {
 
   state: {
     current: null,
+    canRead: false,
+    canWrite: false,
   },
 
   mutations: {
-    setRef(state, {name, ref}) { state[`${name}Ref`] = ref },
+    authorize(state, { read, write }) {
+      state.canRead = read
+      state.canWrite = write
+    },
+
     ...firebaseMutations,
   },
 
@@ -33,22 +39,15 @@ export default {
     current(state) {
       return state.current
     },
+    canRead(state) {
+      return state.canRead
+    },
+    canWrite(state) {
+      return state.canWrite
+    },
   },
 
   actions: {
-    async canRead({ commit }, teamName) {
-      try {
-        await db.ref(`/teams/${teamName}/public`).once("value")
-        return true
-      } catch(error) {
-        commit("notify", {
-          message: "You don't have permissions to view this team.",
-          color: "error",
-        })
-        return false
-      }
-    },
-
     loadTeam: firebaseAction(async ({ bindFirebaseRef, commit, dispatch }, teamName) => {
       commit("loading", true)
       const currentRef = db.ref(`/teams/${teamName}/current`)
@@ -72,6 +71,25 @@ export default {
       await currentRef.once("value")
       commit("loading", false)
     }),
+
+    async authorize({ commit }, teamName) {
+      try {
+        await db.ref(`/teams/${teamName}/writecheck`).set(0)
+        commit("authorize", { read: true, write: true })
+        return
+      } catch(error) {
+        try {
+          await db.ref(`/teams/${teamName}/public`).once("value")
+          commit("authorize", { read: true, write: false })
+        } catch(error) {
+          commit("authorize", { read: false, write: false })
+          commit("notify", {
+            message: "You don't have permissions to view this team.",
+            color: "error",
+          })
+        }
+      }
+    },
 
     async move({ getters, dispatch }, { type, key, targetKey }) {
       if (type !== "people" && targetKey === constants.LOCATION.OUT) {
@@ -101,15 +119,13 @@ export default {
           lane = getters["lanes/lastAddedKey"]
         }
 
-        pair.forEach(person => {
-          if (person && person.location !== lane) {
-            dispatch("move", {
-              type: "people",
-              key: person[".key"],
-              targetKey: lane,
-            })
-            actionsTaken++
-          }
+        pair.forEach(personKey => {
+          dispatch("move", {
+            type: "people",
+            key: personKey,
+            targetKey: lane,
+          })
+          actionsTaken++
         })
       })
       if (actionsTaken === 0) {
@@ -120,10 +136,9 @@ export default {
       }
     },
 
-    async recommendPairs({ commit, dispatch, getters}) {
-      commit("loading", true)
+    recommendPairs({ commit, dispatch, getters}) {
       try {
-        const bestPairing = recommendation.findBestPairing({
+        const moves = recommendation.calculateMovesToBestPairing({
           history: getters["history/all"].slice(),
           current: {
             people: getters["people/all"].slice(),
@@ -131,8 +146,8 @@ export default {
           },
         })
 
-        if (bestPairing) {
-          await dispatch("applyPairing", bestPairing)
+        if (moves) {
+          dispatch("applyPairing", moves)
         } else {
           commit("notify", {
             message: "Cannot make a valid pairing assignment. Do you have too many lanes?",
@@ -144,9 +159,7 @@ export default {
           message: "Error finding best pair setting.",
           color: "error",
         })
-        console.error(error)
       }
-      commit("loading", false)
     },
   },
 }

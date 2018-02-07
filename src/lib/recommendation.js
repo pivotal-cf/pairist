@@ -51,8 +51,14 @@ class Recommendation {
     const laneKeys = laneKeysWithPeople.concat(emptyLaneKeys)
 
     return match.map((pair) => {
-      return { pair: pair, lane: laneKeys.shift() || "new-lane" }
-    })
+      const lane = laneKeys.shift() || "new-lane"
+      return {
+        pair: pair.map(person =>
+          person && person.location != lane && person[".key"]
+        ).filter(Boolean),
+        lane,
+      }
+    }).filter(({ pair }) => pair.length > 0)
   }
 
   _calculateScores(availablePeople, history) {
@@ -110,7 +116,7 @@ class Recommendation {
     return lastPairings
   }
 
-  findBestPairing({history, current}) {
+  calculateMovesToBestPairing({history, current}) {
     const lanes = current.lanes
       .filter(({ locked }) => !locked)
     const laneKeys = lanes.map(lane => lane[".key"])

@@ -123,7 +123,7 @@ describe("People Store", () => {
 
         store.actions.save({ state }, { ".key": "p2", "name": "smith" })
         expect(child).toHaveBeenCalledTimes(1)
-        expect(child).toHaveBeenCalledWith("p1")
+        expect(child).toHaveBeenCalledWith("p2")
         expect(update).toHaveBeenCalledTimes(1)
         expect(update).toHaveBeenCalledWith({ name: "smith" })
       })

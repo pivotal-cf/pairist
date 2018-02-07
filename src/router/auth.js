@@ -1,8 +1,10 @@
 import { store } from "@/store"
 
 export const Auth = async (to, from, next) => {
-  if (store.getters.user)
-    if (await store.dispatch("canRead", to.params.team)) {
+  if (store.getters.user) {
+    await store.dispatch("authorize", to.params.team)
+
+    if (store.getters.canRead) {
       await store.dispatch("loadTeam", to.params.team)
       next()
       return
@@ -11,7 +13,8 @@ export const Auth = async (to, from, next) => {
         message: "You do not have access to this team.",
         color: "error",
       })
-    } else {
+    }
+  } else {
     store.commit("notify", {
       message: "You need to be logged in to access this page.",
       color: "error",

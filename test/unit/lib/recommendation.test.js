@@ -33,28 +33,20 @@ describe("Recommendation", () => {
     })
   })
 
-  describe("findBestPairing", () => {
+  describe("calculateMovesToBestPairing", () => {
     it("does not blow up if history is not set", () => {
-      const bestPairing = recommendation.findBestPairing({
+      const bestPairing = recommendation.calculateMovesToBestPairing({
         current: {
           people: [ { ".key": "p1", "location": "l1" } ],
           lanes: [{ ".key": "l1" }],
         },
       })
 
-      expect(bestPairing).toEqual([
-        {
-          lane: "l1",
-          pair: [
-            {".key": "p1", "location": "l1"},
-            undefined,
-          ],
-        },
-      ])
+      expect(bestPairing).toEqual([])
     })
 
     it("returns the single possibility if there's only one", () => {
-      const bestPairing = recommendation.findBestPairing({
+      const bestPairing = recommendation.calculateMovesToBestPairing({
         current: {
           people: [
             { ".key": "p1", "location": "l1" },
@@ -65,20 +57,12 @@ describe("Recommendation", () => {
         history: [],
       })
 
-      expect(bestPairing).toEqual([
-        {
-          lane: "l1",
-          pair: [
-            {".key": "p1", "location": "l1"},
-            {".key": "p2", "location": "l1"},
-          ],
-        },
-      ])
+      expect(bestPairing).toEqual([])
     })
 
     describe("with 3 people", () => {
       it("pairs the two that haven't paired together the longest", () => {
-        const bestPairing = recommendation.findBestPairing({
+        const bestPairing = recommendation.calculateMovesToBestPairing({
           current: {
             people: [
               { ".key": "p1", "location": constants.LOCATION.UNASSIGNED },
@@ -110,17 +94,11 @@ describe("Recommendation", () => {
         expect(bestPairing).toEqual([
           {
             lane: "l1",
-            pair: [
-              {".key": "p1", "location": constants.LOCATION.UNASSIGNED},
-              undefined,
-            ],
+            pair: [ "p1" ],
           },
           {
             lane: "new-lane",
-            pair: [
-              {".key": "p2", "location": constants.LOCATION.UNASSIGNED},
-              {".key": "p3", "location": constants.LOCATION.UNASSIGNED},
-            ],
+            pair: [ "p2", "p3" ],
           },
         ])
       })
@@ -128,7 +106,7 @@ describe("Recommendation", () => {
 
     describe("with people out", () => {
       it("pairs the two that haven't paired together the longest", () => {
-        const bestPairing = recommendation.findBestPairing({
+        const bestPairing = recommendation.calculateMovesToBestPairing({
           current: {
             people: [
               { ".key": "p1", "location": constants.LOCATION.UNASSIGNED },
@@ -160,10 +138,7 @@ describe("Recommendation", () => {
         expect(bestPairing).toEqual([
           {
             lane: "new-lane",
-            pair: [
-              {".key": "p1", "location": constants.LOCATION.UNASSIGNED},
-              {".key": "p2", "location": constants.LOCATION.UNASSIGNED},
-            ],
+            pair: [ "p1", "p2" ],
           },
         ])
       })
@@ -171,7 +146,7 @@ describe("Recommendation", () => {
 
     describe("with locked lanes", () => {
       it("ignores locked lanes completely", () => {
-        const bestPairing = recommendation.findBestPairing({
+        const bestPairing = recommendation.calculateMovesToBestPairing({
           current: {
             people: [
               { ".key": "p1", "location": "l1" },
@@ -203,19 +178,11 @@ describe("Recommendation", () => {
           ],
         })
 
-        expect(bestPairing).toEqual([
-          {
-            lane: "l2",
-            pair: [
-              {".key": "p3", "location": "l2"},
-              undefined,
-            ],
-          },
-        ])
+        expect(bestPairing).toEqual([])
       })
 
       it("even when they're empty", () => {
-        const bestPairing = recommendation.findBestPairing({
+        const bestPairing = recommendation.calculateMovesToBestPairing({
           current: {
             people: [
               { ".key": "p1", "location": constants.LOCATION.UNASSIGNED },
@@ -250,17 +217,11 @@ describe("Recommendation", () => {
         expect(bestPairing).toEqual([
           {
             lane: "l2",
-            pair: [
-              {".key": "p2", "location": constants.LOCATION.UNASSIGNED},
-              {".key": "p3", "location": "l2"},
-            ],
+            pair: [ "p2" ],
           },
           {
             lane: "new-lane",
-            pair: [
-              {".key": "p1", "location": constants.LOCATION.UNASSIGNED},
-              undefined,
-            ],
+            pair: [ "p1" ],
           },
         ])
       })
@@ -283,13 +244,13 @@ describe("Recommendation", () => {
           }
           const board = generateBoard(config)
 
-          const bestPairing = recommendation.findBestPairing(board)
+          const bestPairing = recommendation.calculateMovesToBestPairing(board)
           if (lanesCount*2-1 > peopleCount || peopleCount === 0) {
             // too many lanes
             assert.equal(bestPairing, undefined, JSON.stringify({config, current: board.current}))
           } else {
             assert.ok(bestPairing, JSON.stringify({config, current: board.current}))
-            expect(bestPairing.length).toBeGreaterThanOrEqual(1)
+            expect(bestPairing).toBeTruthy()
           }
         })
       }

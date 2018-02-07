@@ -44,7 +44,7 @@ module.exports = {
     home.setValue("@teamNameInput", "my-team")
     home.setValue("@passwordInput", "password")
     home.click("@createButton")
-    home.waitForElementNotPresent("@createButton", 2000)
+    home.waitForElementNotPresent("@createButton", 4000)
   },
 
   "DAY 0: create team members and tracks"(client) {
