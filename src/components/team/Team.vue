@@ -1,51 +1,6 @@
 <template>
   <v-content>
-    <v-toolbar
-      class="primary logo"
-      fixed
-      dark
-      app
-    >
-      <v-toolbar-title>
-        <span>
-          Pairist
-        </span>
-        <span v-if="current">
-          - {{ teamName.toUpperCase() }}
-        </span>
-      </v-toolbar-title>
-      <v-spacer class="ml-3">
-        <v-progress-linear indeterminate v-if="loading" class="d-inline-flex" color="accent"/>
-      </v-spacer>
-      <v-toolbar-items>
-        <v-btn
-          :disabled="loading"
-          @click="recommendPairs"
-          flat
-        >
-          <v-icon dark>mdi-shuffle-variant</v-icon>
-        </v-btn>
-        <v-btn
-          :disabled="loading"
-          @click="saveHistory"
-          flat
-        >
-          <v-icon dark>mdi-content-save</v-icon>
-        </v-btn>
-        <v-menu bottom left>
-          <v-btn pa-0 flat slot="activator" dark>
-            <v-icon>more_vert</v-icon>
-          </v-btn>
-          <v-list>
-            <v-list-tile @click="logout">
-              <v-list-tile-title>
-                Logout <v-icon>mdi-logout</v-icon>
-              </v-list-tile-title>
-            </v-list-tile>
-          </v-list>
-        </v-menu>
-      </v-toolbar-items>
-    </v-toolbar>
+    <Toolbar :team-name="teamName.toUpperCase()" />
 
     <v-container class="dropzone" pt-0 pb-0 fluid fill-height>
       <v-layout row wrap>
@@ -188,12 +143,14 @@
 <script>
 import Interact from "interact.js"
 
-import Lane from "@/components/Lane"
 import Notification from "@/components/Notification"
-import Person from "@/components/Person"
-import PersonDialog from "@/components/PersonDialog"
-import Role from "@/components/Role"
-import TrackComponent from "@/components/Track"
+
+import Lane from "./Lane"
+import Person from "./Person"
+import PersonDialog from "./PersonDialog"
+import Role from "./Role"
+import Toolbar from "./Toolbar"
+import TrackComponent from "./Track"
 
 import constants from "@/lib/constants"
 
@@ -210,6 +167,7 @@ export default {
     Person,
     PersonDialog,
     Role,
+    Toolbar,
     TrackComponent,
   },
 
@@ -226,10 +184,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
-      "loading",
-      "current",
-    ]),
+    ...mapGetters(["current"]),
     ...mapGetters("lanes",{
       lanes: "all",
     }),
@@ -318,12 +273,7 @@ export default {
   },
 
   methods: {
-    ...mapActions([
-      "recommendPairs",
-      "move",
-      "clearNotification",
-      "logout",
-    ]),
+    ...mapActions(["move"]),
 
     openPersonDialog() {
       this.$refs.personDialog.open()
@@ -341,10 +291,6 @@ export default {
 
       this.newRoleDialog = false
       this.newRoleName = ""
-    },
-
-    saveHistory() {
-      this.$store.dispatch("history/save")
     },
   },
 }
@@ -415,13 +361,5 @@ export default {
 .highlight-enter {
   transform: rotate(5deg);
   filter: brightness(140%);
-}
-
-#app .logo {
-  background-image: url("../assets/pairist.svg");
-  background-size: 45px;
-  background-repeat: no-repeat;
-  background-position: 10px 50%;
-  padding-left: 40px !important;
 }
 </style>

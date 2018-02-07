@@ -44,9 +44,9 @@
 </template>
 
 <script>
-import Person from "@/components/Person"
-import Role from "@/components/Role"
-import TrackComponent from "@/components/Track"
+import Person from "./Person"
+import Role from "./Role"
+import TrackComponent from "./Track"
 
 import {
   mapActions,

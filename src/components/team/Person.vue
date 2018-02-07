@@ -24,7 +24,7 @@
 
 <script>
 import ContextMenu from "@/components/ContextMenu"
-import PersonDialog from "@/components/PersonDialog"
+import PersonDialog from "./PersonDialog"
 
 export default {
   name: "Person",
@@ -42,7 +42,7 @@ export default {
       if (this.person.picture && this.person.picture.length > 0) {
         return this.person.picture
       }
-      return require("../assets/no-picture.svg")
+      return require("@/assets/no-picture.svg")
     },
 
     fontSize() {
@@ -66,7 +66,7 @@ export default {
 
   methods: {
     fixPicture(event) {
-      event.target.src = require("../assets/error-image.svg")
+      event.target.src = require("@/assets/error-image.svg")
     },
 
     openMenu(event) {
