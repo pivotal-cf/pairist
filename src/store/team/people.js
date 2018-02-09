@@ -34,7 +34,7 @@ export default {
   actions: {
     setRef: firebaseAction(({ bindFirebaseRef, commit }, ref) => {
       bindFirebaseRef("people", ref)
-      commit("setRef",  ref)
+      commit("setRef",  ref.ref)
     }),
 
     save({ state }, person) {

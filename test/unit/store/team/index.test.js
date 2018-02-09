@@ -103,32 +103,32 @@ describe("Team Store", () => {
         expect(dispatch)
           .toHaveBeenCalledWith(
             "people/setRef",
-            global.db.ref("/teams/my-team/current/people").orderByChild("updatedAt").ref,
+            global.db.ref("/teams/my-team/current/people").orderByChild("updatedAt"),
           )
 
         expect(dispatch)
           .toHaveBeenCalledWith(
             "tracks/setRef",
-            global.db.ref("/teams/my-team/current/tracks").orderByChild("updatedAt").ref,
+            global.db.ref("/teams/my-team/current/tracks").orderByChild("updatedAt"),
           )
 
         expect(dispatch)
           .toHaveBeenCalledWith(
             "roles/setRef",
-            global.db.ref("/teams/my-team/current/roles").orderByChild("updatedAt").ref,
+            global.db.ref("/teams/my-team/current/roles").orderByChild("updatedAt"),
           )
 
         expect(dispatch)
           .toHaveBeenCalledWith(
             "lanes/setRef",
-            global.db.ref("/teams/my-team/current/lanes").ref,
+            global.db.ref("/teams/my-team/current/lanes"),
           )
 
 
         expect(dispatch)
           .toHaveBeenCalledWith(
             "history/setRef",
-            global.db.ref("/teams/my-team/history").ref,
+            global.db.ref("/teams/my-team/history").orderByKey().limitToLast(100),
           )
       })
 

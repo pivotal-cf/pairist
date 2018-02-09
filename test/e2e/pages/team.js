@@ -15,6 +15,25 @@ module.exports = {
       return this.entity("people", name)
     },
 
+    lane(lane) {
+      var self = this
+      var element = this.el("@lane", lane)
+
+      return {
+        toHavePeople(...peopleNames) {
+          peopleNames.forEach((person, i) => {
+            self.api
+              .useXpath()
+              .assert
+              .containsText(
+                element + `//*[contains(@class, 'person')][${i+1}]`,
+                person
+              )
+          })
+        },
+      }
+    },
+
     logout() {
       this.click("@moreMenuButton")
       this.api

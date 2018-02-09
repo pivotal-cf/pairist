@@ -56,17 +56,17 @@ export default {
       bindFirebaseRef("current" , currentRef)
 
       dispatch("people/setRef",
-        currentRef.child("people").orderByChild("updatedAt").ref)
+        currentRef.child("people").orderByChild("updatedAt"))
       dispatch("tracks/setRef",
-        currentRef.child("tracks").orderByChild("updatedAt").ref)
+        currentRef.child("tracks").orderByChild("updatedAt"))
       dispatch("roles/setRef",
-        currentRef.child("roles").orderByChild("updatedAt").ref)
+        currentRef.child("roles").orderByChild("updatedAt"))
 
       dispatch("lanes/setRef",
-        currentRef.child("lanes").ref)
+        currentRef.child("lanes"))
 
       dispatch("history/setRef",
-        historyRef.orderByKey().limitToLast(100).ref)
+        historyRef.orderByKey().limitToLast(100))
 
       await currentRef.once("value")
       commit("loading", false)

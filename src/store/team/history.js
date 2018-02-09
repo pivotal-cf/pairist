@@ -20,7 +20,7 @@ export default {
   actions: {
     setRef: firebaseAction(({ bindFirebaseRef, commit }, ref) => {
       bindFirebaseRef("history", ref)
-      commit("setRef",  ref)
+      commit("setRef",  ref.ref)
     }),
 
     async save({ commit, state, rootGetters }) {

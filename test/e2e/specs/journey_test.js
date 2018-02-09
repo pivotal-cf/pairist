@@ -89,13 +89,11 @@ module.exports = {
 
     team.person("person-6").moveToOut()
 
-    team.person("person-1").toBeInLane("1")
-    team.person("person-4").toBeInLane("1")
-
-    team.person("person-2").toBeInLane("2")
-    team.person("person-3").toBeInLane("2")
+    team.lane("1").toHavePeople("person-1", "person-4")
+    team.lane("2").toHavePeople("person-3", "person-2")
 
     team.person("person-5").toBeUnassigned
+
     team.person("person-6").toBeOut()
 
     team.track("track-1").moveToLane("1")
@@ -120,13 +118,9 @@ module.exports = {
     team.person("person-4").moveToLane("2")
     team.person("person-5").moveToLane("1")
 
-    team.person("person-1").toBeInLane("1")
-    team.person("person-5").toBeInLane("1")
-
-    team.person("person-2").toBeInLane("2")
-    team.person("person-4").toBeInLane("2")
-
-    team.person("person-3").toBeInLane("3")
+    team.lane("1").toHavePeople("person-1", "person-5")
+    team.lane("2").toHavePeople("person-2", "person-4")
+    team.lane("3").toHavePeople("person-3")
 
     team.saveHistory()
   },
@@ -145,12 +139,9 @@ module.exports = {
     team.person("person-1").edit("renamed-1")
     team.person("person-1").notToExist()
 
-    team.person("renamed-1").toBeInLane("1")
-
-    team.person("person-2").toBeInLane("2")
-    team.person("person-4").toBeInLane("2")
-
-    team.person("person-3").toBeInLane("3")
+    team.lane("1").toHavePeople("renamed-1")
+    team.lane("2").toHavePeople("person-2", "person-4")
+    team.lane("3").toHavePeople("person-3")
 
     team.recommendPairs()
 
@@ -160,11 +151,8 @@ module.exports = {
 
     team.recommendPairs()
 
-    team.person("renamed-1").toBeInLane("1")
-    team.person("person-2").toBeInLane("1")
-
-    team.person("person-4").toBeInLane("2")
-    team.person("person-3").toBeInLane("2")
+    team.lane("1").toHavePeople("renamed-1", "person-2")
+    team.lane("2").toHavePeople("person-4", "person-3")
 
     team.recommendPairs()
     team.expectMessage("Pairing setting is already the optimal one. No actions taken", "accent")
@@ -218,11 +206,8 @@ module.exports = {
 
     team.recommendPairs()
 
-    team.person("renamed-1").toBeInLane("1")
-
-    team.person("person-3").toBeInLane("2")
-    team.person("person-2").toBeInLane("2")
-
-    team.person("person-4").toBeInLane("3")
+    team.lane("1").toHavePeople("renamed-1")
+    team.lane("2").toHavePeople("person-4")
+    team.lane("3").toHavePeople("person-3", "person-2")
   },
 }
