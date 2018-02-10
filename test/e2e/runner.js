@@ -1,7 +1,5 @@
 process.env.NODE_ENV = "testing"
 
-const config = require("../../config")
-
 const webpack = require("webpack")
 const DevServer = require("webpack-dev-server")
 
