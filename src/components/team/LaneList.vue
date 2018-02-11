@@ -24,7 +24,6 @@ import Lane from "./Lane"
 import { mapGetters } from "vuex"
 
 export default {
-  name: "LaneList",
   components: { Lane },
 
   computed: {

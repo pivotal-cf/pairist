@@ -27,7 +27,6 @@ import ContextMenu from "@/components/ContextMenu"
 import PersonDialog from "./PersonDialog"
 
 export default {
-  name: "Person",
   components: { ContextMenu, PersonDialog },
 
   props: {

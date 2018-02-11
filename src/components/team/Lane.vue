@@ -53,7 +53,6 @@ import {
 } from "vuex"
 
 export default {
-  name: "Lane",
   components: {
     Person, Role, TrackComponent,
   },

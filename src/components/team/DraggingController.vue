@@ -9,8 +9,6 @@ import { plural } from "pluralize"
 import { mapActions } from "vuex"
 
 export default {
-  name: "DraggingController",
-
   props: {
     draggables: {
       type: Array,

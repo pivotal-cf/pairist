@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <Toolbar :team-name="teamName.toUpperCase()" />
+    <Toolbar :team-name="$route.params.team.toUpperCase()" />
 
     <v-container class="dropzone" pt-0 pb-0 fluid fill-height>
       <v-layout row wrap>
@@ -23,17 +23,10 @@ import Sidebar from "./Sidebar"
 import Toolbar from "./Toolbar"
 
 export default {
-  name: "Team",
   components: {
     Notification,
 
     DraggingController, LaneList, Sidebar, Toolbar,
-  },
-
-  data() {
-    return {
-      teamName: this.$route.params.team.toLowerCase(),
-    }
   },
 }
 </script>

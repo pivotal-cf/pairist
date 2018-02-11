@@ -11,7 +11,6 @@
 import ContextMenu from "@/components/ContextMenu"
 
 export default {
-  name: "Role",
   components: { ContextMenu },
 
   props: {

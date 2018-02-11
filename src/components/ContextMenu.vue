@@ -30,7 +30,6 @@
 
 <script>
 export default {
-  name: "ContextMenu",
   props: {
     showEdit: {
       type: Boolean,

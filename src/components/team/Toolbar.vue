@@ -55,7 +55,6 @@ import {
 } from "vuex"
 
 export default {
-  name: "Toolbar",
   props: {
     teamName: {
       type: String,

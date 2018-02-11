@@ -23,8 +23,6 @@ import {
 } from "vuex"
 
 export default {
-  name: "Notification",
-
   computed: {
     snackbarText: {
       get() { return this.$store.getters.snackbarText },

@@ -124,7 +124,6 @@ import constants from "@/lib/constants"
 import { mapGetters } from "vuex"
 
 export default {
-  name: "Sidebar",
   components: {
     Person,
     PersonDialog,

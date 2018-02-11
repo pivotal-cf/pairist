@@ -11,7 +11,6 @@
 import ContextMenu from "@/components/ContextMenu"
 
 export default {
-  name: "Track",
   components: { ContextMenu },
 
   props: {

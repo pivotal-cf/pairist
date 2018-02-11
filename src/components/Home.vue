@@ -65,8 +65,6 @@ import { mapGetters, mapActions } from "vuex"
 import Notification from "@/components/Notification"
 
 export default {
-  name: "Home",
-
   components: {
     Notification,
   },

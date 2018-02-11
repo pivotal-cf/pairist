@@ -36,8 +36,6 @@
 
 <script>
 export default {
-  name: "PersonDialog",
-
   props: {
     actionType: {
       type: String,
