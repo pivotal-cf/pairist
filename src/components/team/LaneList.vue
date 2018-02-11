@@ -27,7 +27,7 @@ export default {
   components: { Lane },
 
   computed: {
-    ...mapGetters("lanes",{ lanes: "all" }),
+    ...mapGetters("lanes", { lanes: "all" }),
   },
 }
 </script>
