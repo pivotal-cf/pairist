@@ -1,6 +1,7 @@
 <template>
   <transition name="highlight">
-    <v-card class="person title" dark color="secondary" :data-key="person['.key']" @contextmenu="openMenu">
+    <v-card class="person title" dark color="secondary"
+            :data-key="person['.key']" @contextmenu="openMenu">
       <v-card-text>
         <v-avatar
           size="86px"
