@@ -126,7 +126,6 @@ import { mapGetters } from "vuex"
 export default {
   name: "Sidebar",
   components: {
-    Notification,
     Person,
     PersonDialog,
     Role,
