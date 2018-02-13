@@ -25,6 +25,8 @@ export default {
 
   state: {
     current: null,
+    public: null,
+    publicRef: null,
     canRead: false,
     canWrite: false,
   },
@@ -39,6 +41,9 @@ export default {
   },
 
   getters: {
+    publicRO(state) {
+      return state.public && state.public[".value"]
+    },
     current(state) {
       return state.current
     },
@@ -51,12 +56,15 @@ export default {
   },
 
   actions: {
-    loadTeam: firebaseAction(async ({ bindFirebaseRef, commit, dispatch }, teamName) => {
+    loadTeam: firebaseAction(async ({ bindFirebaseRef, commit, dispatch, state }, teamName) => {
       commit("loading", true)
       const currentRef = db.ref(`/teams/${teamName}/current`)
       const historyRef = db.ref(`/teams/${teamName}/history`)
+      const publicRef = db.ref(`/teams/${teamName}/public`)
 
       bindFirebaseRef("current" , currentRef)
+      bindFirebaseRef("public" , publicRef)
+      state.publicRef = publicRef.ref
 
       dispatch("people/setRef",
         currentRef.child("people").orderByChild("updatedAt"))
@@ -95,6 +103,12 @@ export default {
           })
         }
       }
+    },
+
+    async setPublic({ commit, state }, value) {
+      commit("loading", true)
+      await state.publicRef.set(value)
+      commit("loading", false)
     },
 
     async move({ getters, dispatch }, { type, key, targetKey }) {

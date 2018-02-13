@@ -13,14 +13,21 @@
         - {{ teamName }}
       </span>
     </v-toolbar-title>
+    <v-flex xs2 ml-3>
+      <v-switch :hide-details="true" :disabled="!canWrite"
+                :label="publicRO ? 'Public' : 'Private'" v-model="publicRO"/>
+    </v-flex>
+
     <v-spacer class="ml-3">
       <v-progress-linear indeterminate v-if="loading" class="d-inline-flex" color="accent"/>
     </v-spacer>
+
     <v-toolbar-items>
       <v-btn
         :disabled="loading"
         @click="recommendPairs"
         flat
+        v-if="canWrite"
       >
         <v-icon dark>mdi-shuffle-variant</v-icon>
       </v-btn>
@@ -28,10 +35,11 @@
         :disabled="loading"
         @click="saveHistory"
         flat
+        v-if="canWrite"
       >
         <v-icon dark>mdi-content-save</v-icon>
       </v-btn>
-      <v-menu bottom left>
+      <v-menu bottom left v-if="user">
         <v-btn pa-0 flat slot="activator" dark>
           <v-icon>more_vert</v-icon>
         </v-btn>
@@ -63,7 +71,11 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["loading"]),
+    ...mapGetters(["canWrite", "loading", "user"]),
+    publicRO: {
+      get() { return this.$store.getters.publicRO },
+      set(value) { this.$store.dispatch("setPublic", value) },
+    },
   },
 
   methods: {

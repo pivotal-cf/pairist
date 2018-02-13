@@ -1,8 +1,13 @@
 <template>
   <div class="list">
     <v-subheader>
-      <editable placeholder="Set list title..." :content="list.title" @update="changeTitle"/>
-      <v-btn icon ripple class="remove-list" @click="dialog = true">
+      <editable placeholder="Set list title..." :content="list.title"
+                @update="changeTitle" v-if="canWrite" />
+      <div v-else>
+        {{ list.title }}
+      </div>
+      <v-btn icon ripple class="remove-list" @click="dialog = true"
+             v-if="canWrite">
         <v-icon color="grey lighten-1">mdi-close-circle</v-icon>
       </v-btn>
     </v-subheader>
@@ -14,7 +19,7 @@
       <v-divider :key="item['.key']"/>
     </template>
 
-    <v-list-tile class="new-item">
+    <v-list-tile class="new-item" v-if="canWrite">
       <v-list-tile-action>
         <v-btn icon ripple class="add-item" @click="addItemFocus">
           <v-icon color="grey lighten-1">add</v-icon>
@@ -47,6 +52,8 @@
 import ListItem from "@/components/team/ListItem"
 import editable from "@/components/editable"
 
+import { mapGetters } from "vuex"
+
 export default {
   components: {
     editable,
@@ -69,6 +76,8 @@ export default {
   },
 
   computed: {
+    ...mapGetters(["canWrite"]),
+
     isLoading() {
       return (key) => this.loading.includes(key)
     },

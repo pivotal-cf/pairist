@@ -86,19 +86,22 @@ describe("Team Store", () => {
           , dispatch = jest.fn()
           , bindFirebaseRef = jest.fn()
 
-        store.actions.loadTeam({ bindFirebaseRef, commit, dispatch }, "my-team")
+        store.actions.loadTeam({ bindFirebaseRef, commit, dispatch, state: {} }, "my-team")
 
-        expect(bindFirebaseRef).toHaveBeenCalledTimes(1)
+        expect(bindFirebaseRef).toHaveBeenCalledTimes(2)
         expect(bindFirebaseRef)
           .toHaveBeenCalledWith("current", global.db.ref("/teams/my-team/current"))
+        expect(bindFirebaseRef)
+          .toHaveBeenCalledWith("public", global.db.ref("/teams/my-team/public"))
       })
 
       it("dispatches ref for child stores", () => {
         const commit = jest.fn()
           , dispatch = jest.fn()
           , bindFirebaseRef = jest.fn()
+          , state = {}
 
-        store.actions.loadTeam({ bindFirebaseRef, commit, dispatch }, "my-team")
+        store.actions.loadTeam({ bindFirebaseRef, commit, dispatch, state }, "my-team")
 
         expect(dispatch)
           .toHaveBeenCalledWith(
@@ -137,7 +140,7 @@ describe("Team Store", () => {
           , dispatch = jest.fn()
           , bindFirebaseRef = jest.fn()
 
-        const loadPromise = store.actions.loadTeam({ bindFirebaseRef, commit, dispatch }, "my-team")
+        const loadPromise = store.actions.loadTeam({ bindFirebaseRef, commit, dispatch, state: {} }, "my-team")
         expect(commit).toHaveBeenCalledTimes(1)
         expect(commit).toHaveBeenCalledWith("loading", true)
 

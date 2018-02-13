@@ -32,7 +32,7 @@
           small
           :color="lane.locked? 'pink' : 'accent'"
           @click="setLocked({ key: lane['.key'], locked: !lane.locked })"
-          v-if="lane['.key'] !== 'new-lane'"
+          v-if="canWrite && lane['.key'] !== 'new-lane'"
         >
           <v-icon v-if="lane.locked">mdi-lock</v-icon>
           <v-icon v-else>mdi-lock-open</v-icon>
@@ -50,6 +50,7 @@ import TrackComponent from "./Track"
 
 import {
   mapActions,
+  mapGetters,
 } from "vuex"
 
 export default {
@@ -67,6 +68,11 @@ export default {
       default: true,
     },
   },
+
+  computed: {
+    ...mapGetters(["canWrite"]),
+  },
+
   methods: {
     ...mapActions("lanes", ["setLocked"]),
   },

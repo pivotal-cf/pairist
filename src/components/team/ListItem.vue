@@ -1,17 +1,23 @@
 <template>
   <v-list-tile>
     <v-list-tile-action>
-      <v-checkbox v-model="item.checked" @change="save"/>
+      <v-checkbox v-model="item.checked" @change="save"
+                  :disabled="!canWrite" />
     </v-list-tile-action>
     <v-list-tile-content>
       <v-list-tile-title>
-        <editable placeholder="Add title..." :content="title"
+        <editable placeholder="Add title..." :content="item.title"
                   :class="{ checked: item.checked }"
-                  @update="title = $event"/>
+                  @update="title = $event"
+                  v-if="canWrite" />
+        <div v-else
+             :class="{ checked: item.checked }" >
+          {{ item.title }}
+        </div>
       </v-list-tile-title>
     </v-list-tile-content>
     <v-progress-circular v-if="loading" indeterminate color="primary"/>
-    <v-list-tile-action>
+    <v-list-tile-action v-if="canWrite">
       <v-btn icon ripple class="remove-item" @click="remove">
         <v-icon color="grey lighten-1">close</v-icon>
       </v-btn>
@@ -21,6 +27,7 @@
 
 <script>
 import editable from "@/components/editable"
+import { mapGetters } from "vuex"
 
 export default {
   components: { editable },
@@ -37,6 +44,8 @@ export default {
   },
 
   computed: {
+    ...mapGetters(["canWrite"]),
+
     title: {
       get() { return this.item.title },
       async set(value) {

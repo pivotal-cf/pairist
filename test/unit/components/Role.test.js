@@ -12,10 +12,14 @@ import Role from "@/components/team/Role"
 describe("Role", () => {
   let actions
   let store
+  let getters
 
   beforeEach(() => {
     actions = {
       remove: jest.fn(),
+    }
+    getters = {
+      canWrite: jest.fn().mockReturnValue(true),
     }
     store = new Vuex.Store({
       state: {},
@@ -25,6 +29,7 @@ describe("Role", () => {
           actions,
         },
       },
+      getters,
     })
   })
 
@@ -42,7 +47,7 @@ describe("Role", () => {
     expect(wrapper.find("span").text()).toContain("Lisa")
   })
 
-  it("shows a context menu on right click", async () => {
+  it("shows a context menu on right click if can write", async () => {
     const wrapper = shallow(Role, { store, localVue,
       propsData: {
         role: { ".key": "p", "name": "Role" },
@@ -67,5 +72,20 @@ describe("Role", () => {
     wrapper.vm.remove()
     expect(actions.remove).toHaveBeenCalled()
     expect(actions.remove).toHaveBeenCalledWith(expect.anything(), "p", undefined)
+  })
+
+  it("does not show menu if cannot write", async () => {
+    getters.canWrite.mockReturnValue(false)
+
+    const wrapper = shallow(Role, { store, localVue,
+      propsData: {
+        role: { ".key": "p", "name": "Role" },
+      },
+    })
+
+    const menu = wrapper.find(ContextMenu)
+    expect(menu.exists()).toBeFalsy()
+    wrapper.find(".role").trigger("contextmenu")
+    await flushPromises()
   })
 })

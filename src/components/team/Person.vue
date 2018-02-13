@@ -17,7 +17,8 @@
         </div>
       </v-card-text>
 
-      <ContextMenu @remove="remove" :show-edit="true" @edit="edit" ref="menu" />
+      <ContextMenu @remove="remove" :show-edit="true" @edit="edit" ref="menu"
+                   v-if="canWrite" />
       <PersonDialog ref="personDialog" :person="Object.assign({}, person)"/>
     </v-card>
   </transition>
@@ -26,6 +27,7 @@
 <script>
 import ContextMenu from "@/components/ContextMenu"
 import PersonDialog from "./PersonDialog"
+import { mapGetters } from "vuex"
 
 export default {
   components: { ContextMenu, PersonDialog },
@@ -38,6 +40,8 @@ export default {
   },
 
   computed: {
+    ...mapGetters(["canWrite"]),
+
     picture() {
       if (this.person.picture && this.person.picture.length > 0) {
         return this.person.picture
@@ -70,7 +74,9 @@ export default {
     },
 
     openMenu(event) {
-      this.$refs.menu.open(event)
+      if (this.canWrite) {
+        this.$refs.menu.open(event)
+      }
     },
 
     edit() {

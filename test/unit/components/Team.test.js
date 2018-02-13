@@ -1,4 +1,11 @@
-import { shallow } from "@vue/test-utils"
+import { shallow, createLocalVue } from "@vue/test-utils"
+import flushPromises from "flush-promises"
+import Vuex from "vuex"
+
+const localVue = createLocalVue()
+
+localVue.use(Vuex)
+
 import Lists from "@/components/team/Lists"
 import Sidebar from "@/components/team/Sidebar"
 import LaneList from "@/components/team/LaneList"
@@ -14,39 +21,68 @@ const $route = {
 }
 
 describe("Team", () => {
+  let actions
+  let store
+  let getters
+
+  beforeEach(() => {
+    actions = {
+      remove: jest.fn(),
+    }
+    getters = {
+      canWrite: jest.fn().mockReturnValue(true),
+    }
+    store = new Vuex.Store({
+      state: {},
+      getters,
+      modules: {
+        people: {
+          namespaced: true,
+          actions,
+        },
+      },
+    })
+  })
+
   it("renders with no exceptions", () => {
-    shallow(Team, { mocks: { $route } })
+    shallow(Team, { localVue, store, mocks: { $route } })
   })
 
   it("renders a sidebar", () => {
-    const wrapper = shallow(Team, { mocks: { $route } })
+    const wrapper = shallow(Team, { localVue, store, mocks: { $route } })
     expect(wrapper.find(Sidebar).exists()).toBeTruthy()
   })
 
   it("renders Lists", () => {
-    const wrapper = shallow(Team, { mocks: { $route } })
+    const wrapper = shallow(Team, { localVue, store, mocks: { $route } })
     expect(wrapper.find(Lists).exists()).toBeTruthy()
   })
 
   it("renders a LaneList", () => {
-    const wrapper = shallow(Team, { mocks: { $route } })
+    const wrapper = shallow(Team, { localVue, store, mocks: { $route } })
     expect(wrapper.find(LaneList).exists()).toBeTruthy()
   })
 
   it("renders a Notification", () => {
-    const wrapper = shallow(Team, { mocks: { $route } })
+    const wrapper = shallow(Team, { localVue, store, mocks: { $route } })
     expect(wrapper.find(Notification).exists()).toBeTruthy()
   })
 
-  it("renders a DraggingController", () => {
-    const wrapper = shallow(Team, { mocks: { $route } })
+  it("renders a DraggingController if can write", () => {
+    const wrapper = shallow(Team, { localVue, store, mocks: { $route } })
     expect(wrapper.find(DraggingController).exists()).toBeTruthy()
     expect(wrapper.find(DraggingController).vm.draggables)
       .toEqual(["person", "track", "role"])
   })
 
+  it("skips DraggingController if cannot write", () => {
+    getters.canWrite.mockReturnValue(false)
+    const wrapper = shallow(Team, { localVue, store, mocks: { $route } })
+    expect(wrapper.find(DraggingController).exists()).toBeFalsy()
+  })
+
   it("renders a Toolbar", () => {
-    const wrapper = shallow(Team, { mocks: { $route } })
+    const wrapper = shallow(Team, { localVue, store, mocks: { $route } })
     expect(wrapper.find(Toolbar).exists()).toBeTruthy()
     expect(wrapper.find(Toolbar).vm.teamName)
       .toEqual("TEAM-NAME")

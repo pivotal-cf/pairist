@@ -7,7 +7,6 @@ const localVue = createLocalVue()
 localVue.use(Vuex)
 
 import ContextMenu from "@/components/ContextMenu"
-import PersonDialog from "@/components/team/PersonDialog"
 import Person from "@/components/team/Person"
 
 jest.mock("@/assets/no-picture.svg", () => {
@@ -21,13 +20,18 @@ jest.mock("@/assets/error-image.svg", () => {
 describe("Person", () => {
   let actions
   let store
+  let getters
 
   beforeEach(() => {
     actions = {
       remove: jest.fn(),
     }
+    getters = {
+      canWrite: jest.fn().mockReturnValue(true),
+    }
     store = new Vuex.Store({
       state: {},
+      getters,
       modules: {
         people: {
           namespaced: true,
@@ -147,5 +151,19 @@ describe("Person", () => {
     wrapper.vm.remove()
     expect(actions.remove).toHaveBeenCalled()
     expect(actions.remove).toHaveBeenCalledWith(expect.anything(), "p", undefined)
+  })
+
+  it("does not show menu if cannot write", () => {
+    getters.canWrite.mockReturnValue(false)
+
+    const wrapper = shallow(Person, { store, localVue,
+      propsData: {
+        person: { ".key": "p", "name": "person" },
+      },
+    })
+
+    const menu = wrapper.find(ContextMenu)
+    expect(menu.exists()).toBeFalsy()
+    wrapper.find(".person").trigger("contextmenu")
   })
 })

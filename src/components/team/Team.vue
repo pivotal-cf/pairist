@@ -4,14 +4,15 @@
 
     <v-container class="dropzone" pt-0 pb-0 fluid fill-height>
       <v-layout row wrap>
-        <Lists class="xs12 md4" />
-        <LaneList class="xs12 md4" />
-        <Sidebar class="xs12 md4" />
+        <Lists class="xs12 md4 order-xs3 order-md1" />
+        <LaneList class="xs12 md4 order-xs1 order-md2" />
+        <Sidebar class="xs12 md4 order-xs2 order-md2"/>
       </v-layout>
     </v-container>
 
     <Notification/>
-    <DraggingController :draggables="['person', 'track', 'role']"/>
+    <DraggingController :draggables="['person', 'track', 'role']"
+                        v-if="canWrite" />
   </v-content>
 </template>
 
@@ -24,11 +25,17 @@ import LaneList from "./LaneList"
 import Sidebar from "./Sidebar"
 import Toolbar from "./Toolbar"
 
+import { mapGetters } from "vuex"
+
 export default {
   components: {
     Notification,
 
     DraggingController, LaneList, Sidebar, Toolbar, Lists,
+  },
+
+  computed: {
+    ...mapGetters(["canWrite"]),
   },
 }
 </script>

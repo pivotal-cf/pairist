@@ -5,7 +5,8 @@
         <h2>
           Tracks
           <v-dialog v-model="newTrackDialog" max-width="300px">
-            <v-btn color="secondary" small dark slot="activator" icon>
+            <v-btn color="secondary" small dark slot="activator" icon
+                   v-if="canWrite">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
             <v-card v-if="newTrackDialog">
@@ -46,7 +47,8 @@
         <h2>
           Roles
           <v-dialog v-model="newRoleDialog" max-width="300px">
-            <v-btn color="secondary" small dark slot="activator" icon>
+            <v-btn color="secondary" small dark slot="activator" icon
+                   v-if="canWrite">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
             <v-card v-if="newRoleDialog">
@@ -86,7 +88,8 @@
       <div class="people unassigned">
         <h2>
           People
-          <v-btn color="secondary" small dark @click="openPersonDialog" icon>
+          <v-btn color="secondary" small dark @click="openPersonDialog" icon
+                 v-if="canWrite">
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         <PersonDialog ref="personDialog" :action-type="'New'"/></h2>
@@ -142,6 +145,8 @@ export default {
   },
 
   computed: {
+    ...mapGetters(["canWrite"]),
+
     ...mapGetters("people", {
       unassignedPeople: "unassigned",
       outPeople: "out",

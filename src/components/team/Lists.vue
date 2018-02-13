@@ -5,7 +5,8 @@
         <span/>
         <v-toolbar-title>Lists</v-toolbar-title>
         <v-spacer/>
-        <v-btn icon id="add-list" @click="addList">
+        <v-btn icon id="add-list" @click="addList"
+               v-if="canWrite">
           <v-icon>add</v-icon>
         </v-btn>
       </v-toolbar>
@@ -30,6 +31,7 @@ export default {
   },
 
   computed: {
+    ...mapGetters(["canWrite"]),
     ...mapGetters("lists", { lists: "all" }),
   },
 

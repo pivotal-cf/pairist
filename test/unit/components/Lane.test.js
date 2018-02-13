@@ -14,13 +14,18 @@ import Lane from "@/components/team/Lane"
 describe("Lane", () => {
   let actions
   let store
+  let getters
 
   beforeEach(() => {
     actions = {
       setLocked: jest.fn(),
     }
+    getters = {
+      canWrite: jest.fn().mockReturnValue(true),
+    }
     store = new Vuex.Store({
       state: {},
+      getters,
       modules: {
         lanes: {
           namespaced: true,
@@ -31,7 +36,7 @@ describe("Lane", () => {
   })
 
   it("renders with no exceptions", () => {
-    shallow(Lane, { propsData: { lane: {} } })
+    shallow(Lane, { localVue, store, propsData: { lane: {} } })
   })
 
   it("can be locked and unlocked", async () => {
@@ -64,6 +69,19 @@ describe("Lane", () => {
       key: "a-key",
       locked: false,
     }, undefined)
+  })
+
+  it("cannot be locked and unlocked if cannot write", () => {
+    getters.canWrite.mockReturnValue(false)
+
+    const lane = { ".key": "a-key" , "locked": false }
+      , wrapper = shallow(Lane, {
+        store,
+        localVue,
+        propsData: { lane },
+      })
+
+    expect(wrapper.find(".lock-button").exists()).toBeFalsy()
   })
 
   it("shows a new lane without a lock button if new-lane is passed", async () => {
