@@ -27,28 +27,28 @@
     </v-spacer>
 
     <v-toolbar-items>
-      <v-btn
-        :disabled="loading"
-        @click="recommendPairs"
-        flat
-        v-if="canWrite"
-      >
-        <v-tooltip bottom open-delay="200" content-class="accent">
-          <v-icon dark slot="activator">mdi-shuffle-variant</v-icon>
-          <span>Recommend pairs (optimizing for more variability in individual pairings</span>
-        </v-tooltip>
-      </v-btn>
-      <v-btn
-        :disabled="loading"
-        @click="saveHistory"
-        flat
-        v-if="canWrite"
-      >
-        <v-tooltip bottom open-delay="200" content-class="accent">
-          <v-icon dark slot="activator">mdi-content-save</v-icon>
-          <span>Save history. This required to ensure future accuracy in recommendations</span>
-        </v-tooltip>
-      </v-btn>
+      <v-tooltip bottom open-delay="200" content-class="accent">
+        <v-btn
+          :disabled="loading"
+          @click="recommendPairs"
+          flat slot="activator"
+          v-if="canWrite"
+        >
+          <v-icon dark>mdi-shuffle-variant</v-icon>
+        </v-btn>
+        <span>Recommend pairs (optimizing for more variability in individual pairings</span>
+      </v-tooltip>
+      <v-tooltip bottom open-delay="200" content-class="accent">
+        <v-btn
+          :disabled="loading"
+          @click="saveHistory"
+          flat slot="activator"
+          v-if="canWrite"
+        >
+          <v-icon dark>mdi-content-save</v-icon>
+        </v-btn>
+        <span>Save history. This required to ensure future accuracy in recommendations</span>
+      </v-tooltip>
       <v-menu bottom left v-if="user">
         <v-btn pa-0 flat slot="activator" dark>
           <v-icon>more_vert</v-icon>
@@ -62,23 +62,14 @@
         </v-list>
       </v-menu>
 
-      <v-btn v-else
-             flat
-             @click="$router.push('/')">
-        <v-tooltip bottom content-class="accent">
-          <v-icon dark slot="activator">mdi-login</v-icon>
-          <span>Login</span>
-        </v-tooltip>
-      </v-btn>
+      <v-tooltip v-else bottom content-class="accent">
+        <v-btn flat slot="activator"
+               @click="$router.push('/')">
+          <v-icon dark>mdi-login</v-icon>
+        </v-btn>
+        <span>Login</span>
+      </v-tooltip>
     </v-toolbar-items>
-
-    <v-snackbar
-      :timeout="0"
-      color="error"
-      :value="!user"
-      bottom right>
-      Viewing in read-only mode
-    </v-snackbar>
   </v-toolbar>
 </template>
 
