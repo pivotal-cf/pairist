@@ -5,7 +5,7 @@
                   :disabled="!canWrite" />
     </v-list-tile-action>
     <v-list-tile-content>
-      <v-list-tile-title>
+      <v-list-tile-sub-title>
         <editable placeholder="Add title..." :content="item.title"
                   :class="{ checked: item.checked }"
                   @update="title = $event"
@@ -14,7 +14,7 @@
              :class="{ checked: item.checked }" >
           {{ item.title }}
         </div>
-      </v-list-tile-title>
+      </v-list-tile-sub-title>
     </v-list-tile-content>
     <v-progress-circular v-if="loading" indeterminate color="primary"/>
     <v-list-tile-action v-if="canWrite">

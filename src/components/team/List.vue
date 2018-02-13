@@ -136,3 +136,16 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+.lists .list {
+  .list__tile {
+    min-height: 2.5rem;
+    height: auto;
+
+    .list__tile__content {
+      overflow-wrap: break-word;
+    }
+  }
+}
+</style>

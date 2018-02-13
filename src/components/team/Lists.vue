@@ -10,7 +10,7 @@
           <v-icon>add</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-list class="pl-2">
+      <v-list class="pl-2" three-line>
         <template v-for="list in lists">
           <List :list="list" :key="list['.key']" />
         </template>

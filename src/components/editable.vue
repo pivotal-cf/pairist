@@ -3,7 +3,7 @@
     <div class="accent--text placeholder" v-if="contentText === ''">
       {{ placeholder }}
     </div>
-    <div class="content" contenteditable="true" @input="input" @keyup.enter="update"
+    <div class="editable-content" contenteditable="true" @input="input" @keyup.enter="update"
          ref="contentWrapper" @keydown.enter="disableEvent" @keypress.enter="disableEvent" />
   </div>
 </template>
@@ -78,11 +78,14 @@ export default  {
 <style lang="scss">
 .editable {
   position: relative;
+  height: 100%;
   width: 100%;
   display: inline-block;
+  overflow-wrap: break-word;
 
-  .content {
+  .editable-content {
     min-height: 1rem;
+    overflow-wrap: break-word;
   }
 
   .placeholder {
