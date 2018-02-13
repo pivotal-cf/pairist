@@ -1,4 +1,5 @@
 import { shallow } from "@vue/test-utils"
+import Lists from "@/components/team/Lists"
 import Sidebar from "@/components/team/Sidebar"
 import LaneList from "@/components/team/LaneList"
 import DraggingController from "@/components/team/DraggingController"
@@ -20,6 +21,11 @@ describe("Team", () => {
   it("renders a sidebar", () => {
     const wrapper = shallow(Team, { mocks: { $route } })
     expect(wrapper.find(Sidebar).exists()).toBeTruthy()
+  })
+
+  it("renders Lists", () => {
+    const wrapper = shallow(Team, { mocks: { $route } })
+    expect(wrapper.find(Lists).exists()).toBeTruthy()
   })
 
   it("renders a LaneList", () => {

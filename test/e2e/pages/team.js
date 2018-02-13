@@ -15,6 +15,106 @@ module.exports = {
       return this.entity("people", name)
     },
 
+    addList() {
+      this.api.useCss().click("#add-list")
+    },
+
+    list(index) {
+      var self = this
+      var element = this.el("@list", index)
+
+      return {
+        rename(newName) {
+          self.api.useXpath()
+            .waitForElementPresent(
+              `(${element}//div[@contenteditable = 'true'])[1]`,
+              1000,
+            )
+
+          self.api.useXpath()
+            .click(`(${element}//div[@contenteditable = 'true'])[1]`)
+            .pause(300)
+            .keys([newName, self.api.Keys.ENTER])
+        },
+
+        toHaveName(name) {
+          self.api.useXpath()
+            .assert
+            .containsText(element + "//div[@contenteditable = 'true']", name)
+        },
+
+        addItem(item) {
+          self.api.useXpath()
+            .click(element + "//button[contains(@class, 'add-item')]")
+            .keys([item, self.api.Keys.ENTER])
+        },
+
+        remove() {
+          self.api.useXpath()
+            .click(`${element}//button[contains(@class, 'remove-list')]`)
+            .waitForElementPresent("//button//div[text()='Yes']", 2000)
+            .pause(500)
+            .click("//button//div[text()='Yes']")
+            .waitForElementNotPresent("//button//div[text()='Yes']", 2000)
+        },
+
+        item(index) {
+          var item = `(${element}//div[@class = 'list__tile'])[${index}]`
+
+          return {
+            toHaveName(name) {
+              self.api.useXpath()
+                .assert
+                .containsText(item, name)
+            },
+
+            rename(name) {
+              self.api.useXpath()
+                .click(`${item}//div[@contenteditable = 'true']`)
+                .keys([name, self.api.Keys.ENTER])
+            },
+
+            check() {
+              self.api.useXpath()
+                .click(`${item}//*[@role = 'checkbox']`)
+                .pause(300)
+            },
+
+            uncheck() {
+              self.api.useXpath()
+                .click(`${item}//*[@role = 'checkbox']`)
+                .pause(300)
+            },
+
+            toBeChecked() {
+              self.api.useXpath()
+                .assert
+                .attributeContains(
+                  `${item}//*[@role = 'checkbox']`,
+                  "aria-checked",
+                  "true",
+                )
+            },
+
+            toBeUnchecked() {
+              self.api.useXpath()
+                .assert
+                .attributeContains(
+                  `${item}//*[@role = 'checkbox']`,
+                  "aria-checked",
+                  "false",
+                )
+            },
+
+            remove() {
+              self.api.useXpath()
+                .click(`${item}//button[contains(@class, 'remove-item')]`)
+            },
+          }
+        },
+      }
+    },
+
     lane(lane) {
       var self = this
       var element = this.el("@lane", lane)
@@ -116,6 +216,8 @@ module.exports = {
       return {
         add(picture) {
           self.click(`@add${self.capitalize(singular)}Button`)
+
+          self.api.useCss()
             .waitForElementVisible("input[type='text']", 2000)
             .setValue("input[type='text']", name)
 
@@ -244,6 +346,11 @@ module.exports = {
 
     role: {
       selector: "//*[contains(@class, 'role')]//*[text()='%s']",
+      locateStrategy: "xpath",
+    },
+
+    list: {
+      selector: "(//div[contains(@class, 'lists')]//div[@class = 'list'])[%s]",
       locateStrategy: "xpath",
     },
 

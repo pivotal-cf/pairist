@@ -8,6 +8,7 @@ import roles from "./roles"
 import tracks from "./tracks"
 import lanes from "./lanes"
 import history from "./history"
+import lists from "./lists"
 
 import recommendation from "./recommendation"
 
@@ -18,6 +19,8 @@ export default {
     tracks,
     lanes,
     history,
+
+    lists,
   },
 
   state: {
@@ -67,6 +70,9 @@ export default {
 
       dispatch("history/setRef",
         historyRef.orderByKey().limitToLast(100))
+
+      dispatch("lists/setRef",
+        db.ref(`/teams/${teamName}/lists`))
 
       await currentRef.once("value")
       commit("loading", false)

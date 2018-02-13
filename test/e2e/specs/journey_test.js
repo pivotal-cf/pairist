@@ -47,6 +47,40 @@ module.exports = {
     home.waitForElementNotPresent("@createButton", 4000)
   },
 
+  "lists"(client) {
+    var team = client.page.team()
+
+    team.addList()
+    team.list("1").rename("list1")
+    team.list("1").toHaveName("list1")
+
+    team.list("1").addItem("item1")
+    team.list("1").item("1").toHaveName("item1")
+
+    team.addList()
+    team.list("2").rename("list2")
+    team.list("2").toHaveName("list2")
+
+    team.list("1").addItem("item2")
+    team.list("1").item("2").toHaveName("item2")
+    team.list("2").addItem("item3")
+    team.list("2").item("1").toHaveName("item3")
+
+    team.list("2").item("1").check()
+    team.list("2").item("1").toBeChecked()
+
+    team.list("1").item("1").remove()
+    team.list("1").item("1").toHaveName("item2")
+    team.list("1").remove()
+    team.list("1").toHaveName("list2")
+
+    team.list("1").item("2").rename("renamed3")
+    team.list("1").item("2").toHaveName("renamed3")
+
+    team.list("1").item("1").uncheck()
+    team.list("1").item("1").toBeUnchecked()
+  },
+
   "DAY 0: create team members and tracks"(client) {
     var team = client.page.team()
     team.waitForElementPresent("@title", 2000)

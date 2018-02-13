@@ -4,7 +4,8 @@
 
     <v-container class="dropzone" pt-0 pb-0 fluid fill-height>
       <v-layout row wrap>
-        <LaneList class="xs12 md8" />
+        <Lists class="xs12 md4" />
+        <LaneList class="xs12 md4" />
         <Sidebar class="xs12 md4" />
       </v-layout>
     </v-container>
@@ -18,6 +19,7 @@
 import Notification from "@/components/Notification"
 
 import DraggingController from "./DraggingController"
+import Lists from "./Lists"
 import LaneList from "./LaneList"
 import Sidebar from "./Sidebar"
 import Toolbar from "./Toolbar"
@@ -26,7 +28,7 @@ export default {
   components: {
     Notification,
 
-    DraggingController, LaneList, Sidebar, Toolbar,
+    DraggingController, LaneList, Sidebar, Toolbar, Lists,
   },
 }
 </script>

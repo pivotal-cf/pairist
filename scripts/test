@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$1" = *"/e2e/"* ]]; then
+if [[ "$1" == *"/e2e/"* ]]; then
   yarn e2e
 else
   yarn unit "$1"
