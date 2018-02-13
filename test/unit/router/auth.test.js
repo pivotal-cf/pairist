@@ -30,6 +30,21 @@ describe("Auth", () => {
     expect(next).toHaveBeenCalledWith()
   })
 
+  it("loads the team and moves on if user is authorized even if not logged in", async () => {
+    const to = { params: { team: "my-team" } }
+      , from = {}
+      , next = jest.fn()
+
+    global.store.getters.user = undefined
+    global.store.getters.canRead = true
+
+    await Auth(to, from, next)
+
+    expect(global.store.dispatch).toHaveBeenCalledWith("authorize", "my-team")
+    expect(global.store.dispatch).toHaveBeenCalledWith("loadTeam", "my-team")
+    expect(next).toHaveBeenCalledWith()
+  })
+
   it("notifies and redirect if not authorized", async () => {
     const to = { params: { team: "my-team" } }
       , from = {}
@@ -55,11 +70,11 @@ describe("Auth", () => {
       , next = jest.fn()
 
     global.store.getters.user = null
+    global.store.getters.canRead = false
 
     await Auth(to, from, next)
 
-    expect(global.store.dispatch).not.toHaveBeenCalled()
-    expect(global.store.dispatch).not.toHaveBeenCalled()
+    expect(global.store.dispatch).toHaveBeenCalledWith("authorize", "my-team")
     expect(global.store.commit).toHaveBeenCalledWith("notify", {
       message: "You need to be logged in to access this page.",
       color: "error",
