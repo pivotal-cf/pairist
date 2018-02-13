@@ -61,7 +61,24 @@
           </v-list-tile>
         </v-list>
       </v-menu>
+
+      <v-btn v-else
+             flat
+             @click="$router.push('/')">
+        <v-tooltip bottom content-class="accent">
+          <v-icon dark slot="activator">mdi-login</v-icon>
+          <span>Login</span>
+        </v-tooltip>
+      </v-btn>
     </v-toolbar-items>
+
+    <v-snackbar
+      :timeout="0"
+      color="error"
+      :value="!user"
+      bottom right>
+      Viewing in read-only mode
+    </v-snackbar>
   </v-toolbar>
 </template>
 
