@@ -29,6 +29,16 @@
     <v-toolbar-items>
       <v-tooltip bottom open-delay="200" content-class="accent">
         <v-btn
+          tag="a" href="https://medium.com/pairist" target="_blank"
+          flat slot="activator"
+        >
+          <v-icon dark>help</v-icon>
+        </v-btn>
+        <span>Pair.ist blog. Leave us feedback and catch up on latest updates</span>
+      </v-tooltip>
+
+      <v-tooltip bottom open-delay="200" content-class="accent">
+        <v-btn
           :disabled="loading"
           @click="recommendPairs"
           flat slot="activator"

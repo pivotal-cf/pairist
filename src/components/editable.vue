@@ -3,7 +3,7 @@
     <div class="accent--text placeholder" v-if="contentText === ''">
       {{ placeholder }}
     </div>
-    <div contenteditable="true" @input="input" @keyup.enter="update"
+    <div class="content" contenteditable="true" @input="input" @keyup.enter="update"
          ref="contentWrapper" @keydown.enter="disableEvent" @keypress.enter="disableEvent" />
   </div>
 </template>
@@ -80,6 +80,10 @@ export default  {
   position: relative;
   width: 100%;
   display: inline-block;
+
+  .content {
+    min-height: 1rem;
+  }
 
   .placeholder {
     pointer-events: none;

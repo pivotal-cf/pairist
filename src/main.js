@@ -21,6 +21,8 @@ import { firebaseApp } from "./firebase"
 
 const auth = firebaseApp.auth()
 
+Vue.config.devtools = process.env.NODE_ENV !== "production"
+Vue.config.performance = process.env.NODE_ENV !== "production"
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
