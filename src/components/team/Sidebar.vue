@@ -142,12 +142,12 @@ export default {
   },
 
   computed: {
-    ...mapGetters("people",{
+    ...mapGetters("people", {
       unassignedPeople: "unassigned",
       outPeople: "out",
     }),
-    ...mapGetters("tracks",{ unassignedTracks: "unassigned" }),
-    ...mapGetters("roles",{ unassignedRoles: "unassigned" }),
+    ...mapGetters("tracks", { unassignedTracks: "unassigned" }),
+    ...mapGetters("roles", { unassignedRoles: "unassigned" }),
   },
 
   methods: {
@@ -178,11 +178,11 @@ export default {
 }
 
 .tracks.unassigned {
-  min-height: 136px;
+  min-height: 6rem;
 }
 
 .roles.unassigned {
-  min-height: 122px;
+  min-height: 6rem;
 }
 
 .out {
