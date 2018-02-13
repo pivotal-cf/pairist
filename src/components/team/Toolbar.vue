@@ -14,8 +14,12 @@
       </span>
     </v-toolbar-title>
     <v-flex xs2 ml-3>
-      <v-switch :hide-details="true" :disabled="!canWrite"
-                :label="publicRO ? 'Public' : 'Private'" v-model="publicRO"/>
+      <v-tooltip bottom open-delay="200" content-class="accent">
+        <v-switch :hide-details="true" :disabled="!canWrite"
+                  :label="publicRO ? 'Public' : 'Private'"
+                  v-model="publicRO" slot="activator" />
+        <span>Make team publicly read-only</span>
+      </v-tooltip>
     </v-flex>
 
     <v-spacer class="ml-3">
@@ -29,7 +33,10 @@
         flat
         v-if="canWrite"
       >
-        <v-icon dark>mdi-shuffle-variant</v-icon>
+        <v-tooltip bottom open-delay="200" content-class="accent">
+          <v-icon dark slot="activator">mdi-shuffle-variant</v-icon>
+          <span>Recommend pairs (optimizing for more variability in individual pairings</span>
+        </v-tooltip>
       </v-btn>
       <v-btn
         :disabled="loading"
@@ -37,7 +44,10 @@
         flat
         v-if="canWrite"
       >
-        <v-icon dark>mdi-content-save</v-icon>
+        <v-tooltip bottom open-delay="200" content-class="accent">
+          <v-icon dark slot="activator">mdi-content-save</v-icon>
+          <span>Save history. This required to ensure future accuracy in recommendations</span>
+        </v-tooltip>
       </v-btn>
       <v-menu bottom left v-if="user">
         <v-btn pa-0 flat slot="activator" dark>
