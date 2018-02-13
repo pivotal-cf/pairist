@@ -171,7 +171,7 @@ module.exports = {
 
       this.api.useCss()
         .assert
-        .cssClassPresent(".snack.snack--top", type)
+        .cssClassPresent(".snack.snack--top .snack__wrapper", type)
 
       this.api.click(".snack.snack--top .mdi-close")
     },

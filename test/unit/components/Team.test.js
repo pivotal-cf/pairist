@@ -31,6 +31,7 @@ describe("Team", () => {
     }
     getters = {
       canWrite: jest.fn().mockReturnValue(true),
+      user: jest.fn().mockReturnValue({}),
     }
     store = new Vuex.Store({
       state: {},
