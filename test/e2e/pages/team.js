@@ -163,17 +163,17 @@ module.exports = {
     expectMessage(msg, type) {
       this.api.pause(300)
       this.api.useCss()
-        .waitForElementPresent(".snack .mdi-close", 2000)
+        .waitForElementPresent(".snack.snack--top .mdi-close", 2000)
 
       this.api.useCss()
         .assert
-        .containsText(".snack div", msg)
+        .containsText(".snack.snack--top div", msg)
 
       this.api.useCss()
         .assert
-        .cssClassPresent(".snack", type)
+        .cssClassPresent(".snack.snack--top", type)
 
-      this.api.click(".snack .mdi-close")
+      this.api.click(".snack.snack--top .mdi-close")
     },
 
     recommendPairs() {
