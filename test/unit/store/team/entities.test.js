@@ -1,7 +1,9 @@
-import store from "@/store/team/people"
+import storeFactory from "@/store/team/entities"
 import constants from "@/lib/constants"
 
-describe("People Store", () => {
+const store = storeFactory()
+
+describe("Entities Store", () => {
   describe("mutations", () => {
     describe("setRef", () => {
       it("sets the ref", () => {
@@ -16,17 +18,17 @@ describe("People Store", () => {
 
   describe("getters", () => {
     describe("all", () => {
-      it("returns the people from the state", () => {
-        const people = { people: "people" }
+      it("returns the entities from the state", () => {
+        const entities = { entities: "entities" }
 
-        expect(store.getters.all({ people })).toBe(people)
+        expect(store.getters.all({ entities })).toBe(entities)
       })
     })
 
     describe("inLocation", () => {
       it("returns a function that can filter by location", () => {
-        const people = [ { location: 1 }, { location: 2 }, {} ]
-          , f = store.getters.inLocation(null, { all: people })
+        const entities = [ { location: 1 }, { location: 2 }, {} ]
+          , f = store.getters.inLocation(null, { all: entities })
 
         expect(f(1)).toEqual([{ location: 1 }])
         expect(f(2)).toEqual([{ location: 2 }])
@@ -34,7 +36,7 @@ describe("People Store", () => {
     })
 
     describe("unassigned", () => {
-      it("selects people that have unassigned as their location", () => {
+      it("selects entities that have unassigned as their location", () => {
         const f = jest.fn()
 
         store.getters.unassigned(null, { inLocation: f })
@@ -43,15 +45,15 @@ describe("People Store", () => {
 
       it("returns results from the inLocation getter", () => {
         const f = jest.fn()
-          , people = { people: "people" }
+          , entities = { entities: "entities" }
 
-        f.mockReturnValue(people)
-        expect(store.getters.unassigned(null, { inLocation: f })).toBe(people)
+        f.mockReturnValue(entities)
+        expect(store.getters.unassigned(null, { inLocation: f })).toBe(entities)
       })
     })
 
     describe("out", () => {
-      it("selects people that have out as their location", () => {
+      it("selects entities that have out as their location", () => {
         const f = jest.fn()
 
         store.getters.out(null, { inLocation: f })
@@ -60,35 +62,35 @@ describe("People Store", () => {
 
       it("returns results from the inLocation getter", () => {
         const f = jest.fn()
-          , people = { people: "people" }
+          , entities = { entities: "entities" }
 
-        f.mockReturnValue(people)
-        expect(store.getters.out(null, { inLocation: f })).toBe(people)
+        f.mockReturnValue(entities)
+        expect(store.getters.out(null, { inLocation: f })).toBe(entities)
       })
     })
   })
 
   describe("actions", () => {
     describe("save", () => {
-      it("pushes a new person into the ref", () => {
+      it("pushes a new entity into the ref", () => {
         const push = jest.fn()
           , state = { ref: { push } }
 
         const now = 123456789
         Date.now = jest.fn().mockReturnValue(now)
 
-        store.actions.save({ state }, { name: "person", picture: "picture" })
+        store.actions.save({ state }, { name: "entity", picture: "picture" })
         expect(push).toHaveBeenCalledTimes(1)
         expect(push).toHaveBeenCalledWith({
-          name: "person",
+          name: "entity",
           picture: "picture",
           location: constants.LOCATION.UNASSIGNED,
           updatedAt: now,
         })
       })
 
-      it("edits an existing person", () => {
-        const existingPerson = {
+      it("edits an existing entity", () => {
+        const existingEntity = {
             ".key": "p1",
             "name": "john",
             "picture": "",
@@ -97,7 +99,7 @@ describe("People Store", () => {
           }
           , update = jest.fn()
           , child = jest.fn().mockReturnValue({ update })
-          , state = { people: [existingPerson], ref: { child } }
+          , state = { entities: [existingEntity], ref: { child } }
 
         store.actions.save({ state }, { ".key": "p1", "name": "smith", "picture": "picture" })
         expect(child).toHaveBeenCalledTimes(1)
@@ -110,7 +112,7 @@ describe("People Store", () => {
       })
 
       it("only submints updated fields", () => {
-        const existingPerson = {
+        const existingEntity = {
             ".key": "p2",
             "name": "john",
             "picture": "",
@@ -119,7 +121,7 @@ describe("People Store", () => {
           }
           , update = jest.fn()
           , child = jest.fn().mockReturnValue({ update })
-          , state = { people: [existingPerson], ref: { child } }
+          , state = { entities: [existingEntity], ref: { child } }
 
         store.actions.save({ state }, { ".key": "p2", "name": "smith" })
         expect(child).toHaveBeenCalledTimes(1)
@@ -138,7 +140,7 @@ describe("People Store", () => {
     })
 
     describe("remove", () => {
-      it("removes person from ref", () => {
+      it("removes entity from ref", () => {
         const dispatch = jest.fn()
           , remove = jest.fn()
           , child = jest.fn().mockReturnValue({ remove })
@@ -164,7 +166,7 @@ describe("People Store", () => {
     })
 
     describe("move", () => {
-      it("moves existing person to location", () => {
+      it("moves existing entity to location", () => {
         const dispatch = jest.fn()
           , update = jest.fn()
           , child = jest.fn().mockReturnValue({ update })
@@ -184,12 +186,12 @@ describe("People Store", () => {
       })
 
       it("dispatches a clear lanes action", () => {
-        const person = { ".key": "key", "something": "else" }
+        const entity = { ".key": "key", "something": "else" }
 
         const dispatch = jest.fn()
           , update = jest.fn()
           , child = jest.fn().mockReturnValue({ update })
-          , state = { people: [person], ref: { child } }
+          , state = { entities: [entity], ref: { child } }
 
         const key = "key", location = "location"
 

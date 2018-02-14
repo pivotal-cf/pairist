@@ -2,11 +2,11 @@ import { firebaseMutations, firebaseAction } from "vuexfire"
 
 import constants from "@/lib/constants"
 
-export default {
+export default () => ({
   namespaced: true,
 
   state: {
-    roles: [],
+    entities: [],
   },
 
   mutations: {
@@ -16,33 +16,48 @@ export default {
 
   getters: {
     all(state) {
-      return state.roles
+      return state.entities
     },
     unassigned(_, getters) {
       return getters.inLocation(constants.LOCATION.UNASSIGNED)
     },
-    inLocation(_, getters) {
+    out(_, getters) {
+      return getters.inLocation(constants.LOCATION.OUT)
+    },
+    inLocation(state, getters) {
       return location => (
-        getters.all.filter(role => role.location === location)
+        getters.all.filter(entity => entity.location === location)
       )
     },
   },
 
   actions: {
     setRef: firebaseAction(({ bindFirebaseRef, commit }, ref) => {
-      bindFirebaseRef("roles", ref)
+      bindFirebaseRef("entities", ref)
       commit("setRef",  ref.ref)
     }),
 
-    add({ state }, { name }) {
-      if (name === "") { return }
+    save({ state }, entity) {
+      if (entity.name === "") { return }
 
-      state.ref
-        .push({
-          name,
+      if (entity[".key"]) {
+        const key = entity[".key"]
+        delete entity[".key"]
+
+        state.ref.child(key).update(entity)
+      } else {
+        const entityToCreate = {
+          name: entity.name,
           location: constants.LOCATION.UNASSIGNED,
           updatedAt: Date.now(),
-        })
+        }
+
+        if (entity.picture) {
+          entityToCreate.picture = entity.picture
+        }
+
+        state.ref.push(entityToCreate)
+      }
     },
 
     remove({ dispatch, state }, key ) {
@@ -60,4 +75,4 @@ export default {
       dispatch("lanes/clearEmpty", null, { root: true })
     },
   },
-}
+})

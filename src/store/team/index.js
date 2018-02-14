@@ -3,9 +3,7 @@ import { firebaseMutations, firebaseAction } from "vuexfire"
 import { db } from "@/firebase"
 
 import constants from "@/lib/constants"
-import people from "./people"
-import roles from "./roles"
-import tracks from "./tracks"
+import entities from "./entities"
 import lanes from "./lanes"
 import history from "./history"
 import lists from "./lists"
@@ -14,9 +12,9 @@ import recommendation from "./recommendation"
 
 export default {
   modules: {
-    people,
-    roles,
-    tracks,
+    people: entities(),
+    roles: entities(),
+    tracks: entities(),
     lanes,
     history,
 

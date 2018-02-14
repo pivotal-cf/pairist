@@ -165,14 +165,14 @@ export default {
     },
 
     addTrack() {
-      this.$store.dispatch("tracks/add", { name: this.newTrackName })
+      this.$store.dispatch("tracks/save", { name: this.newTrackName })
 
       this.newTrackDialog = false
       this.newTrackName = ""
     },
 
     addRole() {
-      this.$store.dispatch("roles/add", { name: this.newRoleName })
+      this.$store.dispatch("roles/save", { name: this.newRoleName })
 
       this.newRoleDialog = false
       this.newRoleName = ""
