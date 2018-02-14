@@ -13,14 +13,20 @@
           />
         </v-flex>
         <v-flex class="text-xs-right">
-          <Role
+          <Chip
             v-for="role in lane.roles"
-            :role="role"
+            :chip="role"
+            chip-class="role"
+            outline
+            @remove="removeRole"
             :key="role['.key']"
           />
-          <TrackComponent
+          <Chip
             v-for="track in lane.tracks"
-            :track="track"
+            :chip="track"
+            chip-class="track"
+            text-color="white"
+            @remove="removeTrack"
             :key="track['.key']"
           />
         </v-flex>
@@ -45,8 +51,7 @@
 
 <script>
 import Person from "./Person"
-import Role from "./Role"
-import TrackComponent from "./Track"
+import Chip from "./Chip"
 
 import {
   mapActions,
@@ -55,7 +60,7 @@ import {
 
 export default {
   components: {
-    Person, Role, TrackComponent,
+    Person, Chip,
   },
   props: {
     lane: {
@@ -75,6 +80,8 @@ export default {
 
   methods: {
     ...mapActions("lanes", ["setLocked"]),
+    ...mapActions("tracks", { removeTrack: "remove" }),
+    ...mapActions("roles", { removeRole: "remove" }),
   },
 }
 </script>

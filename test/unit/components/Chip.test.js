@@ -7,24 +7,21 @@ const localVue = createLocalVue()
 localVue.use(Vuex)
 
 import ContextMenu from "@/components/ContextMenu"
-import Role from "@/components/team/Role"
+import Chip from "@/components/team/Chip"
 
-describe("Role", () => {
+describe("Chip", () => {
   let actions
   let store
   let getters
 
   beforeEach(() => {
-    actions = {
-      remove: jest.fn(),
-    }
     getters = {
       canWrite: jest.fn().mockReturnValue(true),
     }
     store = new Vuex.Store({
       state: {},
       modules: {
-        roles: {
+        chips: {
           namespaced: true,
           actions,
         },
@@ -34,58 +31,67 @@ describe("Role", () => {
   })
 
   it("renders with no exceptions", () => {
-    shallow(Role, { store, localVue,
-      propsData: { role: { ".key": "p1", "name": "Bart" } },
+    shallow(Chip, { store, localVue,
+      propsData: {
+        chip: { ".key": "p1", "name": "Bart" },
+        chipClass: "chip",
+      },
     })
   })
 
-  it("shows a roles name", () => {
-    const wrapper = shallow(Role, { store, localVue,
-      propsData: { role: { ".key": "p1", "name": "Lisa" } },
+  it("shows a chips name", () => {
+    const wrapper = shallow(Chip, { store, localVue,
+      propsData: {
+        chip: { ".key": "p1", "name": "Lisa" },
+        chipClass: "chip",
+      },
     })
 
     expect(wrapper.find("span").text()).toContain("Lisa")
   })
 
   it("shows a context menu on right click if can write", async () => {
-    const wrapper = shallow(Role, { store, localVue,
+    const wrapper = shallow(Chip, { store, localVue,
       propsData: {
-        role: { ".key": "p", "name": "Role" },
+        chip: { ".key": "p", "name": "Chip" },
+        chipClass: "chip",
       },
     })
 
     const menu = wrapper.find(ContextMenu)
     const open = wrapper.vm.$refs.menu.open = jest.fn()
     expect(menu.exists()).toBeTruthy()
-    wrapper.find(".role").trigger("contextmenu")
+    wrapper.find(".chip").trigger("contextmenu")
     await flushPromises()
     expect(open).toHaveBeenCalled()
   })
 
-  it("removes role when clicking remove", () => {
-    const wrapper = shallow(Role, { store, localVue,
+  it("emits a remove event when it is removed", () => {
+    const wrapper = shallow(Chip, { store, localVue,
       propsData: {
-        role: { ".key": "p", "name": "Role" },
+        chip: { ".key": "p", "name": "Chip" },
+        chipClass: "chip",
       },
     })
 
     wrapper.vm.remove()
-    expect(actions.remove).toHaveBeenCalled()
-    expect(actions.remove).toHaveBeenCalledWith(expect.anything(), "p", undefined)
+    expect(wrapper.emitted().remove.length).toEqual(1)
+    expect(wrapper.emitted().remove[0]).toEqual(["p"])
   })
 
   it("does not show menu if cannot write", async () => {
     getters.canWrite.mockReturnValue(false)
 
-    const wrapper = shallow(Role, { store, localVue,
+    const wrapper = shallow(Chip, { store, localVue,
       propsData: {
-        role: { ".key": "p", "name": "Role" },
+        chip: { ".key": "p", "name": "Chip" },
+        chipClass: "chip",
       },
     })
 
     const menu = wrapper.find(ContextMenu)
     expect(menu.exists()).toBeFalsy()
-    wrapper.find(".role").trigger("contextmenu")
+    wrapper.find(".chip").trigger("contextmenu")
     await flushPromises()
   })
 })

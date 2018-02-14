@@ -1,7 +1,13 @@
 <template>
   <transition name="highlight">
-    <v-chip class="track" color="accent" text-color="white" :data-key="track['.key']" @contextmenu="openMenu">
-      <span>{{ track.name }}</span>
+    <v-chip
+      color="accent"
+      :class="chipClass"
+      :outline="outline"
+      :text-color="textColor"
+      :data-key="chip['.key']"
+      @contextmenu="openMenu">
+      <span>{{ chip.name }}</span>
       <ContextMenu @remove="remove" ref="menu"
                    v-if="canWrite" />
     </v-chip>
@@ -17,9 +23,21 @@ export default {
   components: { ContextMenu },
 
   props: {
-    track: {
+    chip: {
       type: Object,
       required: true,
+    },
+    chipClass: {
+      type: String,
+      required: true,
+    },
+    outline: {
+      type: Boolean,
+      default: false,
+    },
+    textColor: {
+      type: String,
+      default: "",
     },
   },
 
@@ -35,7 +53,7 @@ export default {
     },
 
     remove() {
-      this.$store.dispatch("tracks/remove", this.track[".key"])
+      this.$emit("remove", this.chip[".key"])
     },
   },
 }

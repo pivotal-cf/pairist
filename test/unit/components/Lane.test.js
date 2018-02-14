@@ -7,8 +7,7 @@ const localVue = createLocalVue()
 localVue.use(Vuex)
 
 import Person from "@/components/team/Person"
-import Role from "@/components/team/Role"
-import Track from "@/components/team/Track"
+import Chip from "@/components/team/Chip"
 import Lane from "@/components/team/Lane"
 
 describe("Lane", () => {
@@ -139,10 +138,10 @@ describe("Lane", () => {
         propsData: { lane },
       })
 
-    const roles = wrapper.findAll(Role)
+    const roles = wrapper.findAll(Chip)
     expect(roles.length).toEqual(2)
-    expect(roles.wrappers[0].vm.role).toEqual({ ".key": "r1" })
-    expect(roles.wrappers[1].vm.role).toEqual({ ".key": "r2" })
+    expect(roles.wrappers[0].vm.chip).toEqual({ ".key": "r1" })
+    expect(roles.wrappers[1].vm.chip).toEqual({ ".key": "r2" })
   })
 
   it("renders tracks", () => {
@@ -154,9 +153,9 @@ describe("Lane", () => {
         propsData: { lane },
       })
 
-    const tracks = wrapper.findAll(Track)
+    const tracks = wrapper.findAll(Chip)
     expect(tracks.length).toEqual(2)
-    expect(tracks.wrappers[0].vm.track).toEqual({ ".key": "t1" })
-    expect(tracks.wrappers[1].vm.track).toEqual({ ".key": "t2" })
+    expect(tracks.wrappers[0].vm.chip).toEqual({ ".key": "t1" })
+    expect(tracks.wrappers[1].vm.chip).toEqual({ ".key": "t2" })
   })
 })

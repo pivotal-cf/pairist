@@ -36,9 +36,12 @@
           </v-dialog>
         </h2>
 
-        <TrackComponent
+        <Chip
           v-for="track in unassignedTracks"
-          :track="track"
+          :chip="track"
+          chip-class="track"
+          text-color="white"
+          @remove="removeTrack"
           :key="track['.key']"
         />
       </div>
@@ -78,9 +81,12 @@
           </v-dialog>
         </h2>
 
-        <Role
+        <Chip
           v-for="role in unassignedRoles"
-          :role="role"
+          :chip="role"
+          chip-class="role"
+          outline
+          @remove="removeRole"
           :key="role['.key']"
         />
       </div>
@@ -119,19 +125,17 @@
 <script>
 import Person from "./Person"
 import PersonDialog from "./PersonDialog"
-import Role from "./Role"
-import TrackComponent from "./Track"
+import Chip from "./Chip"
 
 import constants from "@/lib/constants"
 
-import { mapGetters } from "vuex"
+import { mapGetters, mapActions } from "vuex"
 
 export default {
   components: {
     Person,
     PersonDialog,
-    Role,
-    TrackComponent,
+    Chip,
   },
 
   data() {
@@ -173,6 +177,8 @@ export default {
       this.newRoleDialog = false
       this.newRoleName = ""
     },
+    ...mapActions("tracks", { removeTrack: "remove" }),
+    ...mapActions("roles", { removeRole: "remove" }),
   },
 }
 </script>
