@@ -98,12 +98,12 @@ export default {
   text-align: center;
 
   @media (min-width: 960px) {
-    height: 143px !important;
-    width: 120px;
+    height: 123px !important;
+    width: 100px;
   }
 
   .card__text {
-    padding: 15px;
+    padding: 5px;
 
     .name {
       margin-top: 7px;

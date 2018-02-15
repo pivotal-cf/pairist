@@ -50,7 +50,7 @@ export default {
 
   @media (min-width: 960px) {
     position: relative;
-    margin-left: -30px;
+    margin-left: -20px;
     height:100%;
     width: 100%;
   }

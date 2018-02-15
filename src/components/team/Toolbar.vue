@@ -34,7 +34,7 @@
         >
           <v-icon dark>help</v-icon>
         </v-btn>
-        <span>Pair.ist blog. Leave us feedback and catch up on latest updates</span>
+        <span>Pair.ist blog. Leave us feedback and catch up on the latest updates</span>
       </v-tooltip>
 
       <v-tooltip bottom open-delay="200" content-class="accent">
@@ -46,7 +46,7 @@
         >
           <v-icon dark>mdi-shuffle-variant</v-icon>
         </v-btn>
-        <span>Recommend pairs (optimizing for more variability in individual pairings</span>
+        <span>Recommend pairs (optimizing for more variability in individual pairings)</span>
       </v-tooltip>
       <v-tooltip bottom open-delay="200" content-class="accent">
         <v-btn
@@ -57,7 +57,7 @@
         >
           <v-icon dark>mdi-content-save</v-icon>
         </v-btn>
-        <span>Save history. This required to ensure future accuracy in recommendations</span>
+        <span>Save history. This is required to ensure future accuracy in recommendations</span>
       </v-tooltip>
       <v-menu bottom left v-if="user">
         <v-btn pa-0 flat slot="activator" dark>

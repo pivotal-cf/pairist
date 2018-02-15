@@ -13,8 +13,8 @@
     <v-container class="dropzone" pt-0 pb-0 fluid fill-height>
       <v-layout row wrap>
         <Lists class="xs12 md4 order-xs3 order-md1" />
-        <LaneList class="xs12 md4 order-xs1 order-md2" />
-        <Sidebar class="xs12 md4 order-xs2 order-md2"/>
+        <LaneList class="xs12 md5 order-xs1 order-md2" />
+        <Sidebar class="xs12 md3 order-xs2 order-md2"/>
       </v-layout>
     </v-container>
 

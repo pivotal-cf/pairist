@@ -116,7 +116,7 @@ class Recommendation {
     return lastPairings
   }
 
-  calculateMovesToBestPairing({history, current}) {
+  calculateMovesToBestPairing({ history, current }) {
     const lanes = current.lanes
       .filter(({ locked }) => !locked)
     const laneKeys = lanes.map(lane => lane[".key"])

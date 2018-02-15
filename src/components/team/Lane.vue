@@ -4,15 +4,19 @@
       ripple
       class="lane"
     >
-      <v-layout row justify-space-between>
-        <v-flex>
+      <v-layout row wrap>
+        <v-flex order-xs2 xs12 order-lg1 lg6>
           <Person
             v-for="person in lane.people"
             :person="person"
             :key="person['.key']"
           />
         </v-flex>
-        <v-flex class="text-xs-right">
+        <v-flex text-xs-left
+                text-lg-right
+                order-xs1
+                xs12 order-lg2
+                lg6>
           <Chip
             v-for="role in lane.roles"
             :chip="role"
@@ -93,7 +97,7 @@ export default {
 
 .lane {
   @media (min-width: 960px) {
-    min-height: 155px !important;
+    min-height: 135px !important;
   }
 
   .list__tile {
