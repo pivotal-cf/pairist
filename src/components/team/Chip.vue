@@ -2,6 +2,7 @@
   <transition name="highlight">
     <v-chip
       color="accent"
+      class="chip"
       :class="chipClass"
       :outline="outline"
       :text-color="textColor"

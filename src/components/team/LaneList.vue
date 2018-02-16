@@ -1,6 +1,6 @@
 <template>
   <v-flex class="lanes" elevation-2>
-    <v-list>
+    <v-list class="pb-0">
       <Lane
         class="dropzone"
         v-for="lane in lanes"

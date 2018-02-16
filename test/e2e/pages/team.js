@@ -355,7 +355,7 @@ module.exports = {
     },
 
     lane: {
-      selector: "(//li[contains(@class, 'lane')])[%s]",
+      selector: "(//div[contains(concat(' ', @class, ' '), ' lane ')])[%s]",
       locateStrategy: "xpath",
     },
 

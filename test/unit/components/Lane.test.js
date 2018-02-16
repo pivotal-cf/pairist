@@ -21,6 +21,8 @@ describe("Lane", () => {
     }
     getters = {
       canWrite: jest.fn().mockReturnValue(true),
+      dragging: jest.fn().mockReturnValue(false),
+      dropTarget: jest.fn().mockReturnValue(null),
     }
     store = new Vuex.Store({
       state: {},

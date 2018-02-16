@@ -1,7 +1,11 @@
 <template>
   <v-flex>
     <div class="elevation-8 background sidebar">
-      <div class="tracks unassigned">
+      <div class="background tracks unassigned"
+           :class="{
+             'phase-out': dragging && dropTarget,
+             'phase-in': dragging && !dropTarget
+      }">
         <h2>
           Tracks
           <v-dialog v-model="newTrackDialog" max-width="300px">
@@ -46,7 +50,11 @@
         />
       </div>
 
-      <div class="roles unassigned">
+      <div class="background roles unassigned"
+           :class="{
+             'phase-out': dragging && dropTarget,
+             'phase-in': dragging && !dropTarget
+      }">
         <h2>
           Roles
           <v-dialog v-model="newRoleDialog" max-width="300px">
@@ -91,7 +99,11 @@
         />
       </div>
 
-      <div class="people unassigned">
+      <div class="background people unassigned"
+           :class="{
+             'phase-out': dragging && dropTarget,
+             'phase-in': dragging && !dropTarget
+      }">
         <h2>
           People
           <v-btn color="secondary" small dark @click="openPersonDialog" icon
@@ -107,7 +119,11 @@
       </div>
 
       <div
-        class="people out dropzone"
+        class="background people out dropzone"
+        :class="{
+          'phase-out': dragging && dropTarget !== constants.LOCATION.OUT,
+          'phase-in': dragging && dropTarget === constants.LOCATION.OUT
+        }"
         :data-key="constants.LOCATION.OUT"
       >
         <h2>PM / Out</h2>
@@ -149,7 +165,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["canWrite"]),
+    ...mapGetters(["canWrite", "dragging", "dropTarget"]),
 
     ...mapGetters("people", {
       unassignedPeople: "unassigned",
@@ -196,15 +212,19 @@ export default {
   min-height: 6rem;
 }
 
+.unassigned {
+  padding: 10px;
+}
+
 .out {
   flex: 1 1 auto;
   min-height: 221px;
+  padding: 10px;
 }
 
 #app .sidebar {
   display: flex;
   flex-flow: column;
-  padding: 10px;
 
   @media (min-width: 960px) {
     position: relative;

@@ -27,6 +27,9 @@ export default {
     publicRef: null,
     canRead: false,
     canWrite: false,
+
+    dragging: false,
+    dropTarget: null,
   },
 
   mutations: {
@@ -35,10 +38,21 @@ export default {
       state.canWrite = write
     },
 
+    setDragging(state, value) {
+      state.dragging = value
+    },
+
+    setDropTarget(state, value) {
+      state.dropTarget = value
+    },
+
     ...firebaseMutations,
   },
 
   getters: {
+    dragging(state) { return state.dragging },
+    dropTarget(state) { return state.dropTarget },
+
     publicRO(state) {
       return state.public && state.public[".value"]
     },

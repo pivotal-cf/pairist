@@ -1,9 +1,10 @@
 <template>
-  <div>
-    <v-list-tile
-      ripple
-      class="lane"
-    >
+  <div class="lane"
+       :class="{
+         'phase-out': dragging && dropTarget !== lane['.key'],
+         'phase-in': dragging && dropTarget === lane['.key'],
+  }">
+    <v-list-tile ripple background>
       <v-layout row wrap>
         <v-flex order-xs2 xs12 order-lg1 lg6>
           <Person
@@ -79,7 +80,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["canWrite"]),
+    ...mapGetters(["canWrite", "dragging", "dropTarget"]),
   },
 
   methods: {
@@ -91,23 +92,20 @@ export default {
 </script>
 
 <style lang="scss">
-.lane.drop-target {
-  background-color: hsl(0, 0%, 97%);
-}
+.lane li {
 
-.lane {
   @media (min-width: 960px) {
-    min-height: 135px !important;
+    min-height: 121px !important;
   }
 
   .list__tile {
-  height: auto;
-  padding: 0 5px 10px 10px;
+    height: auto;
+    padding: 0 5px 5px 10px;
 
-  .list__tile__content {
-    overflow: visible !important;
+    .list__tile__content {
+      overflow: visible !important;
+    }
   }
-}
 
   &:hover .lock-button {
     opacity: 1,
@@ -121,7 +119,7 @@ export default {
 
     @media (min-width: 960px) {
       opacity: 0;
-      top: 46px;
+      top: 33px;
       right: -30px;
     }
 

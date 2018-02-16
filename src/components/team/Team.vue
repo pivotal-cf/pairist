@@ -52,4 +52,22 @@ export default {
 #app {
   overflow-x: hidden;
 }
+
+.phase-out {
+  position: relative;
+}
+
+.phase-out:after {
+  content: '\A';
+  position: absolute;
+  width: 100%;
+  height:100%;
+  top:0;
+  left:0;
+  background:rgba(0,0,0,0.1);
+  opacity: 1;
+}
+
+.phase-in {
+}
 </style>

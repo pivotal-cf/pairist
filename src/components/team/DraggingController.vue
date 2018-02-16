@@ -6,7 +6,7 @@
 import Interact from "interact.js"
 import { plural } from "pluralize"
 
-import { mapActions } from "vuex"
+import { mapActions, mapMutations } from "vuex"
 
 export default {
   props: {
@@ -30,6 +30,8 @@ export default {
       autoScroll: true,
 
       onstart(event) {
+        self.setDragging(true)
+
         event.target.classList.add("dragging")
         event.target.classList.add("elevation-10")
       },
@@ -47,6 +49,7 @@ export default {
       },
 
       onend(event) {
+        self.setDragging(false)
         const target = event.target
 
         target.classList.remove("dragging")
@@ -63,6 +66,16 @@ export default {
       accept: draggableClassList,
       overlap: 0.50,
 
+      ondragenter(event) {
+        self.setDropTarget(event.target.dataset.key)
+      },
+      ondragleave() {
+        self.setDropTarget(null)
+      },
+      ondropdeactivate() {
+        self.setDropTarget(null)
+      },
+
       ondrop(event) {
         const key = event.relatedTarget.dataset.key,
           targetKey = event.target.dataset.key
@@ -78,6 +91,7 @@ export default {
   },
 
   methods: {
+    ...mapMutations(["setDragging", "setDropTarget"]),
     ...mapActions(["move"]),
   },
 }

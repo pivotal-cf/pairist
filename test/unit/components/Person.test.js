@@ -96,19 +96,19 @@ describe("Person", () => {
 
     const name = wrapper.find(".name span")
     expect(name.text()).toEqual("N")
-    expect(name.element.style.fontSize).toEqual("20px")
+    expect(name.element.style.fontSize).toEqual("18px")
 
     person.name = "12345678"
     await flushPromises()
-    expect(name.element.style.fontSize).toEqual("18px")
+    expect(name.element.style.fontSize).toEqual("16px")
 
     person.name = "123456789"
     await flushPromises()
-    expect(name.element.style.fontSize).toEqual("17px")
+    expect(name.element.style.fontSize).toEqual("15px")
 
     person.name = "1234567890"
     await flushPromises()
-    expect(name.element.style.fontSize).toEqual("14px")
+    expect(name.element.style.fontSize).toEqual("12px")
   })
 
   it("shows a context menu on right click", async () => {

@@ -51,19 +51,19 @@ export default {
 
     fontSize() {
       if (this.person.name.length < 8) {
-        return "20px"
-      } else if (this.person.name.length < 9) {
         return "18px"
+      } else if (this.person.name.length < 9) {
+        return "16px"
       } else if (this.person.name.length < 10) {
-        return "17px"
+        return "15px"
       } else if (this.person.name.length < 12) {
-        return "14px"
-      } else if (this.person.name.length < 15) {
-        return "13px"
-      } else if (this.person.name.length < 18) {
         return "12px"
-      } else {
+      } else if (this.person.name.length < 15) {
         return "11px"
+      } else if (this.person.name.length < 18) {
+        return "10px"
+      } else {
+        return "9px"
       }
     },
   },
@@ -94,19 +94,18 @@ export default {
 .person {
   display: inline-block;
   margin-right: 10px;
-  margin-top: 5px;
+  margin-top: 3px;
   text-align: center;
 
   @media (min-width: 960px) {
-    height: 123px !important;
+    height: 113px !important;
     width: 100px;
   }
 
   .card__text {
-    padding: 5px;
+    padding: 3px;
 
     .name {
-      margin-top: 7px;
       height: 20px;
     }
   }
