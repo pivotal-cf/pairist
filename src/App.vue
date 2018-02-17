@@ -1,13 +1,13 @@
 <template>
   <v-app id="app">
     <template v-if="dbSchema">
-      <router-view :key="$route.fullPath"
-                   v-if="!migrating && dbSchemaVersion === appSchemaVersion"
-      />
+      <template v-if="!migrating && dbSchemaVersion === appSchemaVersion">
+        <router-view :key="$route.fullPath" />
+        <Update v-if="localVersion < remoteVersion" />
+      </template>
       <Migrating v-else/>
     </template>
     <Loading v-else/>
-    <Update v-if="localVersion < remoteVersion" />
   </v-app>
 </template>
 
