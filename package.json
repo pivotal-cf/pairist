@@ -5,7 +5,7 @@
   "author": "Luan Santos <cfcluan@gmail.com>",
   "private": true,
   "scripts": {
-    "precommit": "lint-staged",
+    "precommit": "chmod a-w migrations/*.migration.js && lint-staged",
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "yarn run dev",
     "unit": "jest --config test/unit/jest.conf.js",
@@ -15,12 +15,16 @@
     "test": "yarn unit && yarn e2e",
     "lint": "eslint --fix --ext .js,.vue build config src test/unit test/e2e/specs",
     "deploy:env": "firebase deploy -P",
+    "migrate:env": "node migrations/migrate.js",
     "build:dev": "node build/build-dev.js",
     "build:test": "node build/build-test.js",
     "build:production": "node build/build.js",
-    "deploy:dev": "yarn build:dev && yarn deploy:env dev",
-    "deploy:test": "yarn build:test && yarn deploy:env test",
-    "deploy:production": "yarn build:production && yarn deploy:env production"
+    "migrate:dev": "yarn migrate:env dev",
+    "migrate:test": "yarn migrate:env test",
+    "migrate:production": "yarn migrate:env production",
+    "deploy:dev": "yarn build:dev && yarn deploy:env dev && yarn migrate:dev",
+    "deploy:test": "yarn build:test && yarn deploy:env test && yarn migrate:test",
+    "deploy:production": "yarn build:production && yarn deploy:env production && yarn migrate:production"
   },
   "lint-staged": {
     "src/**/*.{js,vue,jsx,json,css}": [
