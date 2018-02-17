@@ -7,4 +7,6 @@ module.exports = {
   FIREBASE_PROJECT_ID: JSON.stringify("pairist-9de4d"),
   FIREBASE_STORAGE_BUCKET: JSON.stringify("pairist-9de4d.appspot.com"),
   FIREBASE_MESSAGING_SENDER_ID: JSON.stringify("283999642674"),
+
+  APP_VERSION: JSON.stringify(Date.now()),
 }

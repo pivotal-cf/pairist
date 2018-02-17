@@ -14,17 +14,18 @@
     "e2e": "PORT=12000 node test/e2e/runner.js",
     "test": "yarn unit && yarn e2e",
     "lint": "eslint --fix --ext .js,.vue build config src test/unit test/e2e/specs",
-    "deploy:env": "firebase deploy -P",
-    "migrate:env": "node migrations/migrate.js",
+    "migrate:env": "node migrations/migrate.js $NODE_ENV",
     "build:dev": "node build/build-dev.js",
     "build:test": "node build/build-test.js",
     "build:production": "node build/build.js",
-    "migrate:dev": "yarn migrate:env dev",
-    "migrate:test": "yarn migrate:env test",
-    "migrate:production": "yarn migrate:env production",
-    "deploy:dev": "yarn build:dev && yarn deploy:env dev && yarn migrate:dev",
-    "deploy:test": "yarn build:test && yarn deploy:env test && yarn migrate:test",
-    "deploy:production": "yarn build:production && yarn deploy:env production && yarn migrate:production"
+    "migrate:dev": "NODE_ENV=dev yarn migrate:env",
+    "migrate:test": "NODE_ENV=test yarn migrate:env",
+    "migrate:production": "NODE_ENV=production yarn migrate:env",
+    "set-version:env": "grep -Pho '(?<=APP_VERSION:)\\d+' dist/static/js/vendor.* | firebase database:set /config/version -y",
+    "deploy:env": "yarn build:$NODE_ENV && firebase deploy -P $NODE_ENV && yarn migrate:env && yarn set-version:env",
+    "deploy:dev": "NODE_ENV=dev yarn deploy:env",
+    "deploy:test": "NODE_ENV=test yarn deploy:env",
+    "deploy:production": "NODE_ENV=production yarn deploy:env"
   },
   "lint-staged": {
     "src/**/*.{js,vue,jsx,json,css}": [

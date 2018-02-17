@@ -20,7 +20,7 @@ import router from "./router"
 import { store } from "./store"
 import { firebaseApp } from "./firebase"
 
-store.dispatch("bindSchemaRef")
+store.dispatch("bindGlobalRefs")
 
 const auth = firebaseApp.auth()
 

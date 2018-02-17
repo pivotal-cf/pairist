@@ -7,19 +7,24 @@
       <Migrating v-else/>
     </template>
     <Loading v-else/>
+    <Update v-if="localVersion < remoteVersion" />
   </v-app>
 </template>
 
 <script>
 import Migrating from "@/components/Migrating"
 import Loading from "@/components/Loading"
+import Update from "@/components/Update"
 import { mapGetters } from "vuex"
 
 export default {
-  components: { Migrating, Loading },
+  components: { Migrating, Loading, Update },
 
   computed: {
-    ...mapGetters(["migrating", "appSchemaVersion", "dbSchemaVersion", "dbSchema"]),
+    ...mapGetters([
+      "migrating", "appSchemaVersion", "dbSchemaVersion", "dbSchema",
+      "localVersion", "remoteVersion",
+    ]),
   },
 
   watch: {

@@ -7,9 +7,12 @@ import user from "./user"
 import { db } from "@/firebase"
 import { firebaseMutations, firebaseAction } from "vuexfire"
 
+import version from "@/version"
+
 Vue.use(Vuex)
 
 const schemaRef = db.ref("/schema")
+const configRef = db.ref("/config")
 
 export const store = new Vuex.Store({
   modules: {
@@ -20,6 +23,7 @@ export const store = new Vuex.Store({
 
   state: {
     schema: null,
+    config: null,
   },
 
   mutations: {
@@ -27,29 +31,41 @@ export const store = new Vuex.Store({
   },
 
   getters: {
-    migrating(state) {
-      if (state.schema) {
-        return state.schema.migrating
+    localVersion() {
+      return version
+    },
+
+    remoteVersion({ config }) {
+      if (config) {
+        return config.version
+      }
+      return null
+    },
+
+    migrating({ schema }) {
+      if (schema) {
+        return schema.migrating
       }
       return true
     },
 
-    dbSchemaVersion(state) {
-      if (state.schema) {
-        return state.schema.version
+    dbSchemaVersion({ schema }) {
+      if (schema) {
+        return schema.version
       }
       return 0
     },
 
-    dbSchema(state) {
-      return state.schema
+    dbSchema({ schema }) {
+      return schema
     },
 
     appSchemaVersion() { return 1 },
   },
 
   actions: {
-    bindSchemaRef: firebaseAction(async ({ bindFirebaseRef }) => {
+    bindGlobalRefs: firebaseAction(async ({ bindFirebaseRef }) => {
+      bindFirebaseRef("config" , configRef)
       bindFirebaseRef("schema" , schemaRef)
     }),
   },
