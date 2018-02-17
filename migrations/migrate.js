@@ -36,7 +36,7 @@ const migrations = []
 
 fs.readdirSync(migrationsDir).forEach(file => {
   if (file.match(/^\d{4}_.*\.migration\.js$/)) {
-    const name = file.replace(".migration.js", "")
+    const name = file.replace(".js", "")
     const Migration = require("./" + name)
     const migration = new Migration(db)
     const version = parseInt(name.split("_")[0])
