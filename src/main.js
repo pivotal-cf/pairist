@@ -20,6 +20,8 @@ import router from "./router"
 import { store } from "./store"
 import { firebaseApp } from "./firebase"
 
+store.dispatch("bindSchemaRef")
+
 const auth = firebaseApp.auth()
 
 Vue.config.devtools = process.env.NODE_ENV !== "production"

@@ -6,6 +6,10 @@
         ".write": "auth.uid != null && $team + '@pair.ist' === auth.email && (!data.exists() && newData.exists()) || data.child('ownerUID').val() === auth.uid"
       }
     },
+    "schema": {
+      ".read": "true",
+      ".write": "false"
+    },
     "users": {
       "$uid": {
         ".read": "auth != null && auth.uid == $uid"

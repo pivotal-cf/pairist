@@ -1,32 +1,31 @@
 "use strict"
 /* eslint-disable no-console */
 
-var Promise = require("es6-promise").Promise
-var admin = require("firebase-admin")
-var serviceAccount = require(`${process.env.HOME}/.secrets/pairist-test-service-account.json`)
+const admin = require("firebase-admin")
+const serviceAccount = require(`${process.env.HOME}/.secrets/pairist-test-service-account.json`)
+const util = require("util")
+const exec = util.promisify(require("child_process").exec)
 
 module.exports = {
-  before(_, done) {
+  async before(_, done) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       databaseURL: "https://pairist-test.firebaseio.com",
     })
 
-    var deleteUsers = new Promise((resolve, reject) => {
-      admin.auth().listUsers()
-        .then((listUsersResult) => {
-          var promises = listUsersResult.users.map((userRecord) =>
-            admin.auth().deleteUser(userRecord.uid)
-          )
-          Promise.all(promises).then(resolve).catch(reject)
-        })
-        .catch(reject)
-    })
-    var clearDB = new Promise((resolve, reject) => {
-      admin.database().ref().remove().then(resolve).catch(reject)
-    })
+    try {
+      const users = await admin.auth().listUsers()
+      await users.users.forEach(async (userRecord) =>
+        await admin.auth().deleteUser(userRecord.uid)
+      )
+      await admin.database().ref().remove()
 
-    Promise.all([deleteUsers, clearDB]).then(() => done()).catch(done)
+      await exec("yarn migrate:test")
+
+      done()
+    } catch(error) {
+      done(error)
+    }
   },
 
   after(client) {
@@ -41,6 +40,7 @@ module.exports = {
     client.waitForElementPresent("body", 1000)
 
     var home = client.page.home()
+    home.waitForElementPresent("@createButton", 4000)
     home.setValue("@teamNameInput", "my-team")
     home.setValue("@passwordInput", "password")
     home.click("@createButton")

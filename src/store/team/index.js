@@ -1,4 +1,4 @@
-import { firebaseMutations, firebaseAction } from "vuexfire"
+import { firebaseAction } from "vuexfire"
 
 import { db } from "@/firebase"
 
@@ -45,8 +45,6 @@ export default {
     setDropTarget(state, value) {
       state.dropTarget = value
     },
-
-    ...firebaseMutations,
   },
 
   getters: {
