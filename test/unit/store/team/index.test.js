@@ -32,6 +32,7 @@ jest.mock("@/store/team/recommendation", () => {
   global.calculateMovesToBestPairing = jest.fn()
   return {
     calculateMovesToBestPairing: global.calculateMovesToBestPairing,
+    toDate(date) { return new Date(date) },
   }
 })
 
@@ -80,19 +81,17 @@ describe("Team Store", () => {
   })
 
   describe("actions", () => {
-    describe("loadTeam", () => {
+    describe("loadTeamRefs", () => {
       it("binds current ref", () => {
         const commit = jest.fn()
           , dispatch = jest.fn()
           , bindFirebaseRef = jest.fn()
 
-        store.actions.loadTeam({ bindFirebaseRef, commit, dispatch, state: {} }, "my-team")
+        store.actions.loadTeamRefs({ bindFirebaseRef, commit, dispatch, state: {} }, global.db.ref("/teams/my-team/current"))
 
-        expect(bindFirebaseRef).toHaveBeenCalledTimes(2)
+        expect(bindFirebaseRef).toHaveBeenCalledTimes(1)
         expect(bindFirebaseRef)
           .toHaveBeenCalledWith("current", global.db.ref("/teams/my-team/current"))
-        expect(bindFirebaseRef)
-          .toHaveBeenCalledWith("public", global.db.ref("/teams/my-team/public"))
       })
 
       it("dispatches ref for child stores", () => {
@@ -101,7 +100,7 @@ describe("Team Store", () => {
           , bindFirebaseRef = jest.fn()
           , state = {}
 
-        store.actions.loadTeam({ bindFirebaseRef, commit, dispatch, state }, "my-team")
+        store.actions.loadTeamRefs({ bindFirebaseRef, commit, dispatch, state }, global.db.ref("/teams/my-team/current"))
 
         expect(dispatch)
           .toHaveBeenCalledWith(
@@ -126,30 +125,69 @@ describe("Team Store", () => {
             "lanes/setRef",
             global.db.ref("/teams/my-team/current/lanes"),
           )
+      })
+    })
 
+    describe("loadTeam", () => {
+      it("loads refs for team history and public", () => {
+        const commit = jest.fn()
+          , dispatch = jest.fn()
+          , bindFirebaseRef = jest.fn()
+          , state = {}
+
+        store.actions.loadTeam({ bindFirebaseRef, commit, dispatch, state }, "my-team")
+        expect(dispatch)
+          .toHaveBeenCalledWith(
+            "loadTeamRefs",
+            global.db.ref("/teams/my-team/current"),
+          )
 
         expect(dispatch)
           .toHaveBeenCalledWith(
             "history/setRef",
             global.db.ref("/teams/my-team/history").orderByKey().limitToLast(100),
           )
-      })
 
-      it("toggles loading while fetching current ref", async () => {
+        expect(bindFirebaseRef)
+          .toHaveBeenCalledWith("public", global.db.ref("/teams/my-team/public"))
+      })
+    })
+
+    fdescribe("loadState", () => {
+      it("loads current state back if offset is 0", () => {
         const commit = jest.fn()
           , dispatch = jest.fn()
-          , bindFirebaseRef = jest.fn()
+          , state = { teamName: "my-team" }
+          , getters = {
+            "history/all": [ { ".key": "123" } ],
+          }
 
-        const loadPromise = store.actions.loadTeam({ bindFirebaseRef, commit, dispatch, state: {} }, "my-team")
-        expect(commit).toHaveBeenCalledTimes(1)
-        expect(commit).toHaveBeenCalledWith("loading", true)
+        store.actions.loadState({ commit, dispatch, state, getters }, 0)
+        expect(dispatch)
+          .toHaveBeenCalledWith(
+            "loadTeamRefs",
+            global.db.ref("/teams/my-team/current"),
+          )
 
-        global.db.ref("/teams/my-team/current").flush()
+        expect(state.showingDate).toBeNull()
+      })
 
-        await loadPromise
+      it("loads in ref from history when offset is negative", () => {
+        const commit = jest.fn()
+          , dispatch = jest.fn()
+          , state = { teamName: "my-team" }
+          , getters = {
+            "history/all": [ { ".key": "123" } ],
+          }
 
-        expect(commit).toHaveBeenCalledTimes(2)
-        expect(commit).toHaveBeenCalledWith("loading", false)
+        store.actions.loadState({ commit, dispatch, state, getters }, -1)
+        expect(dispatch)
+          .toHaveBeenCalledWith(
+            "loadTeamRefs",
+            global.db.ref("/teams/my-team/history/123"),
+          )
+
+        expect(state.showingDate).toEqual("Fri Jan 01 0123 at 00:00:00 GMT-0800 (PST)")
       })
     })
 

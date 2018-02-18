@@ -7,6 +7,10 @@ class Recommendation {
     this.historyChunkDuration = historyChunkDuration
   }
 
+  toDate(scaled) {
+    return new Date(parseInt(scaled) * this.historyChunkDuration)
+  }
+
   scaleDate(date) {
     return parseInt((date / this.historyChunkDuration).toFixed(0))
   }

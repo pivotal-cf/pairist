@@ -32,6 +32,8 @@ describe("Team", () => {
     getters = {
       canWrite: jest.fn().mockReturnValue(true),
       user: jest.fn().mockReturnValue({}),
+      offsetToShow: jest.fn().mockReturnValue(0),
+      showingDate: jest.fn().mockReturnValue(null),
     }
     store = new Vuex.Store({
       state: {},
@@ -40,6 +42,12 @@ describe("Team", () => {
         people: {
           namespaced: true,
           actions,
+        },
+        history: {
+          namespaced: true,
+          getters: {
+            all: jest.fn().mockReturnValue([]),
+          },
         },
       },
     })

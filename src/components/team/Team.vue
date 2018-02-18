@@ -21,6 +21,33 @@
     <Notification/>
     <DraggingController :draggables="['person', 'track', 'role']"
                         v-if="canWrite" />
+
+
+    <v-snackbar class="history-notification" :timeout="0" color="info" bottom
+                vertical auto-height :value="showingDate !== null">
+      <h3>Browsing history</h3>
+      <p>
+        You're viewing a snapshot from <strong>{{ showingDate }}</strong>.
+        <br >
+        Editing is allowed, but if you do it may affect recommendations for the
+        present state.
+      </p>
+
+      <v-btn flat @click="resetDate">
+        <v-icon>refresh</v-icon>
+        Go back
+      </v-btn>
+    </v-snackbar>
+
+    <v-system-bar class="history-bar" color="secondary" lights-out status fixed height="32">
+      <v-icon>history</v-icon>
+      <v-slider class="history-slider" v-model="stateToShow" thumb-label step="1" max="0" :min="-dateLength"
+                prepend-icon="mdi-skip-previous" :prepend-icon-cb="previousDate"
+                append-icon="mdi-skip-next" :append-icon-cb="nextDate"
+                persistent-hint
+                hide-details ticks color="accent" />
+      <v-icon @click="resetDate">refresh</v-icon>
+    </v-system-bar>
   </v-content>
 </template>
 
@@ -43,7 +70,37 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["canWrite", "user"]),
+    ...mapGetters(["canWrite", "user", "offsetToShow", "showingDate"]),
+    ...mapGetters("history", { history: "all" }),
+
+    stateToShow: {
+      get() { return this.offsetToShow },
+      set(value) {
+        this.$store.dispatch("loadState", value)
+      },
+    },
+
+    dateLength() {
+      return Math.min(this.history.length, 14)
+    },
+  },
+
+  methods: {
+    nextDate() {
+      if (this.stateToShow < 0) {
+        this.stateToShow += 1
+      }
+    },
+
+    previousDate() {
+      if (this.stateToShow > -this.dateLength) {
+        this.stateToShow -= 1
+      }
+    },
+
+    resetDate() {
+      this.$store.dispatch("loadState", 0)
+    },
   },
 }
 </script>
@@ -69,5 +126,31 @@ export default {
 }
 
 .phase-in {
+}
+
+.history-bar {
+  z-index: 2000;
+  top: unset;
+  bottom: 0;
+
+  .icon {
+    font-size: 26px;
+  }
+
+}
+
+.history-notification {
+  .btn {
+    margin-top: -24px !important;
+    margin-bottom: 24px !important;
+  }
+}
+
+.history-slider {
+  padding: 0;
+
+  .slider {
+    margin: 0 !important;
+  }
 }
 </style>

@@ -39,7 +39,7 @@
 
       <v-tooltip bottom open-delay="200" content-class="accent">
         <v-btn
-          :disabled="loading"
+          :disabled="loading || showingDate !== null"
           @click="recommendPairs"
           flat slot="activator"
           v-if="canWrite"
@@ -50,7 +50,7 @@
       </v-tooltip>
       <v-tooltip bottom open-delay="200" content-class="accent">
         <v-btn
-          :disabled="loading"
+          :disabled="loading || showingDate !== null"
           @click="saveHistory"
           flat slot="activator"
           v-if="canWrite"
@@ -99,7 +99,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["canWrite", "loading", "user"]),
+    ...mapGetters(["canWrite", "loading", "user", "showingDate"]),
     publicRO: {
       get() { return this.$store.getters.publicRO },
       set(value) { this.$store.dispatch("setPublic", value) },

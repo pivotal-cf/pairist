@@ -30,6 +30,9 @@ export default {
 
     dragging: false,
     dropTarget: null,
+
+    offsetToShow: 0,
+    showingDate: null,
   },
 
   mutations: {
@@ -48,6 +51,9 @@ export default {
   },
 
   getters: {
+    offsetToShow(state) { return state.offsetToShow },
+    showingDate(state) { return state.showingDate },
+
     dragging(state) { return state.dragging },
     dropTarget(state) { return state.dropTarget },
 
@@ -66,15 +72,8 @@ export default {
   },
 
   actions: {
-    loadTeam: firebaseAction(async ({ bindFirebaseRef, commit, dispatch, state }, teamName) => {
-      commit("loading", true)
-      const currentRef = db.ref(`/teams/${teamName}/current`)
-      const historyRef = db.ref(`/teams/${teamName}/history`)
-      const publicRef = db.ref(`/teams/${teamName}/public`)
-
+    loadTeamRefs: firebaseAction(({ bindFirebaseRef, dispatch }, currentRef) => {
       bindFirebaseRef("current" , currentRef)
-      bindFirebaseRef("public" , publicRef)
-      state.publicRef = publicRef.ref
 
       dispatch("people/setRef",
         currentRef.child("people").orderByChild("updatedAt"))
@@ -85,6 +84,19 @@ export default {
 
       dispatch("lanes/setRef",
         currentRef.child("lanes"))
+    }),
+
+    loadTeam: firebaseAction(({ bindFirebaseRef, commit, dispatch, state }, teamName) => {
+      state.teamName = teamName
+      commit("loading", true)
+      const currentRef = db.ref(`/teams/${teamName}/current`)
+      const historyRef = db.ref(`/teams/${teamName}/history`)
+      const publicRef = db.ref(`/teams/${teamName}/public`)
+
+      dispatch("loadTeamRefs", currentRef)
+
+      bindFirebaseRef("public" , publicRef)
+      state.publicRef = publicRef.ref
 
       dispatch("history/setRef",
         historyRef.orderByKey().limitToLast(100))
@@ -92,9 +104,29 @@ export default {
       dispatch("lists/setRef",
         db.ref(`/teams/${teamName}/lists`))
 
-      await currentRef.once("value")
       commit("loading", false)
     }),
+
+    loadState({ commit, state, getters, dispatch }, offset) {
+      commit("loading", true)
+      const currentRef = db.ref(`/teams/${state.teamName}/current`)
+      state.offsetToShow = offset
+
+      if (offset === 0) {
+        dispatch("loadTeamRefs", currentRef)
+        commit("loading", false)
+        state.showingDate = null
+        return
+      }
+
+      const history = getters["history/all"]
+      const keyToBind = history[history.length + offset][".key"]
+
+      const date = recommendation.toDate(keyToBind)
+      state.showingDate = date.toDateString() + " at " + date.toTimeString()
+      dispatch("loadTeamRefs", db.ref(`/teams/${state.teamName}/history/${keyToBind}`))
+      commit("loading", false)
+    },
 
     async authorize({ commit }, teamName) {
       try {
