@@ -1,13 +1,5 @@
 <template>
   <v-content>
-    <v-snackbar
-      :timeout="0"
-      color="info"
-      :value="!canWrite"
-      top>
-      Viewing in read-only mode
-    </v-snackbar>
-
     <Toolbar :team-name="$route.params.team.toUpperCase()" />
 
     <v-container class="dropzone" pt-0 pb-0 fluid fill-height>
