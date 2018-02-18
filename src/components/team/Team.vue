@@ -2,9 +2,9 @@
   <v-content>
     <v-snackbar
       :timeout="0"
-      color="error"
+      color="info"
       :value="!canWrite"
-      bottom right>
+      top>
       Viewing in read-only mode
     </v-snackbar>
 
