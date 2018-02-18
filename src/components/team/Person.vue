@@ -97,6 +97,10 @@ export default {
   margin-top: 3px;
   text-align: center;
 
+  .avatar img {
+    object-fit: cover;
+  }
+
   @media (min-width: 960px) {
     height: 113px !important;
     width: 100px;
