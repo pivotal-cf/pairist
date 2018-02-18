@@ -153,7 +153,7 @@ describe("Team Store", () => {
       })
     })
 
-    fdescribe("loadState", () => {
+    describe("loadState", () => {
       it("loads current state back if offset is 0", () => {
         const commit = jest.fn()
           , dispatch = jest.fn()

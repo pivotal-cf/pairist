@@ -21,7 +21,7 @@
     "migrate:dev": "NODE_ENV=dev yarn migrate:env",
     "migrate:test": "NODE_ENV=test yarn migrate:env",
     "migrate:production": "NODE_ENV=production yarn migrate:env",
-    "set-version:env": "grep -Pho '(?<=APP_VERSION:)\\d+' dist/static/js/vendor.* | firebase database:set /config/version -y",
+    "set-version:env": "grep -Pho '(?<=APP_VERSION:)\\d+' dist/static/js/vendor.* | firebase -P $NODE_ENV database:set /config/version -y",
     "deploy:env": "yarn build:$NODE_ENV && firebase deploy -P $NODE_ENV && yarn migrate:env && yarn set-version:env",
     "deploy:dev": "NODE_ENV=dev yarn deploy:env",
     "deploy:test": "NODE_ENV=test yarn deploy:env",

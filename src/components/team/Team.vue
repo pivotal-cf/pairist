@@ -3,7 +3,7 @@
     <v-snackbar
       :timeout="0"
       color="error"
-      :value="!user"
+      :value="!canWrite"
       bottom right>
       Viewing in read-only mode
     </v-snackbar>
@@ -129,7 +129,7 @@ export default {
 }
 
 .history-bar {
-  z-index: 2000;
+  z-index: 999;
   top: unset;
   bottom: 0;
 
@@ -140,6 +140,8 @@ export default {
 }
 
 .history-notification {
+  z-index: 998;
+
   .btn {
     margin-top: -24px !important;
     margin-bottom: 24px !important;
