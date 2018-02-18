@@ -83,8 +83,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.context-menu.menu {
-  display: none !important;
-}
+<style lang="stylus">
+.context-menu.menu
+  display: none !important
 </style>

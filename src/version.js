@@ -1,1 +1,1 @@
-export default process.env.APP_VERSION
+export default process.env.VUE_APP_VERSION

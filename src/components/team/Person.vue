@@ -90,44 +90,36 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.person {
-  display: inline-block;
-  margin-right: 10px;
-  margin-top: 3px;
-  text-align: center;
+<style lang="stylus">
+.person
+  display: inline-block
+  margin-right: 10px
+  margin-top: 3px
+  text-align: center
 
-  .avatar img {
-    object-fit: cover;
-  }
+  .avatar img
+    object-fit: cover
 
-  @media (min-width: 960px) {
-    height: 113px !important;
-    width: 100px;
-  }
+  @media (min-width: 960px)
+    height: 113px !important
+    width: 100px
 
-  .card__text {
-    padding: 3px;
+  .card__text
+    padding: 3px
 
-    .name {
-      height: 20px;
-    }
-  }
+    .name
+      height: 20px
 
-  @media (max-width: 960px) {
-    margin: 5px;
-    .card__text {
-      padding: 5px;
+  @media (max-width: 960px)
+    margin: 5px
 
-      .avatar {
-        height: 70px !important;
-        width: 70px !important;
-      }
-    }
+    .card__text
+      padding: 5px
 
-    .name {
-      display: inline-block;
-    }
-  }
-}
+      .avatar
+        height: 70px !important
+        width: 70px !important
+
+    .name
+      display: inline-block
 </style>

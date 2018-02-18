@@ -91,41 +91,33 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.lane li {
+<style lang="stylus">
+.lane li
 
-  @media (min-width: 960px) {
-    min-height: 121px !important;
-  }
+  @media (min-width: 960px)
+    min-height: 121px !important
 
-  .list__tile {
-    height: auto;
-    padding: 0 5px 5px 10px;
+  .list__tile
+    height: auto
+    padding: 0 5px 5px 10px
 
-    .list__tile__content {
-      overflow: visible !important;
-    }
-  }
+    .list__tile__content
+      overflow: visible !important
 
-  &:hover .lock-button {
-    opacity: 1,
-  }
+  &:hover .lock-button
+    opacity: 1
 
-  .lock-button {
-    transition: opacity .1s linear;
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
+  .lock-button
+    transition: opacity .1s linear
+    position: absolute
+    bottom: 10px
+    right: 10px
 
-    @media (min-width: 960px) {
-      opacity: 0;
-      top: 33px;
-      right: -30px;
-    }
+    @media (min-width: 960px)
+      opacity: 0
+      top: 33px
+      right: -30px
 
-    &.is-locked {
-      opacity: 1;
-    }
-  }
-}
+    &.is-locked
+      opacity: 1
 </style>

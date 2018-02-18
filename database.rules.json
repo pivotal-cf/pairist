@@ -2,8 +2,9 @@
   "rules": {
     "teams": {
       "$team": {
-        ".read": "data.child('public').val() === true || data.child('ownerUID').val() === auth.uid",
-        ".write": "auth.uid != null && $team + '@pair.ist' === auth.email && (!data.exists() && newData.exists()) || data.child('ownerUID').val() === auth.uid"
+        ".read": "data.exists() && (data.child('public').val() === true || data.child('ownerUID').val() === auth.uid)",
+        ".write":
+          "auth.uid != null && $team + '@pair.ist' === auth.email && (!data.exists() && newData.exists() || data.child('ownerUID').val() === auth.uid)"
       }
     },
     "schema": {

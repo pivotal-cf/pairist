@@ -67,8 +67,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.checked {
-  text-decoration: line-through;
-}
+<style lang="stylus">
+.checked
+  text-decoration: line-through
 </style>

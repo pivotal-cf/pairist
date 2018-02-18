@@ -97,26 +97,22 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.dropzone {
-  min-height: 100px;
-  width: 100%;
-}
+<style lang="stylus">
+.dropzone
+  min-height: 100px
+  width: 100%
 
-.dragging {
-  z-index: 200;
-  position: relative;
-  transition: transform 0.4s ease-in-out,
-  box-shadow 0.4s ease-in-out;
-  transform: rotate(4deg);
-}
+.dragging
+  z-index: 200
+  position: relative
+  transition: transform 0.4s ease-in-out
+  box-shadow 0.4s ease-in-out
+  transform: rotate(4deg)
 
-.highlight-enter-active {
-  transition: transform 0.2s, filter 0.2s, -webkit-filter 0.2s;
-}
+.highlight-enter-active
+  transition: transform 0.2s, filter 0.2s, -webkit-filter 0.2s
 
-.highlight-enter {
-  transform: rotate(5deg);
-  filter: brightness(140%);
-}
+.highlight-enter
+  transform: rotate(5deg)
+  filter: brightness(140%)
 </style>

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+grep -Pho 'VUE_APP_VERSION.*:.*\d+' dist/app.js | cut -d':' -f2 | firebase -P $NODE_ENV database:set /config/version -y

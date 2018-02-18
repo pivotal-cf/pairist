@@ -116,12 +116,11 @@ export default {
 }
 </script>
 
-<style lang="scss">
-#app .logo {
-  background-image: url("~@/assets/pairist.svg");
-  background-size: 45px;
-  background-repeat: no-repeat;
-  background-position: 10px 50%;
-  padding-left: 40px !important;
-}
+<style lang="stylus">
+#app .logo
+  background-image: url("~@/assets/pairist.svg")
+  background-size: 45px
+  background-repeat: no-repeat
+  background-position: 10px 50%
+  padding-left: 40px !important
 </style>

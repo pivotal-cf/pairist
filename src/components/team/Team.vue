@@ -97,54 +97,41 @@ export default {
 }
 </script>
 
-<style lang="scss">
-#app {
-  overflow-x: hidden;
-}
+<style lang="stylus">
+#app
+  overflow-x: hidden
 
-.phase-out {
-  position: relative;
-}
+.phase-out
+  position: relative
 
-.phase-out:after {
-  content: '\A';
-  position: absolute;
-  width: 100%;
-  height:100%;
-  top:0;
-  left:0;
-  background:rgba(0,0,0,0.1);
-  opacity: 1;
-}
+.phase-out:after
+  content: '\A'
+  position: absolute
+  width: 100%
+  height:100%
+  top:0
+  left:0
+  background:rgba(0,0,0,0.1)
+  opacity: 1
 
-.phase-in {
-}
+.history-bar
+  z-index: 999
+  top: unset
+  bottom: 0
 
-.history-bar {
-  z-index: 999;
-  top: unset;
-  bottom: 0;
+  .icon
+    font-size: 26px
 
-  .icon {
-    font-size: 26px;
-  }
+.history-notification
+  z-index: 998
 
-}
+  .btn
+    margin-top: -24px !important
+    margin-bottom: 24px !important
 
-.history-notification {
-  z-index: 998;
-
-  .btn {
-    margin-top: -24px !important;
-    margin-bottom: 24px !important;
-  }
-}
-
-.history-slider {
+.history-slider
   padding: 0;
 
-  .slider {
+  .slider
     margin: 0 !important;
-  }
-}
 </style>

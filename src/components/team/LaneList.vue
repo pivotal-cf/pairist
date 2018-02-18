@@ -32,10 +32,9 @@ export default {
 }
 </script>
 
-<style lang="scss">
-#app .lanes {
-  height: fit-content;
-  padding: 0;
-  z-index: 1;
-}
+<style lang="stylus">
+#app .lanes
+  height: fit-content
+  padding: 0
+  z-index: 1
 </style>

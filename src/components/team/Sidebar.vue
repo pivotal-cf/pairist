@@ -199,38 +199,31 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.people.unassigned {
-  min-height: 221px;
-}
+<style lang="stylus">
+.people.unassigned
+  min-height: 221px
 
-.tracks.unassigned {
-  min-height: 6rem;
-}
+.tracks.unassigned
+  min-height: 6rem
 
-.roles.unassigned {
-  min-height: 6rem;
-}
+.roles.unassigned
+  min-height: 6rem
 
-.unassigned {
-  padding: 10px;
-}
+.unassigned
+  padding: 10px
 
-.out {
-  flex: 1 1 auto;
-  min-height: 221px;
-  padding: 10px;
-}
+.out
+  flex: 1 1 auto
+  min-height: 221px
+  padding: 10px
 
-#app .sidebar {
-  display: flex;
-  flex-flow: column;
+#app .sidebar
+  display: flex
+  flex-flow: column
 
-  @media (min-width: 960px) {
-    position: relative;
-    margin-left: 30px;
-    height:100%;
-    width: 100%;
-  }
-}
+  @media (min-width: 960px)
+    position: relative
+    margin-left: 30px
+    height:100%
+    width: 100%
 </style>

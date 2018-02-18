@@ -1,10 +1,8 @@
-"use strict"
-/* eslint-disable no-console */
-
 const admin = require("firebase-admin")
-const serviceAccount = require(`${process.env.HOME}/.secrets/pairist-test-service-account.json`)
-const util = require("util")
-const exec = util.promisify(require("child_process").exec)
+  , serviceAccount = require(`${process.env.HOME}/.secrets/pairist-test-service-account.json`)
+  , util = require("util")
+  , exec = util.promisify(require("child_process").exec)
+  , devServer = process.env.VUE_DEV_SERVER_URL
 
 module.exports = {
   async before(_, done) {
@@ -20,7 +18,7 @@ module.exports = {
       )
       await admin.database().ref().remove()
 
-      await exec("yarn migrate:test")
+      await exec("NODE_ENV=test yarn migrate")
 
       done()
     } catch(error) {
@@ -34,8 +32,6 @@ module.exports = {
   },
 
   "DAY 0: create account"(client) {
-    const devServer = client.globals.devServerURL
-
     client.url(devServer)
     client.waitForElementPresent("body", 1000)
 
@@ -195,7 +191,6 @@ module.exports = {
   },
 
   "DAY 3: navigating back, logout, login"(client) {
-    const devServer = client.globals.devServerURL
     client.url(devServer)
     client.pause(1000)
 
@@ -208,7 +203,7 @@ module.exports = {
     team.logout()
     team.waitForElementNotPresent("@moreMenuButton", 2000)
 
-    client.url(`${devServer}/my-team`)
+    client.url(`${devServer}my-team`)
     team.expectMessage("You need to be logged in to access this page.", "error")
     team.waitForElementNotPresent("@title", 2000)
 
@@ -224,7 +219,7 @@ module.exports = {
     team.assert.containsText("@title", "MY-TEAM")
     client.assert.urlContains("my-team")
 
-    client.url(`${devServer}/your-team`)
+    client.url(`${devServer}your-team`)
     team.expectMessage("You do not have access to this team.", "error")
     team.waitForElementPresent("@title", 2000)
 

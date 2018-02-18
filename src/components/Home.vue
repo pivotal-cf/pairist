@@ -109,24 +109,21 @@ export default {
 }
 </script>
 
-<style lang=scss>
-#app .logo {
-  background: url("../assets/pairist.svg");
-  background-size: 45px;
-  background-repeat: no-repeat;
-  background-position: 10px 50%;
-  padding-left: 40px !important;
-}
+<style lang="stylus">
+#app .logo
+  background: url("../assets/pairist.svg")
+  background-size: 45px
+  background-repeat: no-repeat
+  background-position: 10px 50%
+  padding-left: 40px !important
 
-.loading-home {
-  margin: auto;
-  position: absolute;
-  z-index: 100;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.3);
+.loading-home
+  margin: auto
+  position: absolute
+  z-index: 100
+  text-align: center
+  background: rgba(255, 255, 255, 0.3)
 
-  div {
-    margin: auto;
-  }
-}
+  div
+    margin: auto
 </style>

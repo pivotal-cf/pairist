@@ -43,16 +43,14 @@ export default {
 }
 </script>
 
-<style lang="scss">
-#app .lists {
-  display: flex;
-  flex-flow: column;
+<style lang="stylus">
+#app .lists
+  display: flex
+  flex-flow: column
 
-  @media (min-width: 960px) {
-    position: relative;
-    margin-left: -20px;
-    height:100%;
-    width: 100%;
-  }
-}
+  @media (min-width: 960px)
+    position: relative
+    margin-left: -20px
+    height:100%
+    width: 100%
 </style>

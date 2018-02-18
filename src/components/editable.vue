@@ -75,25 +75,22 @@ export default  {
 }
 </script>
 
-<style lang="scss">
-.editable {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  display: inline-block;
-  overflow-wrap: break-word;
+<style lang="stylus">
+.editable
+  position: relative
+  height: 100%
+  width: 100%
+  display: inline-block
+  overflow-wrap: break-word
 
-  .editable-content {
-    min-height: 1rem;
-    overflow-wrap: break-word;
-  }
+  .editable-content
+    min-height: 1rem
+    overflow-wrap: break-word
 
-  .placeholder {
-    pointer-events: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0.5;
-  }
-}
+  .placeholder
+    pointer-events: none
+    position: absolute
+    top: 0
+    left: 0
+    opacity: 0.5
 </style>
