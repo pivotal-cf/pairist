@@ -52,7 +52,7 @@ export default {
     history() {
       const history = this.$store.getters["history/all"]
       return history
-        .slice(Math.max(history.length - 14, 1))
+        .slice(Math.max(history.length - 10, 1))
         .reverse()
     },
 

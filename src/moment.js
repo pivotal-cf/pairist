@@ -6,7 +6,7 @@ Vue.moment.calendarFormat = (myMoment, now) => {
   const diff = myMoment.diff(now, "days", true)
   const nextMonth = now.clone().add(1, "month")
 
-  const retVal =  diff < -6 ? "sameElse" :
+  const retVal =  diff < -14 ? "sameElse" :
     diff < -8 ? "lastWeek" :
       diff < -1 ? "nextWeek" :
         diff < 0 ? "lastDay" :
