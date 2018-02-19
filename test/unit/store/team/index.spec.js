@@ -437,13 +437,17 @@ describe("Team Store", () => {
         const dispatch = jest.fn()
           , commit = jest.fn()
           , getters = { "history/all": [], "people/all": [], "lanes/all": [] }
+          , error = new Error("recommend")
 
-        global.calculateMovesToBestPairing.mockImplementation(() => { throw new Error("recommend") })
+        console.error = jest.fn()
+
+        global.calculateMovesToBestPairing.mockImplementation(() => { throw error })
 
         store.actions.recommendPairs({ commit, dispatch, getters })
 
         expect(global.calculateMovesToBestPairing)
           .toHaveBeenCalledWith({ history: [], current: { people: [], lanes: [] } })
+        expect(console.error).toHaveBeenCalledWith(error)
         expect(dispatch).toHaveBeenCalledTimes(0)
         expect(commit).toHaveBeenCalledTimes(1)
         expect(commit).toHaveBeenCalledWith("notify", {

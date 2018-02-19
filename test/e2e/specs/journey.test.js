@@ -18,7 +18,7 @@ module.exports = {
       )
       await admin.database().ref().remove()
 
-      await exec("NODE_ENV=test yarn migrate")
+      await exec("TARGET_ENV=e2e yarn migrate")
 
       done()
     } catch(error) {
@@ -138,7 +138,7 @@ module.exports = {
     team.role("role-3").toBeInLane("1")
     team.role("role-2").toBeInLane("2")
 
-    team.saveHistory()
+    team.waitADay()
   },
 
   "DAY 2: allocate people"(client) {
@@ -152,7 +152,7 @@ module.exports = {
     team.lane("2").toHavePeople("person-2", "person-4")
     team.lane("3").toHavePeople("person-3")
 
-    team.saveHistory()
+    team.waitADay()
   },
 
   "DAY 3: delete some elements and recommend"(client) {
@@ -187,7 +187,7 @@ module.exports = {
     team.recommendPairs()
     team.expectMessage("Pairing setting is already the optimal one. No actions taken", "accent")
 
-    team.saveHistory()
+    team.waitADay()
   },
 
   "DAY 3: navigating back, logout, login"(client) {
@@ -225,6 +225,8 @@ module.exports = {
 
     team.assert.containsText("@title", "MY-TEAM")
     client.assert.urlContains("my-team")
+
+    team.waitADay()
   },
 
   "DAY 4: locks and recommend"(client) {

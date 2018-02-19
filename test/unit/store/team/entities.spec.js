@@ -167,8 +167,7 @@ describe("Entities Store", () => {
 
     describe("move", () => {
       it("moves existing entity to location", () => {
-        const dispatch = jest.fn()
-          , update = jest.fn()
+        const update = jest.fn()
           , child = jest.fn().mockReturnValue({ update })
           , state = { ref: { child } }
 
@@ -178,26 +177,11 @@ describe("Entities Store", () => {
         const key = "key", location = "location"
         const payload = { location, updatedAt }
 
-        store.actions.move({ dispatch, state }, { key, location })
+        store.actions.move({ state }, { key, location })
         expect(child).toHaveBeenCalledTimes(1)
         expect(child).toHaveBeenCalledWith("key")
         expect(update).toHaveBeenCalledTimes(1)
         expect(update).toHaveBeenCalledWith(payload)
-      })
-
-      it("dispatches a clear lanes action", () => {
-        const entity = { ".key": "key", "something": "else" }
-
-        const dispatch = jest.fn()
-          , update = jest.fn()
-          , child = jest.fn().mockReturnValue({ update })
-          , state = { entities: [entity], ref: { child } }
-
-        const key = "key", location = "location"
-
-        store.actions.move({ dispatch, state }, { key, location })
-        expect(dispatch).toHaveBeenCalledTimes(1)
-        expect(dispatch).toHaveBeenCalledWith("lanes/clearEmpty", null, { root: true })
       })
     })
   })

@@ -14,7 +14,16 @@ export default {
   },
 
   getters: {
-    all(state) { return state.history },
+    all(state, getters) {
+      // disregard history entries created > 3 timeslots ago
+      return state.history.filter(history =>
+        parseInt(history[".key"]) <= (getters.currentScaledDate - 3)
+      )
+    },
+
+    currentScaledDate(_state, _getters, rootState) {
+      return recommendation.scaleDate(rootState.shared.now)
+    },
   },
 
   actions: {
@@ -22,21 +31,5 @@ export default {
       bindFirebaseRef("history", ref)
       commit("setRef",  ref.ref)
     }),
-
-    async save({ commit, state, rootGetters }) {
-      commit("loading", true, { root: true })
-
-      const key = recommendation.scaleDate(Date.now())
-      const current = { ...rootGetters.current }
-      delete current[".key"]
-
-      await state.ref.child(key).set(current)
-      commit("notify", {
-        message: "History recorded!",
-        color: "success",
-      }, { root: true })
-
-      commit("loading", false, { root: true })
-    },
   },
 }

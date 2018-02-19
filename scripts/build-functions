@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -xe
+
+set -o allexport
+source ".env.$TARGET_ENV"
+set +o allexport
+
+yarn cpx '*{package.json,yarn.lock}' dist/functions
+cpx 'src/*lib/*' src/functions
+yarn babel src/functions --out-dir dist/functions
+
+(cd dist/functions && yarn)

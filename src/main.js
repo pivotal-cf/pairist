@@ -21,6 +21,7 @@ import { store } from "./store"
 import { firebaseApp } from "./firebase"
 
 store.dispatch("bindGlobalRefs")
+store.dispatch("watchNow")
 
 const auth = firebaseApp.auth()
 

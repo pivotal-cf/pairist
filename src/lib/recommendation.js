@@ -1,6 +1,6 @@
-import { pairs, pairings, permutations } from "@/lib/combinatorics"
+import { pairs, pairings, permutations } from "./combinatorics"
 import _ from "lodash"
-import constants from "@/lib/constants"
+import constants from "./constants"
 
 class Recommendation {
   constructor({ historyChunkDuration }) {
@@ -86,7 +86,7 @@ class Recommendation {
 
     history.forEach(state => {
       const epoch = parseInt(state[".key"])
-      const people = Object.keys(state.people).map(key =>
+      const people = Object.keys(state.people || {}).map(key =>
         Object.assign({".key": key}, state.people[key])
       ).filter(person =>
         person.location != constants.LOCATION.OUT && person.location != constants.LOCATION.UNASSIGNED &&

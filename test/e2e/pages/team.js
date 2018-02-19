@@ -3,6 +3,10 @@ var pluralize = require("pluralize")
 
 module.exports = {
   commands: [{
+    waitADay() {
+      this.api.pause(15000)
+    },
+
     track(name) {
       return this.entity("tracks", name)
     },
@@ -155,11 +159,6 @@ module.exports = {
         .pause(300)
     },
 
-    saveHistory() {
-      this.click("@saveHistoryButton")
-      this.expectMessage("History recorded!", "success")
-    },
-
     expectMessage(msg, type) {
       this.api.pause(300)
       this.api.useCss()
@@ -303,11 +302,6 @@ module.exports = {
 
   elements: {
     title: "nav .toolbar__title span:nth-child(2)",
-
-    saveHistoryButton: {
-      selector: "//nav[contains(@class, 'toolbar')]//i[contains(@class, 'mdi-content-save')]//ancestor::button",
-      locateStrategy: "xpath",
-    },
 
     recommendPairsButton: {
       selector: "//nav[contains(@class, 'toolbar')]//i[contains(@class, 'mdi-shuffle-variant')]//ancestor::button",

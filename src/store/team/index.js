@@ -217,6 +217,7 @@ export default {
           })
         }
       } catch(error) {
+        console.error(error)
         commit("notify", {
           message: "Error finding best pair setting.",
           color: "error",

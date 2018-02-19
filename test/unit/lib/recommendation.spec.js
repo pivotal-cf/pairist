@@ -73,6 +73,9 @@ describe("Recommendation", () => {
           },
           history: [
             {
+              ".key": "" + previousScore(recommendation, 3),
+            },
+            {
               ".key": "" + previousScore(recommendation, 2),
               "people": [
                 { ".key": "p1", "location": "l1" },

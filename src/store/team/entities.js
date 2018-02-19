@@ -65,14 +65,13 @@ export default () => ({
       dispatch("lanes/clearEmpty", null, { root: true })
     },
 
-    move({ dispatch, state }, { key, location }) {
+    move({ state }, { key, location }) {
       const payload = {
         location,
         updatedAt: Date.now(),
       }
 
       state.ref.child(key).update(payload)
-      dispatch("lanes/clearEmpty", null, { root: true })
     },
   },
 })

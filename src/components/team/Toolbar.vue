@@ -48,17 +48,6 @@
         </v-btn>
         <span>Recommend pairs (optimizing for more variability in individual pairings)</span>
       </v-tooltip>
-      <v-tooltip bottom open-delay="200" content-class="accent">
-        <v-btn
-          :disabled="loading || showingDate !== null"
-          @click="saveHistory"
-          flat slot="activator"
-          v-if="canWrite"
-        >
-          <v-icon dark>mdi-content-save</v-icon>
-        </v-btn>
-        <span>Save history. This is required to ensure future accuracy in recommendations</span>
-      </v-tooltip>
       <v-menu bottom left v-if="user">
         <v-btn pa-0 flat slot="activator" dark>
           <v-icon>more_vert</v-icon>
