@@ -32,7 +32,7 @@ module.exports = {
           self.api.useXpath()
             .waitForElementPresent(
               `(${element}//div[@contenteditable = 'true'])[1]`,
-              1000,
+              10000,
             )
 
           self.api.useXpath()

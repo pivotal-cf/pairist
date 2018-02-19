@@ -129,7 +129,7 @@ describe("Users Store", () => {
 
         const ownerUID = (await global.db.ref("/teams/my-name/ownerUID").once("value")).val()
         expect(ownerUID).toEqual(user.uid)
-        expect(global.router.push).toHaveBeenCalledWith({ name: "Team", params: { team: "my-name" } })
+        expect(global.router.push).toHaveBeenCalledWith({ name: "TeamCurrent", params: { team: "my-name" } })
       })
 
       it("notifies user when signup fails", async () => {
@@ -215,7 +215,7 @@ describe("Users Store", () => {
         expect(dispatch).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledWith("autoLogin", user)
 
-        expect(global.router.push).toHaveBeenCalledWith({ name: "Team", params: { team: "signin-test-name" } })
+        expect(global.router.push).toHaveBeenCalledWith({ name: "TeamCurrent", params: { team: "signin-test-name" } })
       })
 
       it("notifies user of failed auth", async () => {

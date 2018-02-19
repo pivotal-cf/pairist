@@ -26,7 +26,6 @@ describe("Auth", () => {
     await Auth(to, from, next)
 
     expect(global.store.dispatch).toHaveBeenCalledWith("authorize", "my-team")
-    expect(global.store.dispatch).toHaveBeenCalledWith("loadTeam", "my-team")
     expect(next).toHaveBeenCalledWith()
   })
 
@@ -41,7 +40,6 @@ describe("Auth", () => {
     await Auth(to, from, next)
 
     expect(global.store.dispatch).toHaveBeenCalledWith("authorize", "my-team")
-    expect(global.store.dispatch).toHaveBeenCalledWith("loadTeam", "my-team")
     expect(next).toHaveBeenCalledWith()
   })
 
@@ -100,6 +98,6 @@ describe("RedirectToTeam", () => {
 
     await RedirectToTeam(to, from, next)
 
-    expect(next).toHaveBeenCalledWith({ name: "Team", params: { team: "squad" } })
+    expect(next).toHaveBeenCalledWith({ name: "TeamCurrent", params: { team: "squad" } })
   })
 })

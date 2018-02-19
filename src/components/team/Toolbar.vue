@@ -1,10 +1,5 @@
 <template>
-  <v-toolbar
-    class="primary logo"
-    fixed
-    dark
-    app
-  >
+  <v-toolbar class="primary logo" fixed dark app>
     <v-toolbar-title>
       <span>
         Pairist

@@ -58,7 +58,7 @@ export default {
         commit("loading", false)
         return
       }
-      router.push({ name: "Team", params: { team: name } })
+      router.push({ name: "TeamCurrent", params: { team: name } })
       commit("loading", false)
     },
 
@@ -70,7 +70,7 @@ export default {
       try {
         const event = await auth.signInWithEmailAndPassword(email, password)
         dispatch("autoLogin", event)
-        router.push({ name: "Team", params: { team: name } })
+        router.push({ name: "TeamCurrent", params: { team: name } })
       } catch(error) {
         commit("notify", {
           message: error.message.replace("email address", "name"),

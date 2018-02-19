@@ -2,7 +2,7 @@
   <v-snackbar :timeout="0" bottom left :value="true">
     A new version of Pair.ist is available!
     <v-btn flat color="info" @click="refresh">
-      <v-icon>refresh</v-icon>
+      <v-icon>update</v-icon>
       UPDATE!
     </v-btn>
   </v-snackbar>

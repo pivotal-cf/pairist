@@ -129,19 +129,13 @@ describe("Team Store", () => {
     })
 
     describe("loadTeam", () => {
-      it("loads refs for team history and public", () => {
+      it("loads refs for team history and public", async () => {
         const commit = jest.fn()
           , dispatch = jest.fn()
           , bindFirebaseRef = jest.fn()
           , state = {}
 
-        store.actions.loadTeam({ bindFirebaseRef, commit, dispatch, state }, "my-team")
-        expect(dispatch)
-          .toHaveBeenCalledWith(
-            "loadTeamRefs",
-            global.db.ref("/teams/my-team/current"),
-          )
-
+        await store.actions.loadTeam({ bindFirebaseRef, commit, dispatch, state }, "my-team")
         expect(dispatch)
           .toHaveBeenCalledWith(
             "history/setRef",
@@ -162,14 +156,14 @@ describe("Team Store", () => {
             "history/all": [ { ".key": "123" } ],
           }
 
-        store.actions.loadState({ commit, dispatch, state, getters }, 0)
+        store.actions.loadState({ commit, dispatch, state, getters }, "current")
         expect(dispatch)
           .toHaveBeenCalledWith(
             "loadTeamRefs",
             global.db.ref("/teams/my-team/current"),
           )
 
-        expect(state.showingDate).toBeNull()
+        expect(state.loadedKey).toEqual("current")
       })
 
       it("loads in ref from history when offset is negative", () => {
@@ -180,14 +174,14 @@ describe("Team Store", () => {
             "history/all": [ { ".key": "123" } ],
           }
 
-        store.actions.loadState({ commit, dispatch, state, getters }, -1)
+        store.actions.loadState({ commit, dispatch, state, getters }, "123")
         expect(dispatch)
           .toHaveBeenCalledWith(
             "loadTeamRefs",
             global.db.ref("/teams/my-team/history/123"),
           )
 
-        expect(state.showingDate).toEqual("Fri Jan 01 0123 at 00:00:00 GMT-0800 (PST)")
+        expect(state.loadedKey).toEqual("123")
       })
     })
 

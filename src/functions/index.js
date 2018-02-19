@@ -15,5 +15,12 @@ export const saveHistory = functions.database.ref("/teams/{teamName}/current").o
   const current = event.data.val()
     , historyKey = recommendation.scaleDate(Date.now())
 
+  try {
+    await event.data.ref.parent.child("history").child(historyKey - 2).remove()
+  } catch(_) { /* don't care if can't delete matching history */ }
+  try {
+    await event.data.ref.parent.child("history").child(historyKey - 1).remove()
+  } catch(_) { /* don't care if can't delete matching history */ }
+
   await event.data.ref.parent.child("history").child(historyKey).set(current)
 })

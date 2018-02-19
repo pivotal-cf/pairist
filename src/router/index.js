@@ -2,9 +2,18 @@ import Vue from "vue"
 import Router from "vue-router"
 import Home from "@/components/Home"
 import Team from "@/components/team/Team"
+import Pairs from "@/components/team/Pairs"
 import { Auth, RedirectToTeam } from "@/router/auth"
 
 Vue.use(Router)
+
+const AddCurrentToTeamRoute = async (to, from, next) => {
+  if (to.name === "BaseTeam") {
+    next({ name: "TeamCurrent", params: to.params })
+  } else {
+    next()
+  }
+}
 
 const router = new Router({
   mode: "history",
@@ -17,9 +26,23 @@ const router = new Router({
     },
     {
       path: "/:team",
-      name: "Team",
+      name: "BaseTeam",
       component: Team,
-      beforeEnter: Auth,
+      beforeEnter: AddCurrentToTeamRoute,
+      children: [
+        {
+          path: "current",
+          name: "TeamCurrent",
+          component: Pairs,
+          beforeEnter: Auth,
+        },
+        {
+          path: "history/:date",
+          name: "TeamHistory",
+          component: Pairs,
+          beforeEnter: Auth,
+        },
+      ],
     },
   ],
 })

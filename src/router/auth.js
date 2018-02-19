@@ -3,7 +3,6 @@ import { store } from "@/store"
 export const Auth = async (to, from, next) => {
   await store.dispatch("authorize", to.params.team)
   if (store.getters.canRead) {
-    await store.dispatch("loadTeam", to.params.team)
     next()
     return
   } else if (store.getters.user) {
@@ -22,7 +21,7 @@ export const Auth = async (to, from, next) => {
 
 export const RedirectToTeam = async (to, from, next) => {
   if (store.getters.user) {
-    next({ name: "Team", params: { team: store.getters.user.name } })
+    next({ name: "TeamCurrent", params: { team: store.getters.user.name } })
   } else {
     next()
   }

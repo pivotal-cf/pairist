@@ -1,5 +1,6 @@
 import Vue from "vue"
 import Vuetify from "vuetify"
+import "./moment"
 
 Vue.use(Vuetify, {
   theme: {
