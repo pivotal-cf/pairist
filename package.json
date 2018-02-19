@@ -9,13 +9,13 @@
     "test": "vue-cli-service test",
     "lint": "vue-cli-service lint",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --mode=$NODE_ENV",
-    "migrate": "node migrations/migrate.js $NODE_ENV",
-    "set-version": "scripts/set-version",
-    "deploy": "yarn build && firebase deploy -P $NODE_ENV && yarn migrate && yarn set-version",
-    "deploy:dev": "NODE_ENV=development yarn deploy",
-    "deploy:test": "NODE_ENV=test yarn deploy",
-    "deploy:production": "NODE_ENV=production yarn deploy"
+    "build": "vue-cli-service build --mode=$TARGET_ENV",
+    "migrate": "node migrations/migrate.js $TARGET_ENV",
+    "set-version": "scripts/built-app-version | firebase -P $TARGET_ENV database:set /config/version -y",
+    "deploy": "yarn build && firebase deploy -P $TARGET_ENV && yarn migrate && yarn set-version",
+    "deploy:staging": "TARGET_ENV=staging yarn deploy",
+    "deploy:e2e": "TARGET_ENV=e2e yarn deploy",
+    "deploy:production": "TARGET_ENV=production yarn deploy"
   },
   "lint-staged": {
     "*.js": [

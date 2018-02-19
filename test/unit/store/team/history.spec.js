@@ -39,7 +39,7 @@ describe("History Store", () => {
         const savePromise = store.actions.save({ commit, state, rootGetters })
         await savePromise
         expect(child).toHaveBeenCalledTimes(1)
-        expect(child).toHaveBeenCalledWith(1111)
+        expect(child).toHaveBeenCalledWith(11111)
         expect(set).toHaveBeenCalledTimes(1)
         expect(set).toHaveBeenCalledWith({ some: ["unique", "properties" ] })
       })

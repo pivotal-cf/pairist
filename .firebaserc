@@ -1,7 +1,8 @@
 {
   "projects": {
-    "development": "pairist-dev",
+    "default": "pairist-dev",
+    "staging": "pairist-dev",
     "production": "pairist-9de4d",
-    "test": "pairist-test"
+    "e2e": "pairist-test"
   }
 }
