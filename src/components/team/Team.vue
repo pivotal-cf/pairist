@@ -6,7 +6,6 @@
     <DraggingController :draggables="['person', 'track', 'role']"
                         v-if="canWrite" />
 
-
     <v-snackbar class="history-notification" :timeout="0" color="info" bottom
                 vertical auto-height :value="showingDate !== null" v-if="showingDate">
       <h3>Browsing history from {{ showingDate | moment("calendar") }}</h3>

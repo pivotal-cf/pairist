@@ -93,8 +93,6 @@ export default {
     }),
 
     loadTeam: firebaseAction(async ({ bindFirebaseRef, commit, dispatch, state }, teamName) => {
-      if (state.teamName === teamName) { return }
-
       commit("loading", true)
       const historyRef = db.ref(`/teams/${teamName}/history`)
       const publicRef = db.ref(`/teams/${teamName}/public`)
@@ -113,8 +111,6 @@ export default {
     }),
 
     async loadState({ commit, state, dispatch }, key) {
-      if (state.loadedKey === key) { return }
-
       commit("loading", true)
       if (key === "current") {
         const currentRef = db.ref(`/teams/${state.teamName}/current`)
