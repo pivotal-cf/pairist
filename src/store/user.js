@@ -70,6 +70,7 @@ export default {
       try {
         const event = await auth.signInWithEmailAndPassword(email, password)
         dispatch("autoLogin", event)
+        commit("loading", false)
         router.push({ name: "TeamCurrent", params: { team: name } })
       } catch(error) {
         commit("notify", {
