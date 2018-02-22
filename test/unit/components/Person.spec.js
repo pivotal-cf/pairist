@@ -33,7 +33,7 @@ describe("Person", () => {
       state: {},
       getters,
       modules: {
-        people: {
+        entities: {
           namespaced: true,
           actions,
         },

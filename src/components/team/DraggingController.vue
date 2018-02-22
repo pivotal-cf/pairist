@@ -4,7 +4,6 @@
 
 <script>
 import Interact from "interact.js"
-import { plural } from "pluralize"
 
 import { mapActions, mapMutations } from "vuex"
 
@@ -80,12 +79,7 @@ export default {
         const key = event.relatedTarget.dataset.key,
           targetKey = event.target.dataset.key
 
-        const type = plural(
-          self.draggables
-            .find(c => event.relatedTarget.classList.contains(c))
-        )
-
-        self.move({ type, key, targetKey })
+        self.move({ key, targetKey })
       },
     })
   },

@@ -54,7 +54,7 @@ export default {
     },
 
     remove() {
-      this.$emit("remove", this.chip[".key"])
+      this.$store.dispatch("entities/remove", this.chip[".key"])
     },
   },
 }

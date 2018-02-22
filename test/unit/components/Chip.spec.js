@@ -18,10 +18,13 @@ describe("Chip", () => {
     getters = {
       canWrite: jest.fn().mockReturnValue(true),
     }
+    actions = {
+      remove: jest.fn(),
+    }
     store = new Vuex.Store({
       state: {},
       modules: {
-        chips: {
+        entities: {
           namespaced: true,
           actions,
         },
@@ -75,8 +78,7 @@ describe("Chip", () => {
     })
 
     wrapper.vm.remove()
-    expect(wrapper.emitted().remove.length).toEqual(1)
-    expect(wrapper.emitted().remove[0]).toEqual(["p"])
+    expect(actions.remove).toHaveBeenCalledWith(expect.anything(), "p", undefined)
   })
 
   it("does not show menu if cannot write", async () => {

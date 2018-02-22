@@ -104,20 +104,8 @@ describe("Team Store", () => {
 
         expect(dispatch)
           .toHaveBeenCalledWith(
-            "people/setRef",
-            global.db.ref("/teams/my-team/current/people").orderByChild("updatedAt"),
-          )
-
-        expect(dispatch)
-          .toHaveBeenCalledWith(
-            "tracks/setRef",
-            global.db.ref("/teams/my-team/current/tracks").orderByChild("updatedAt"),
-          )
-
-        expect(dispatch)
-          .toHaveBeenCalledWith(
-            "roles/setRef",
-            global.db.ref("/teams/my-team/current/roles").orderByChild("updatedAt"),
+            "entities/setRef",
+            global.db.ref("/teams/my-team/current/entities").orderByChild("updatedAt"),
           )
 
         expect(dispatch)
@@ -236,36 +224,10 @@ describe("Team Store", () => {
         , getters = jest.fn()
         , dispatch = jest.fn()
 
-      store.actions.move({ getters, dispatch }, { type: "banana", key, targetKey })
+      store.actions.move({ getters, dispatch }, { key, targetKey })
 
       expect(dispatch).toHaveBeenCalledTimes(2)
-      expect(dispatch).toHaveBeenCalledWith("banana/move", { key, location: targetKey })
-      expect(dispatch).toHaveBeenCalledWith("lanes/clearEmpty")
-    })
-
-    it("moves a non-person to unassigned when trying to move to out", () => {
-      const key = "entity-key"
-        , targetKey = constants.LOCATION.OUT
-        , getters = jest.fn()
-        , dispatch = jest.fn()
-
-      store.actions.move({ getters, dispatch }, { type: "banana", key, targetKey })
-
-      expect(dispatch).toHaveBeenCalledTimes(2)
-      expect(dispatch).toHaveBeenCalledWith("banana/move", { key, location: constants.LOCATION.UNASSIGNED })
-      expect(dispatch).toHaveBeenCalledWith("lanes/clearEmpty")
-    })
-
-    it("moves a person to out", () => {
-      const key = "person"
-        , targetKey = constants.LOCATION.OUT
-        , getters = jest.fn()
-        , dispatch = jest.fn()
-
-      store.actions.move({ getters, dispatch }, { type: "people", key, targetKey })
-
-      expect(dispatch).toHaveBeenCalledTimes(2)
-      expect(dispatch).toHaveBeenCalledWith("people/move", { key, location: constants.LOCATION.OUT })
+      expect(dispatch).toHaveBeenCalledWith("entities/move", { key, location: targetKey })
       expect(dispatch).toHaveBeenCalledWith("lanes/clearEmpty")
     })
 
@@ -275,10 +237,10 @@ describe("Team Store", () => {
         , getters = jest.fn()
         , dispatch = jest.fn()
 
-      store.actions.move({ getters, dispatch }, { type: "vegetables", key, targetKey })
+      store.actions.move({ getters, dispatch }, { key, targetKey })
 
       expect(dispatch).toHaveBeenCalledTimes(2)
-      expect(dispatch).toHaveBeenCalledWith("vegetables/move", { key, location: constants.LOCATION.UNASSIGNED })
+      expect(dispatch).toHaveBeenCalledWith("entities/move", { key, location: constants.LOCATION.UNASSIGNED })
       expect(dispatch).toHaveBeenCalledWith("lanes/clearEmpty")
     })
 
@@ -290,14 +252,14 @@ describe("Team Store", () => {
         , dispatch = jest.fn()
 
 
-      const prom = store.actions.move({ getters, dispatch }, { type: "animals", key, targetKey })
+      const prom = store.actions.move({ getters, dispatch }, { key, targetKey })
       expect(dispatch).toHaveBeenCalledTimes(1)
       expect(dispatch).toHaveBeenCalledWith("lanes/add")
 
       await prom
 
       expect(dispatch).toHaveBeenCalledTimes(3)
-      expect(dispatch).toHaveBeenCalledWith("animals/move", { key, location: newLaneKey })
+      expect(dispatch).toHaveBeenCalledWith("entities/move", { key, location: newLaneKey })
       expect(dispatch).toHaveBeenCalledWith("lanes/clearEmpty")
     })
 
@@ -330,27 +292,22 @@ describe("Team Store", () => {
         store.actions.applyPairing({ commit, dispatch, getters }, pairsAndLanes)
         expect(dispatch).toHaveBeenCalledTimes(5)
         expect(dispatch).toHaveBeenCalledWith("move", {
-          type: "people",
           key: "p1",
           targetKey: "l1",
         })
         expect(dispatch).toHaveBeenCalledWith("move", {
-          type: "people",
           key: "p2",
           targetKey: "l1",
         })
         expect(dispatch).toHaveBeenCalledWith("move", {
-          type: "people",
           key: "p3",
           targetKey: "l2",
         })
         expect(dispatch).toHaveBeenCalledWith("move", {
-          type: "people",
           key: "p4",
           targetKey: "l2",
         })
         expect(dispatch).toHaveBeenCalledWith("move", {
-          type: "people",
           key: "p5",
           targetKey: "l3",
         })
@@ -368,12 +325,10 @@ describe("Team Store", () => {
         expect(dispatch).toHaveBeenCalledTimes(3)
         expect(dispatch).toHaveBeenCalledWith("lanes/add")
         expect(dispatch).toHaveBeenCalledWith("move", {
-          type: "people",
           key: "p1",
           targetKey: "superlane",
         })
         expect(dispatch).toHaveBeenCalledWith("move", {
-          type: "people",
           key: "p2",
           targetKey: "superlane",
         })
@@ -382,11 +337,12 @@ describe("Team Store", () => {
 
     describe("recommendPairs", () => {
       it("dispatches applyPairing with recommended moves", () => {
-        const dispatch = jest.fn()
+        const entityGetter = jest.fn().mockReturnValue([4, 5, 6])
+          , dispatch = jest.fn()
           , commit = jest.fn()
           , getters = {
             "history/all": [1, 2, 3],
-            "people/all": [4, 5, 6],
+            "entities/all": entityGetter,
             "lanes/all": [7, 8, 9],
           }
           , moves = { moves: null }
@@ -394,6 +350,7 @@ describe("Team Store", () => {
         global.calculateMovesToBestPairing.mockReturnValue(moves)
 
         store.actions.recommendPairs({ commit, dispatch, getters })
+        expect(entityGetter).toHaveBeenCalledWith("person")
 
         expect(global.calculateMovesToBestPairing).toHaveBeenCalledTimes(1)
         expect(global.calculateMovesToBestPairing).toHaveBeenCalledWith({
@@ -410,7 +367,7 @@ describe("Team Store", () => {
       it("notifies no pairing assignment can be made", () => {
         const dispatch = jest.fn()
           , commit = jest.fn()
-          , getters = { "history/all": [], "people/all": [], "lanes/all": [] }
+          , getters = { "history/all": [], "entities/all": jest.fn().mockReturnValue([]), "lanes/all": [] }
           , moves = null
 
         global.calculateMovesToBestPairing.mockReturnValue(moves)
@@ -430,7 +387,7 @@ describe("Team Store", () => {
       it("catches errors and notifies", () => {
         const dispatch = jest.fn()
           , commit = jest.fn()
-          , getters = { "history/all": [], "people/all": [], "lanes/all": [] }
+          , getters = { "history/all": [], "entities/all": jest.fn().mockReturnValue([]), "lanes/all": [] }
           , error = new Error("recommend")
 
         console.error = jest.fn()

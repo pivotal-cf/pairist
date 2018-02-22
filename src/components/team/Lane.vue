@@ -23,7 +23,6 @@
             :chip="role"
             chip-class="role"
             outline
-            @remove="removeRole"
             :key="role['.key']"
           />
           <Chip
@@ -31,7 +30,6 @@
             :chip="track"
             chip-class="track"
             text-color="white"
-            @remove="removeTrack"
             :key="track['.key']"
           />
         </v-flex>
@@ -85,8 +83,6 @@ export default {
 
   methods: {
     ...mapActions("lanes", ["setLocked"]),
-    ...mapActions("tracks", { removeTrack: "remove" }),
-    ...mapActions("roles", { removeRole: "remove" }),
   },
 }
 </script>

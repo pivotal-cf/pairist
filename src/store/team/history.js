@@ -21,6 +21,17 @@ export default {
       )
     },
 
+    people(state, getters) {
+      return getters.all.map(history => {
+        return {
+          ".key": history[".key"],
+          "people": Object.keys(history.entities || {}).map(key =>
+            Object.assign({".key": key}, history.entities[key])
+          ).filter(person => person.type === "person"),
+        }
+      })
+    },
+
     currentScaledDate(_state, _getters, rootState) {
       return recommendation.scaleDate(rootState.shared.now)
     },

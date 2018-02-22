@@ -19,7 +19,7 @@ describe("PersonDialog", () => {
     store = new Vuex.Store({
       state: {},
       modules: {
-        people: {
+        entities: {
           namespaced: true,
           actions,
         },
@@ -48,6 +48,7 @@ describe("PersonDialog", () => {
     expect(actions.save).toHaveBeenCalled()
     expect(actions.save).toHaveBeenCalledWith(expect.anything(), {
       ".key": "p1",
+      "type": "person",
       "name": "Bart",
       "picture": "bart.png",
     }, undefined)

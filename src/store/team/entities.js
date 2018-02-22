@@ -2,7 +2,7 @@ import { firebaseMutations, firebaseAction } from "vuexfire"
 
 import constants from "@/lib/constants"
 
-export default () => ({
+export default {
   namespaced: true,
 
   state: {
@@ -15,18 +15,27 @@ export default () => ({
   },
 
   getters: {
+    byKey(state) {
+      return key =>
+        state.entities.find(entity => entity[".key"] === key)
+    },
     all(state) {
-      return state.entities
+      return type =>
+        state.entities.filter(entity => entity.type === type)
     },
     unassigned(_, getters) {
-      return getters.inLocation(constants.LOCATION.UNASSIGNED)
+      return type =>
+        getters.inLocation(constants.LOCATION.UNASSIGNED)(type)
     },
     out(_, getters) {
-      return getters.inLocation(constants.LOCATION.OUT)
+      return type =>
+        getters.inLocation(constants.LOCATION.OUT)(type)
     },
     inLocation(state, getters) {
       return location => (
-        getters.all.filter(entity => entity.location === location)
+        type =>
+          getters.all(type)
+            .filter(entity => entity.location === location)
       )
     },
   },
@@ -48,6 +57,7 @@ export default () => ({
       } else {
         const entityToCreate = {
           name: entity.name,
+          type: entity.type,
           location: constants.LOCATION.UNASSIGNED,
           updatedAt: Date.now(),
         }
@@ -65,7 +75,14 @@ export default () => ({
       dispatch("lanes/clearEmpty", null, { root: true })
     },
 
-    move({ state }, { key, location }) {
+    move({ getters, state }, { key, location }) {
+      const entity = getters.byKey(key)
+      if (!entity) { return }
+
+      if (entity.type !== "person" && location === constants.LOCATION.OUT) {
+        location = constants.LOCATION.UNASSIGNED
+      }
+
       const payload = {
         location,
         updatedAt: Date.now(),
@@ -74,4 +91,4 @@ export default () => ({
       state.ref.child(key).update(payload)
     },
   },
-})
+}

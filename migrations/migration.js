@@ -1,5 +1,6 @@
 module.exports = class {
-  constructor(db) {
+  constructor({ db, env }) {
     this.db = db
+    this.env = env
   }
 }

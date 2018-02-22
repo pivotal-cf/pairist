@@ -19,9 +19,9 @@ export default {
     all(state, _getters, _rootState, rootGetters) {
       return state.lanes.map(lane => (
         {
-          people: rootGetters["people/inLocation"](lane[".key"]),
-          tracks: rootGetters["tracks/inLocation"](lane[".key"]),
-          roles: rootGetters["roles/inLocation"](lane[".key"]),
+          people: rootGetters["entities/inLocation"](lane[".key"])("person"),
+          tracks: rootGetters["entities/inLocation"](lane[".key"])("track"),
+          roles: rootGetters["entities/inLocation"](lane[".key"])("role"),
           ...lane,
         }
       ))

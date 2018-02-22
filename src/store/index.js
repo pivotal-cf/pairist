@@ -60,7 +60,7 @@ export const store = new Vuex.Store({
       return schema
     },
 
-    appSchemaVersion() { return 1 },
+    appSchemaVersion() { return 2 },
   },
 
   actions: {

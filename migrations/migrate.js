@@ -3,6 +3,7 @@
 require("colors")
 const fs = require("fs")
 const path = require("path")
+const mkdirp = require("mkdirp")
 
 const envs = JSON.parse(fs.readFileSync(path.join(path.basename(__dirname), "..", ".firebaserc"))).projects
 
@@ -21,6 +22,7 @@ if (!env) {
 }
 
 console.log(`Running migrations for ${env.bold}...`.green)
+mkdirp.sync(`backups/${env}`)
 
 const admin = require("firebase-admin")
 var serviceAccount = require(`${process.env.HOME}/.secrets/${env}-service-account.json`)
@@ -38,7 +40,7 @@ fs.readdirSync(migrationsDir).forEach(file => {
   if (file.match(/^\d{4}_.*\.migration\.js$/)) {
     const name = file.replace(".js", "")
     const Migration = require("./" + name)
-    const migration = new Migration(db)
+    const migration = new Migration({ db, env })
     const version = parseInt(name.split("_")[0])
     migrations.push({ name, migration, version })
   }
@@ -64,18 +66,33 @@ const up = async () => {
     currentSchema = 0
   }
 
-  await db.ref("/schema/migrating").set(true)
+  try {
 
-  migrations.forEach(async ({ name, migration, version }) => {
-    if (version <= currentSchema) { return }
-    process.stdout.write(`Running ${name.blue}...`)
-    await migration.up()
-    process.stdout.write(" Done!\n".green)
-    await db.ref("/schema/version").set(version)
-  })
+    await db.ref("/schema/migrating").set(true)
 
-  await db.ref("/schema/migrating").set(false)
-  console.log("SUCCESS".green)
+    for (let i = 0; i < migrations.length; i++) {
+      const { name, migration, version } = migrations[i]
+      if (version <= currentSchema) { continue }
+
+      const all = (await db.ref().once("value")).val()
+      fs.writeFileSync(`backups/${env}/before-${name}.json`, JSON.stringify(all), "utf-8")
+
+      process.stdout.write(`Running ${name.blue}...`)
+
+      await migration.up()
+      await db.ref("/schema/version").set(version)
+      process.stdout.write(" Done!\n".green)
+    }
+
+    await db.ref("/schema/migrating").set(false)
+  } catch(error) {
+    process.stdout.write("\n".green)
+    console.error("Failed migrating:".red, error)
+    console.error(`Consider restoring from backup in backups/${env}.`.yellow)
+    console.log(" FAIL ".red.bold.italic)
+    process.exit(1)
+  }
+  console.log(" SUCCESS ".green.bold.italic)
 
   process.exit()
 }

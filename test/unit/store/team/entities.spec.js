@@ -1,7 +1,5 @@
-import storeFactory from "@/store/team/entities"
+import store from "@/store/team/entities"
 import constants from "@/lib/constants"
-
-const store = storeFactory()
 
 describe("Entities Store", () => {
   describe("mutations", () => {
@@ -17,55 +15,58 @@ describe("Entities Store", () => {
   })
 
   describe("getters", () => {
+    describe("byKey", () => {
+      it("finds one entity with the given key", () => {
+        const a = { ".key": "a" }
+          , entities = [a, { ".key": "b" }]
+
+        expect(store.getters.byKey({ entities })("a")).toBe(a)
+      })
+    })
+
     describe("all", () => {
       it("returns the entities from the state", () => {
-        const entities = { entities: "entities" }
+        const a = { type: "a" }
+          , entities = [a, { type: "b" }]
 
-        expect(store.getters.all({ entities })).toBe(entities)
+        expect(store.getters.all({ entities })("a")).toEqual([a])
       })
     })
 
     describe("inLocation", () => {
       it("returns a function that can filter by location", () => {
         const entities = [ { location: 1 }, { location: 2 }, {} ]
-          , f = store.getters.inLocation(null, { all: entities })
+          , all = jest.fn().mockReturnValue(entities)
+          , f = store.getters.inLocation(null, { all })
 
-        expect(f(1)).toEqual([{ location: 1 }])
-        expect(f(2)).toEqual([{ location: 2 }])
+        expect(f(1)("type")).toEqual([{ location: 1 }])
+        expect(all).toHaveBeenCalledWith("type")
+        expect(f(2)("other-type")).toEqual([{ location: 2 }])
+        expect(all).toHaveBeenCalledWith("other-type")
       })
     })
 
     describe("unassigned", () => {
       it("selects entities that have unassigned as their location", () => {
-        const f = jest.fn()
+        const  entities = { entities: "entities" }
+          , f = jest.fn().mockReturnValue(entities)
+          , inLocation = jest.fn().mockReturnValue(f)
 
-        store.getters.unassigned(null, { inLocation: f })
-        expect(f).toHaveBeenCalledWith(constants.LOCATION.UNASSIGNED)
-      })
-
-      it("returns results from the inLocation getter", () => {
-        const f = jest.fn()
-          , entities = { entities: "entities" }
-
-        f.mockReturnValue(entities)
-        expect(store.getters.unassigned(null, { inLocation: f })).toBe(entities)
+        expect(store.getters.unassigned(null, { inLocation })("type")).toBe(entities)
+        expect(inLocation).toHaveBeenCalledWith(constants.LOCATION.UNASSIGNED)
+        expect(f).toHaveBeenCalledWith("type")
       })
     })
 
     describe("out", () => {
       it("selects entities that have out as their location", () => {
-        const f = jest.fn()
+        const  entities = { entities: "entities" }
+          , f = jest.fn().mockReturnValue(entities)
+          , inLocation = jest.fn().mockReturnValue(f)
 
-        store.getters.out(null, { inLocation: f })
-        expect(f).toHaveBeenCalledWith(constants.LOCATION.OUT)
-      })
-
-      it("returns results from the inLocation getter", () => {
-        const f = jest.fn()
-          , entities = { entities: "entities" }
-
-        f.mockReturnValue(entities)
-        expect(store.getters.out(null, { inLocation: f })).toBe(entities)
+        expect(store.getters.out(null, { inLocation })("type")).toBe(entities)
+        expect(inLocation).toHaveBeenCalledWith(constants.LOCATION.OUT)
+        expect(f).toHaveBeenCalledWith("type")
       })
     })
   })
@@ -168,6 +169,8 @@ describe("Entities Store", () => {
     describe("move", () => {
       it("moves existing entity to location", () => {
         const update = jest.fn()
+          , byKey =  jest.fn().mockReturnValue({})
+          , getters = { byKey }
           , child = jest.fn().mockReturnValue({ update })
           , state = { ref: { child } }
 
@@ -177,11 +180,65 @@ describe("Entities Store", () => {
         const key = "key", location = "location"
         const payload = { location, updatedAt }
 
-        store.actions.move({ state }, { key, location })
+        store.actions.move({ getters, state }, { key, location })
         expect(child).toHaveBeenCalledTimes(1)
         expect(child).toHaveBeenCalledWith("key")
         expect(update).toHaveBeenCalledTimes(1)
         expect(update).toHaveBeenCalledWith(payload)
+      })
+
+      it("moves to unassigned if trying to move non-person to out", () => {
+        const update = jest.fn()
+          , byKey =  jest.fn().mockReturnValue({ type: "not-person" })
+          , getters = { byKey }
+          , child = jest.fn().mockReturnValue({ update })
+          , state = { ref: { child } }
+
+        const updatedAt = 123456789
+        Date.now = jest.fn().mockReturnValue(updatedAt)
+
+        const key = "key", location = constants.LOCATION.OUT
+        const payload = { location: constants.LOCATION.UNASSIGNED, updatedAt }
+
+        store.actions.move({ getters, state }, { key, location })
+        expect(child).toHaveBeenCalledTimes(1)
+        expect(child).toHaveBeenCalledWith("key")
+        expect(update).toHaveBeenCalledTimes(1)
+        expect(update).toHaveBeenCalledWith(payload)
+      })
+
+      it("allows person to be moved to out", () => {
+        const update = jest.fn()
+          , byKey =  jest.fn().mockReturnValue({ type: "person" })
+          , getters = { byKey }
+          , child = jest.fn().mockReturnValue({ update })
+          , state = { ref: { child } }
+
+        const updatedAt = 123456789
+        Date.now = jest.fn().mockReturnValue(updatedAt)
+
+        const key = "key", location = constants.LOCATION.OUT
+        const payload = { location, updatedAt }
+
+        store.actions.move({ getters, state }, { key, location })
+        expect(child).toHaveBeenCalledTimes(1)
+        expect(child).toHaveBeenCalledWith("key")
+        expect(update).toHaveBeenCalledTimes(1)
+        expect(update).toHaveBeenCalledWith(payload)
+      })
+
+      it("simply returns with no error when entity not found", () => {
+        const byKey =  jest.fn()
+          , getters = { byKey }
+          , child = jest.fn()
+          , state = { ref: { child } }
+
+        const key = "key", location = constants.LOCATION.OUT
+
+        expect(() =>
+          store.actions.move({ getters, state }, { key, location })
+        ).not.toThrow()
+        expect(child).toHaveBeenCalledTimes(0)
       })
     })
   })

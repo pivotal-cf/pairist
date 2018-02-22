@@ -30,16 +30,15 @@ describe("Lanes Store", () => {
             { ".key": 1 }, { ".key": 2 }, { ".key": 3 },
           ]
           , rootGetters = {
-            "people/inLocation": jest.fn().mockImplementation((key) => ({ people: key })),
-            "tracks/inLocation": jest.fn().mockImplementation((key) => ({ tracks: key })),
-            "roles/inLocation": jest.fn().mockImplementation((key) => ({ roles: key })),
+            "entities/inLocation": jest.fn().mockImplementation((key) =>
+              (type) => ({ [type]: key })),
           }
 
         const result = store.getters.all({ lanes }, null, null, rootGetters)
         expect(result).toEqual([
-          { ".key": 1, "people": { people: 1 }, "tracks": { tracks: 1 }, "roles": { roles: 1 } },
-          { ".key": 2, "people": { people: 2 }, "tracks": { tracks: 2 }, "roles": { roles: 2 } },
-          { ".key": 3, "people": { people: 3 }, "tracks": { tracks: 3 }, "roles": { roles: 3 } },
+          { ".key": 1, "people": { person: 1 }, "tracks": { track: 1 }, "roles": { role: 1 } },
+          { ".key": 2, "people": { person: 2 }, "tracks": { track: 2 }, "roles": { role: 2 } },
+          { ".key": 3, "people": { person: 3 }, "tracks": { track: 3 }, "roles": { role: 3 } },
         ])
       })
     })

@@ -41,11 +41,11 @@
         </h2>
 
         <Chip
-          v-for="track in unassignedTracks"
+          v-for="track in unassigned('track')"
           :chip="track"
           chip-class="track"
           text-color="white"
-          @remove="removeTrack"
+          @remove="remove"
           :key="track['.key']"
         />
       </div>
@@ -90,11 +90,11 @@
         </h2>
 
         <Chip
-          v-for="role in unassignedRoles"
+          v-for="role in unassigned('role')"
           :chip="role"
           chip-class="role"
           outline
-          @remove="removeRole"
+          @remove="remove"
           :key="role['.key']"
         />
       </div>
@@ -112,7 +112,7 @@
           </v-btn>
         <PersonDialog ref="personDialog" :action-type="'New'"/></h2>
         <Person
-          v-for="person in unassignedPeople"
+          v-for="person in unassigned('person')"
           :person="person"
           :key="person['.key']"
         />
@@ -129,7 +129,7 @@
         <h2>PM / Out</h2>
 
         <Person
-          v-for="person in outPeople"
+          v-for="person in out('person')"
           :person="person"
           :key="person['.key']"
         />
@@ -167,12 +167,7 @@ export default {
   computed: {
     ...mapGetters(["canWrite", "dragging", "dropTarget"]),
 
-    ...mapGetters("people", {
-      unassignedPeople: "unassigned",
-      outPeople: "out",
-    }),
-    ...mapGetters("tracks", { unassignedTracks: "unassigned" }),
-    ...mapGetters("roles", { unassignedRoles: "unassigned" }),
+    ...mapGetters("entities", ["out", "unassigned"]),
   },
 
   methods: {
@@ -181,20 +176,19 @@ export default {
     },
 
     addTrack() {
-      this.$store.dispatch("tracks/save", { name: this.newTrackName })
+      this.$store.dispatch("entities/save", { name: this.newTrackName, type: "track" })
 
       this.newTrackDialog = false
       this.newTrackName = ""
     },
 
     addRole() {
-      this.$store.dispatch("roles/save", { name: this.newRoleName })
+      this.$store.dispatch("entities/save", { name: this.newRoleName, type: "role" })
 
       this.newRoleDialog = false
       this.newRoleName = ""
     },
-    ...mapActions("tracks", { removeTrack: "remove" }),
-    ...mapActions("roles", { removeRole: "remove" }),
+    ...mapActions("entities", ["remove"]),
   },
 }
 </script>

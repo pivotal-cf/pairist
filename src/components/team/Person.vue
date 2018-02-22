@@ -84,7 +84,7 @@ export default {
     },
 
     remove() {
-      this.$store.dispatch("people/remove", this.person[".key"])
+      this.$store.dispatch("entities/remove", this.person[".key"])
     },
   },
 }

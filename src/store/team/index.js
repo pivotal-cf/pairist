@@ -12,9 +12,7 @@ import recommendation from "./recommendation"
 
 export default {
   modules: {
-    people: entities(),
-    roles: entities(),
-    tracks: entities(),
+    entities,
     lanes,
     history,
 
@@ -81,12 +79,8 @@ export default {
     loadTeamRefs: firebaseAction(({ bindFirebaseRef, dispatch }, currentRef) => {
       bindFirebaseRef("current" , currentRef)
 
-      dispatch("people/setRef",
-        currentRef.child("people").orderByChild("updatedAt"))
-      dispatch("tracks/setRef",
-        currentRef.child("tracks").orderByChild("updatedAt"))
-      dispatch("roles/setRef",
-        currentRef.child("roles").orderByChild("updatedAt"))
+      dispatch("entities/setRef",
+        currentRef.child("entities").orderByChild("updatedAt"))
 
       dispatch("lanes/setRef",
         currentRef.child("lanes"))
@@ -148,11 +142,7 @@ export default {
       commit("loading", false)
     },
 
-    async move({ getters, dispatch }, { type, key, targetKey }) {
-      if (type !== "people" && targetKey === constants.LOCATION.OUT) {
-        targetKey = constants.LOCATION.UNASSIGNED
-      }
-
+    async move({ getters, dispatch }, { key, targetKey }) {
       let location
 
       if (targetKey == "new-lane") {
@@ -164,7 +154,7 @@ export default {
         location = constants.LOCATION.UNASSIGNED
       }
 
-      dispatch(`${type}/move`, { key, location })
+      dispatch("entities/move", { key, location })
       dispatch("lanes/clearEmpty")
     },
 
@@ -178,7 +168,6 @@ export default {
 
         pair.forEach(personKey => {
           dispatch("move", {
-            type: "people",
             key: personKey,
             targetKey: lane,
           })
@@ -196,9 +185,9 @@ export default {
     recommendPairs({ commit, dispatch, getters}) {
       try {
         const moves = recommendation.calculateMovesToBestPairing({
-          history: getters["history/all"].slice(),
+          history: getters["history/people"].slice(),
           current: {
-            people: getters["people/all"].slice(),
+            people: getters["entities/all"]("person").slice(),
             lanes: getters["lanes/all"].slice(),
           },
         })
