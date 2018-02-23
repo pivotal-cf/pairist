@@ -1,13 +1,12 @@
-import { shallow, createLocalVue } from "@vue/test-utils"
-import Vuex from "vuex"
+import { shallow, createLocalVue } from '@vue/test-utils'
+import Vuex from 'vuex'
+import DraggingController from '@/components/team/DraggingController'
 
 const localVue = createLocalVue()
 
 localVue.use(Vuex)
 
-import DraggingController from "@/components/team/DraggingController"
-
-describe("DraggingController", () => {
+describe('DraggingController', () => {
   let actions
   let store
 
@@ -21,15 +20,15 @@ describe("DraggingController", () => {
     })
   })
 
-  it("renders with no exceptions", () => {
-    shallow(DraggingController, { propsData: { draggables: ["a", "b"] } })
+  it('renders with no exceptions', () => {
+    shallow(DraggingController, { propsData: { draggables: ['a', 'b'] } })
   })
 
-  it("maps the move action", () => {
+  it('maps the move action', () => {
     const wrapper = shallow(DraggingController, {
       store,
       localVue,
-      propsData: { draggables: ["a", "b"] },
+      propsData: { draggables: ['a', 'b'] },
     })
 
     const args = [1, 2, 3]

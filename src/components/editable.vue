@@ -9,7 +9,7 @@
 </template>
 
 <script>
-export default  {
+export default {
   props: {
     content: {
       type: String,
@@ -17,7 +17,7 @@ export default  {
     },
     placeholder: {
       type: String,
-      default: "",
+      default: '',
     },
     saveOnInput: {
       type: Boolean,
@@ -25,50 +25,50 @@ export default  {
     },
   },
 
-  data() {
+  data () {
     return {
-      contentText: "",
+      contentText: '',
     }
   },
 
   watch: {
-    content(value) {
-      if (document.activeElement != this.$refs.contentWrapper) {
+    content (value) {
+      if (document.activeElement !== this.$refs.contentWrapper) {
         this.contentText = value
         this.$refs.contentWrapper.innerText = this.contentText
       }
     },
   },
 
-  mounted() {
+  mounted () {
     this.contentText = this.content
     this.$refs.contentWrapper.innerText = this.contentText
   },
 
   methods: {
-    input(event) {
+    input (event) {
       this.contentText = event.target.innerText
       if (this.saveOnInput) {
-        this.$emit("update", event.target.innerText)
+        this.$emit('update', event.target.innerText)
       }
     },
 
-    update(event) {
+    update (event) {
       event.preventDefault()
-      this.$emit("update", event.target.innerText)
+      this.$emit('update', event.target.innerText)
       if (this.saveOnInput) {
         this.$refs.contentWrapper.blur()
       } else {
-        this.$refs.contentWrapper.innerText = ""
+        this.$refs.contentWrapper.innerText = ''
       }
     },
 
-    disableEvent(event) {
+    disableEvent (event) {
       event.preventDefault()
     },
 
-    clear() {
-      this.contentText = ""
+    clear () {
+      this.contentText = ''
       this.$refs.contentWrapper.innerText = this.contentText
     },
   },

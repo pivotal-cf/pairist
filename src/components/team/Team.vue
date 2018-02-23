@@ -38,42 +38,42 @@
 </template>
 
 <script>
-import Notification from "@/components/Notification"
+import Notification from '@/components/Notification'
 
-import DraggingController from "./DraggingController"
+import DraggingController from './DraggingController'
 
-import { mapGetters } from "vuex"
+import { mapGetters } from 'vuex'
 
 export default {
   components: { Notification, DraggingController },
 
   computed: {
-    history() {
-      const history = this.$store.getters["history/all"]
+    history () {
+      const history = this.$store.getters['history/all']
       return history
         .slice(Math.max(history.length - 10, 1))
         .reverse()
     },
 
-    ...mapGetters(["canWrite", "user", "showingDate"]),
+    ...mapGetters(['canWrite', 'user', 'showingDate']),
   },
 
-  async beforeRouteEnter(to, from, next) {
-    next(async vm => (await vm.loadTeam(to.params.team, to.params.date)))
+  async beforeRouteEnter (to, from, next) {
+    next(async vm => vm.loadTeam(to.params.team, to.params.date))
   },
 
-  async beforeRouteUpdate(to, from, next) {
+  async beforeRouteUpdate (to, from, next) {
     await this.loadTeam(to.params.team, to.params.date)
     next()
   },
 
   methods: {
-    async loadTeam(name, date) {
-      await this.$store.dispatch("loadTeam", name)
-      await this.$store.dispatch("loadState", date || "current")
+    async loadTeam (name, date) {
+      await this.$store.dispatch('loadTeam', name)
+      await this.$store.dispatch('loadState', date || 'current')
     },
 
-    toDate(value) {
+    toDate (value) {
       const date = this.$store.getters.toDate(value)
       return date
     },

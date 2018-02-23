@@ -7,38 +7,38 @@ export default {
   },
 
   mutations: {
-    updateNow(state) { state.now = Date.now() },
+    updateNow (state) { state.now = Date.now() },
 
-    loading(state, value) { state.loading = value },
+    loading (state, value) { state.loading = value },
 
-    notify(state, { message, color }) {
+    notify (state, { message, color }) {
       state.snackbarText = message
       state.snackbarColor = color
     },
   },
 
   getters: {
-    snackbarText(state) {
+    snackbarText (state) {
       return state.snackbarText
     },
-    snackbarColor(state) {
+    snackbarColor (state) {
       return state.snackbarColor
     },
-    loading(state) {
+    loading (state) {
       return state.loading
     },
   },
 
   actions: {
-    watchNow({ commit }) {
-      commit("updateNow")
+    watchNow ({ commit }) {
+      commit('updateNow')
       setInterval(() => {
-        commit("updateNow")
-      }, (process.env.NODE_ENV === "produciton" ? 60 : 5) * 1000)
+        commit('updateNow')
+      }, (process.env.NODE_ENV === 'produciton' ? 60 : 5) * 1000)
     },
 
-    clearNotification({ commit }) {
-      commit("notify", { message: null, color: null })
+    clearNotification ({ commit }) {
+      commit('notify', { message: null, color: null })
     },
   },
 }

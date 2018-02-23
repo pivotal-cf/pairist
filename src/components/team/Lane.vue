@@ -53,13 +53,13 @@
 </template>
 
 <script>
-import Person from "./Person"
-import Chip from "./Chip"
+import Person from './Person'
+import Chip from './Chip'
 
 import {
   mapActions,
   mapGetters,
-} from "vuex"
+} from 'vuex'
 
 export default {
   components: {
@@ -78,11 +78,11 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["canWrite", "dragging", "dropTarget"]),
+    ...mapGetters(['canWrite', 'dragging', 'dropTarget']),
   },
 
   methods: {
-    ...mapActions("lanes", ["setLocked"]),
+    ...mapActions('lanes', ['setLocked']),
   },
 }
 </script>

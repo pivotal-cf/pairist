@@ -1,13 +1,13 @@
 export const permutations = (array) => {
-  var results = [],
-    used = []
+  let results = []
+  let used = []
 
   let permute = (input) => {
     var i, ch
     for (i = 0; i < input.length; i++) {
       ch = input.splice(i, 1)[0]
       used.push(ch)
-      if (input.length == 0) {
+      if (input.length === 0) {
         results.push(used.slice())
       }
       permute(input)

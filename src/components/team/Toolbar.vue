@@ -72,7 +72,7 @@
 import {
   mapGetters,
   mapActions,
-} from "vuex"
+} from 'vuex'
 
 export default {
   props: {
@@ -83,18 +83,18 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["canWrite", "loading", "user", "showingDate"]),
+    ...mapGetters(['canWrite', 'loading', 'user', 'showingDate']),
     publicRO: {
-      get() { return this.$store.getters.publicRO },
-      set(value) { this.$store.dispatch("setPublic", value) },
+      get () { return this.$store.getters.publicRO },
+      set (value) { this.$store.dispatch('setPublic', value) },
     },
   },
 
   methods: {
-    ...mapActions(["recommendPairs", "logout"]),
+    ...mapActions(['recommendPairs', 'logout']),
 
-    saveHistory() {
-      this.$store.dispatch("history/save")
+    saveHistory () {
+      this.$store.dispatch('history/save')
     },
   },
 }

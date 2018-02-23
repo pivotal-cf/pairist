@@ -34,51 +34,17 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex"
+import { mapGetters } from 'vuex'
 
-import Notification from "@/components/Notification"
+import Notification from '@/components/Notification'
 
 export default {
   components: {
     Notification,
   },
 
-  data() {
-    return {
-      valid: true,
-      user: "",
-      name: "",
-      nameRules: [
-        (v) => !!v || "Team name is required",
-        (v) => v && v.length <= 25 || "Team name must be less than 15 characters",
-        (v) => v && /^[A-Za-z\-0-9]+$/.test(v) || "Team name must only contain letters numbers or dashes",
-      ],
-      password: "",
-      passwordRules: [
-        (v) => !!v || "Password is required",
-        (v) => v && v.length >= 5 || "Password must be at least 6 characters",
-      ],
-    }
-  },
-
   computed: {
-    ...mapGetters(["loading"]),
-  },
-
-  methods: {
-    ...mapActions(["signup", "signin"]),
-
-    login() {
-      if (this.$refs.form.validate()) {
-        this.signin({ name: this.name, password: this. password })
-      }
-    },
-
-    create() {
-      if (this.$refs.form.validate()) {
-        this.signup({ name: this.name, password: this.password })
-      }
-    },
+    ...mapGetters(['loading']),
   },
 }
 </script>

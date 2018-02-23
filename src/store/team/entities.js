@@ -1,6 +1,6 @@
-import { firebaseMutations, firebaseAction } from "vuexfire"
+import { firebaseMutations, firebaseAction } from 'vuexfire'
 
-import constants from "@/lib/constants"
+import constants from '@/lib/constants'
 
 export default {
   namespaced: true,
@@ -10,48 +10,47 @@ export default {
   },
 
   mutations: {
-    setRef(state, ref) { state.ref = ref },
+    setRef (state, ref) { state.ref = ref },
     ...firebaseMutations,
   },
 
   getters: {
-    byKey(state) {
+    byKey (state) {
       return key =>
-        state.entities.find(entity => entity[".key"] === key)
+        state.entities.find(entity => entity['.key'] === key)
     },
-    all(state) {
+    all (state) {
       return type =>
         state.entities.filter(entity => entity.type === type)
     },
-    unassigned(_, getters) {
+    unassigned (_, getters) {
       return type =>
         getters.inLocation(constants.LOCATION.UNASSIGNED)(type)
     },
-    out(_, getters) {
+    out (_, getters) {
       return type =>
         getters.inLocation(constants.LOCATION.OUT)(type)
     },
-    inLocation(state, getters) {
-      return location => (
+    inLocation (state, getters) {
+      return location =>
         type =>
           getters.all(type)
             .filter(entity => entity.location === location)
-      )
     },
   },
 
   actions: {
     setRef: firebaseAction(({ bindFirebaseRef, commit }, ref) => {
-      bindFirebaseRef("entities", ref)
-      commit("setRef",  ref.ref)
+      bindFirebaseRef('entities', ref)
+      commit('setRef', ref.ref)
     }),
 
-    save({ state }, entity) {
-      if (entity.name === "") { return }
+    save ({ state }, entity) {
+      if (entity.name === '') { return }
 
-      if (entity[".key"]) {
-        const key = entity[".key"]
-        delete entity[".key"]
+      if (entity['.key']) {
+        const key = entity['.key']
+        delete entity['.key']
 
         state.ref.child(key).update(entity)
       } else {
@@ -70,16 +69,16 @@ export default {
       }
     },
 
-    remove({ dispatch, state }, key ) {
+    remove ({ dispatch, state }, key) {
       state.ref.child(key).remove()
-      dispatch("lanes/clearEmpty", null, { root: true })
+      dispatch('lanes/clearEmpty', null, { root: true })
     },
 
-    move({ getters, state }, { key, location }) {
+    move ({ getters, state }, { key, location }) {
       const entity = getters.byKey(key)
       if (!entity) { return }
 
-      if (entity.type !== "person" && location === constants.LOCATION.OUT) {
+      if (entity.type !== 'person' && location === constants.LOCATION.OUT) {
         location = constants.LOCATION.UNASSIGNED
       }
 

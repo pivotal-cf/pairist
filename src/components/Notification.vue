@@ -20,24 +20,24 @@
 import {
   mapGetters,
   mapActions,
-} from "vuex"
+} from 'vuex'
 
 export default {
   computed: {
     snackbarText: {
-      get() { return this.$store.getters.snackbarText },
-      set(value) {
+      get () { return this.$store.getters.snackbarText },
+      set (value) {
         if (value === false) {
           this.clearNotification()
         }
       },
     },
 
-    ...mapGetters(["snackbarColor"]),
+    ...mapGetters(['snackbarColor']),
   },
 
   methods: {
-    ...mapActions(["clearNotification"]),
+    ...mapActions(['clearNotification']),
   },
 }
 </script>

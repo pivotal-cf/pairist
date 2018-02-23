@@ -13,34 +13,34 @@
 </template>
 
 <script>
-import Migrating from "@/components/Migrating"
-import Loading from "@/components/Loading"
-import Update from "@/components/Update"
-import Toolbar from "@/components/team/Toolbar"
-import { mapGetters } from "vuex"
+import Migrating from '@/components/Migrating'
+import Loading from '@/components/Loading'
+import Update from '@/components/Update'
+import Toolbar from '@/components/team/Toolbar'
+import { mapGetters } from 'vuex'
 
 export default {
   components: { Migrating, Loading, Update, Toolbar },
 
   computed: {
     ...mapGetters([
-      "migrating", "appSchemaVersion", "dbSchemaVersion", "dbSchema",
-      "localVersion", "remoteVersion",
+      'migrating', 'appSchemaVersion', 'dbSchemaVersion', 'dbSchema',
+      'localVersion', 'remoteVersion',
     ]),
   },
 
   watch: {
-    dbSchemaVersion() {
+    dbSchemaVersion () {
       this.checkVersion()
     },
 
-    migrating() {
+    migrating () {
       this.checkVersion()
     },
   },
 
   methods: {
-    checkVersion() {
+    checkVersion () {
       if (this.dbSchemaVersion > this.appSchemaVersion && !this.migrating) {
         location.reload(true)
       }

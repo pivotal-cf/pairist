@@ -25,9 +25,9 @@
 </template>
 
 <script>
-import ContextMenu from "@/components/ContextMenu"
-import PersonDialog from "./PersonDialog"
-import { mapGetters } from "vuex"
+import ContextMenu from '@/components/ContextMenu'
+import PersonDialog from './PersonDialog'
+import { mapGetters } from 'vuex'
 
 export default {
   components: { ContextMenu, PersonDialog },
@@ -40,51 +40,51 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["canWrite"]),
+    ...mapGetters(['canWrite']),
 
-    picture() {
+    picture () {
       if (this.person.picture && this.person.picture.length > 0) {
         return this.person.picture
       }
-      return require("@/assets/no-picture.svg")
+      return require('@/assets/no-picture.svg')
     },
 
-    fontSize() {
+    fontSize () {
       if (this.person.name.length < 8) {
-        return "18px"
+        return '18px'
       } else if (this.person.name.length < 9) {
-        return "16px"
+        return '16px'
       } else if (this.person.name.length < 10) {
-        return "15px"
+        return '15px'
       } else if (this.person.name.length < 12) {
-        return "12px"
+        return '12px'
       } else if (this.person.name.length < 15) {
-        return "11px"
+        return '11px'
       } else if (this.person.name.length < 18) {
-        return "10px"
+        return '10px'
       } else {
-        return "9px"
+        return '9px'
       }
     },
   },
 
   methods: {
-    fixPicture(event) {
-      event.target.src = require("@/assets/error-image.svg")
+    fixPicture (event) {
+      event.target.src = require('@/assets/error-image.svg')
     },
 
-    openMenu(event) {
+    openMenu (event) {
       if (this.canWrite) {
         this.$refs.menu.open(event)
       }
     },
 
-    edit() {
+    edit () {
       this.$refs.personDialog.open()
     },
 
-    remove() {
-      this.$store.dispatch("entities/remove", this.person[".key"])
+    remove () {
+      this.$store.dispatch('entities/remove', this.person['.key'])
     },
   },
 }

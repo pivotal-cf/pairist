@@ -37,7 +37,7 @@ export default {
     },
   },
 
-  data() {
+  data () {
     return {
       showMenu: false,
       x: 0,
@@ -47,25 +47,25 @@ export default {
   },
 
   watch: {
-    dialog(value) {
+    dialog (value) {
       if (value) {
-        window.addEventListener("keyup", this.handleKeyPress)
+        window.addEventListener('keyup', this.handleKeyPress)
       } else {
-        window.removeEventListener("keyup", this.handleKeyPress)
+        window.removeEventListener('keyup', this.handleKeyPress)
       }
     },
   },
 
   methods: {
-    handleKeyPress(event) {
-      if (event.keyCode == 13 && this.dialog === true) {
+    handleKeyPress (event) {
+      if (event.keyCode === 13 && this.dialog === true) {
         this.confirmRemove()
       } else if (event.keyCode === 27) {
         this.dialog = false
       }
     },
 
-    open(event) {
+    open (event) {
       event.preventDefault()
       this.showMenu = false
       this.x = event.clientX
@@ -75,9 +75,9 @@ export default {
       })
     },
 
-    confirmRemove() {
+    confirmRemove () {
       this.dialog = false
-      this.$emit("remove")
+      this.$emit('remove')
     },
   },
 }

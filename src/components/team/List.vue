@@ -49,10 +49,10 @@
 </template>
 
 <script>
-import ListItem from "@/components/team/ListItem"
-import editable from "@/components/editable"
+import ListItem from '@/components/team/ListItem'
+import editable from '@/components/editable'
 
-import { mapGetters } from "vuex"
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -67,71 +67,71 @@ export default {
     },
   },
 
-  data() {
+  data () {
     return {
-      newItem: { title: "" },
+      newItem: { title: '' },
       dialog: false,
       loading: [],
     }
   },
 
   computed: {
-    ...mapGetters(["canWrite"]),
+    ...mapGetters(['canWrite']),
 
-    isLoading() {
+    isLoading () {
       return (key) => this.loading.includes(key)
     },
   },
 
   watch: {
-    dialog(value) {
+    dialog (value) {
       if (value) {
-        window.addEventListener("keyup", this.handleKeyPress)
+        window.addEventListener('keyup', this.handleKeyPress)
       } else {
-        window.removeEventListener("keyup", this.handleKeyPress)
+        window.removeEventListener('keyup', this.handleKeyPress)
       }
     },
   },
 
   methods: {
-    handleKeyPress(event) {
-      if (event.keyCode == 13 && this.dialog === true) {
+    handleKeyPress (event) {
+      if (event.keyCode === 13 && this.dialog === true) {
         this.remove()
       } else if (event.keyCode === 27) {
         this.dialog = false
       }
     },
 
-    addItemFocus() {
+    addItemFocus () {
       this.$refs.newItemEl.$el.lastChild.focus()
     },
 
-    async addItem(list, value) {
-      if (value === "") { return }
+    async addItem (list, value) {
+      if (value === '') { return }
 
       this.newItem.title = value
-      await this.$store.dispatch("lists/saveItem", { list: { ...this.list }, item: { ...this.newItem  } })
-      this.newItem = { title: "" }
+      await this.$store.dispatch('lists/saveItem', { list: { ...this.list }, item: { ...this.newItem } })
+      this.newItem = { title: '' }
       this.$refs.newItemEl.clear()
     },
 
-    async updateItem(item) {
-      this.loading.push(item[".key"])
-      await this.$store.dispatch("lists/saveItem", { list: { ...this.list }, item })
-      this.loading.splice(this.loading.indexOf(item[".key"]), 1)
+    async updateItem (item) {
+      this.loading.push(item['.key'])
+      await this.$store.dispatch('lists/saveItem', { list: { ...this.list }, item })
+      this.loading.splice(this.loading.indexOf(item['.key']), 1)
     },
 
-    removeItem(key) {
-      this.$store.dispatch("lists/removeItem", { list: { ...this.list }, key })
+    removeItem (key) {
+      this.$store.dispatch('lists/removeItem', { list: { ...this.list }, key })
     },
 
-    changeTitle(title) {
-      this.$store.dispatch("lists/save", { ...this.list, title })
+    changeTitle (title) {
+      this.$store.dispatch('lists/save', { ...this.list, title })
     },
 
-    remove() {
+    remove () {
       this.dialog = false
-      this.$store.dispatch("lists/remove", this.list[".key"])
+      this.$store.dispatch('lists/remove', this.list['.key'])
     },
   },
 }

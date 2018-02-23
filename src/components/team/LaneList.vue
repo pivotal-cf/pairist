@@ -19,15 +19,15 @@
 </template>
 
 <script>
-import Lane from "./Lane"
+import Lane from './Lane'
 
-import { mapGetters } from "vuex"
+import { mapGetters } from 'vuex'
 
 export default {
   components: { Lane },
 
   computed: {
-    ...mapGetters("lanes", { lanes: "all" }),
+    ...mapGetters('lanes', { lanes: 'all' }),
   },
 }
 </script>

@@ -1,10 +1,10 @@
-import assert from "assert"
-import _ from "lodash"
+import assert from 'assert'
+import _ from 'lodash'
 
-import Recommendation from "@/lib/recommendation"
-import constants from "@/lib/constants"
+import Recommendation from '@/lib/recommendation'
+import constants from '@/lib/constants'
 
-describe("Recommendation", () => {
+describe('Recommendation', () => {
   let recommendation
 
   beforeEach(() => {
@@ -13,32 +13,32 @@ describe("Recommendation", () => {
     })
   })
 
-  describe("_isPairingValid", () => {
-    it("is always valid without solos", () => {
+  describe('_isPairingValid', () => {
+    it('is always valid without solos', () => {
       expect(recommendation._isPairingValid({ pairing: [], solos: [] })).toBeTruthy()
     })
 
-    it("is invalid if pairing two solos but not together", () => {
+    it('is invalid if pairing two solos but not together', () => {
       expect(recommendation._isPairingValid({
         pairing: [[1, 3], [2, 4]],
-        solos: [{ ".key": 1 }, { ".key": 2 }],
+        solos: [{ '.key': 1 }, { '.key': 2 }],
       })).toBeTruthy()
     })
 
-    it("is invalid if pairing two solos together", () => {
+    it('is invalid if pairing two solos together', () => {
       expect(recommendation._isPairingValid({
         pairing: [[1, 2]],
-        solos: [{ ".key": 1 }, { ".key": 2 }],
+        solos: [{ '.key': 1 }, { '.key': 2 }],
       })).toBeFalsy()
     })
   })
 
-  describe("calculateMovesToBestPairing", () => {
-    it("does not blow up if history is not set", () => {
+  describe('calculateMovesToBestPairing', () => {
+    it('does not blow up if history is not set', () => {
       const bestPairing = recommendation.calculateMovesToBestPairing({
         current: {
-          people: [ { ".key": "p1", "location": "l1" } ],
-          lanes: [{ ".key": "l1" }],
+          people: [{ '.key': 'p1', 'location': 'l1' }],
+          lanes: [{ '.key': 'l1' }],
         },
       })
 
@@ -49,10 +49,10 @@ describe("Recommendation", () => {
       const bestPairing = recommendation.calculateMovesToBestPairing({
         current: {
           people: [
-            { ".key": "p1", "location": "l1" },
-            { ".key": "p2", "location": "l1" },
+            { '.key': 'p1', 'location': 'l1' },
+            { '.key': 'p2', 'location': 'l1' },
           ],
-          lanes: [{ ".key": "l1" }],
+          lanes: [{ '.key': 'l1' }],
         },
         history: [],
       })
@@ -60,35 +60,35 @@ describe("Recommendation", () => {
       expect(bestPairing).toEqual([])
     })
 
-    describe("with 3 people", () => {
+    describe('with 3 people', () => {
       it("pairs the two that haven't paired together the longest", () => {
         const bestPairing = recommendation.calculateMovesToBestPairing({
           current: {
             people: [
-              { ".key": "p1", "location": constants.LOCATION.UNASSIGNED },
-              { ".key": "p2", "location": constants.LOCATION.UNASSIGNED },
-              { ".key": "p3", "location": constants.LOCATION.UNASSIGNED },
+              { '.key': 'p1', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'p2', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'p3', 'location': constants.LOCATION.UNASSIGNED },
             ],
-            lanes: [{ ".key": "l1" }],
+            lanes: [{ '.key': 'l1' }],
           },
           history: [
             {
-              ".key": "" + previousScore(recommendation, 3),
+              '.key': '' + previousScore(recommendation, 3),
             },
             {
-              ".key": "" + previousScore(recommendation, 2),
-              "people": [
-                { ".key": "p1", "location": "l1" },
-                { ".key": "p2", "location": "l2" },
-                { ".key": "p3", "location": "l1" },
+              '.key': '' + previousScore(recommendation, 2),
+              'people': [
+                { '.key': 'p1', 'location': 'l1' },
+                { '.key': 'p2', 'location': 'l2' },
+                { '.key': 'p3', 'location': 'l1' },
               ],
             },
             {
-              ".key": "" + previousScore(recommendation, 1),
-              "people": [
-                { ".key": "p1", "location": "l1" },
-                { ".key": "p2", "location": "l1" },
-                { ".key": "p3", "location": "l2" },
+              '.key': '' + previousScore(recommendation, 1),
+              'people': [
+                { '.key': 'p1', 'location': 'l1' },
+                { '.key': 'p2', 'location': 'l1' },
+                { '.key': 'p3', 'location': 'l2' },
               ],
             },
           ],
@@ -96,43 +96,43 @@ describe("Recommendation", () => {
 
         expect(bestPairing).toEqual([
           {
-            lane: "l1",
-            pair: [ "p1" ],
+            lane: 'l1',
+            pair: ['p1'],
           },
           {
-            lane: "new-lane",
-            pair: [ "p2", "p3" ],
+            lane: 'new-lane',
+            pair: ['p2', 'p3'],
           },
         ])
       })
     })
 
-    describe("with people out", () => {
+    describe('with people out', () => {
       it("pairs the two that haven't paired together the longest", () => {
         const bestPairing = recommendation.calculateMovesToBestPairing({
           current: {
             people: [
-              { ".key": "p1", "location": constants.LOCATION.UNASSIGNED },
-              { ".key": "p2", "location": constants.LOCATION.UNASSIGNED },
-              { ".key": "p3", "location": constants.LOCATION.OUT },
+              { '.key': 'p1', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'p2', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'p3', 'location': constants.LOCATION.OUT },
             ],
             lanes: [],
           },
           history: [
             {
-              ".key": "" + previousScore(recommendation, 1),
-              "people": [
-                { ".key": "p1", "location": "l1" },
-                { ".key": "p2", "location": "l1" },
-                { ".key": "p3", "location": "l2" },
+              '.key': '' + previousScore(recommendation, 1),
+              'people': [
+                { '.key': 'p1', 'location': 'l1' },
+                { '.key': 'p2', 'location': 'l1' },
+                { '.key': 'p3', 'location': 'l2' },
               ],
             },
             {
-              ".key": "" + previousScore(recommendation, 2),
-              "people": [
-                { ".key": "p1", "location": "l1" },
-                { ".key": "p2", "location": "l2" },
-                { ".key": "p3", "location": "l1" },
+              '.key': '' + previousScore(recommendation, 2),
+              'people': [
+                { '.key': 'p1', 'location': 'l1' },
+                { '.key': 'p2', 'location': 'l2' },
+                { '.key': 'p3', 'location': 'l1' },
               ],
             },
           ],
@@ -140,42 +140,42 @@ describe("Recommendation", () => {
 
         expect(bestPairing).toEqual([
           {
-            lane: "new-lane",
-            pair: [ "p1", "p2" ],
+            lane: 'new-lane',
+            pair: ['p1', 'p2'],
           },
         ])
       })
     })
 
-    describe("with locked lanes", () => {
-      it("ignores locked lanes completely", () => {
+    describe('with locked lanes', () => {
+      it('ignores locked lanes completely', () => {
         const bestPairing = recommendation.calculateMovesToBestPairing({
           current: {
             people: [
-              { ".key": "p1", "location": "l1" },
-              { ".key": "p2", "location": "l1" },
-              { ".key": "p3", "location": "l2" },
+              { '.key': 'p1', 'location': 'l1' },
+              { '.key': 'p2', 'location': 'l1' },
+              { '.key': 'p3', 'location': 'l2' },
             ],
             lanes: [
-              { ".key": "l1", "locked": true },
-              { ".key": "l2", "locked": false },
+              { '.key': 'l1', 'locked': true },
+              { '.key': 'l2', 'locked': false },
             ],
           },
           history: [
             {
-              ".key": "" + previousScore(recommendation, 2),
-              "people": [
-                { ".key": "p1", "location": "l1" },
-                { ".key": "p2", "location": "l2" },
-                { ".key": "p3", "location": "l1" },
+              '.key': '' + previousScore(recommendation, 2),
+              'people': [
+                { '.key': 'p1', 'location': 'l1' },
+                { '.key': 'p2', 'location': 'l2' },
+                { '.key': 'p3', 'location': 'l1' },
               ],
             },
             {
-              ".key": "" + previousScore(recommendation, 1),
-              "people": [
-                { ".key": "p1", "location": "l1" },
-                { ".key": "p2", "location": "l1" },
-                { ".key": "p3", "location": "l2" },
+              '.key': '' + previousScore(recommendation, 1),
+              'people': [
+                { '.key': 'p1', 'location': 'l1' },
+                { '.key': 'p2', 'location': 'l1' },
+                { '.key': 'p3', 'location': 'l2' },
               ],
             },
           ],
@@ -188,30 +188,30 @@ describe("Recommendation", () => {
         const bestPairing = recommendation.calculateMovesToBestPairing({
           current: {
             people: [
-              { ".key": "p1", "location": constants.LOCATION.UNASSIGNED },
-              { ".key": "p2", "location": constants.LOCATION.UNASSIGNED },
-              { ".key": "p3", "location": "l2" },
+              { '.key': 'p1', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'p2', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'p3', 'location': 'l2' },
             ],
             lanes: [
-              { ".key": "l1", "locked": true },
-              { ".key": "l2", "locked": false },
+              { '.key': 'l1', 'locked': true },
+              { '.key': 'l2', 'locked': false },
             ],
           },
           history: [
             {
-              ".key": "" + previousScore(recommendation, 2),
-              "people": [
-                { ".key": "p1", "location": "l1" },
-                { ".key": "p2", "location": "l2" },
-                { ".key": "p3", "location": "l1" },
+              '.key': '' + previousScore(recommendation, 2),
+              'people': [
+                { '.key': 'p1', 'location': 'l1' },
+                { '.key': 'p2', 'location': 'l2' },
+                { '.key': 'p3', 'location': 'l1' },
               ],
             },
             {
-              ".key": "" + previousScore(recommendation, 1),
-              "people": [
-                { ".key": "p1", "location": "l1" },
-                { ".key": "p2", "location": "l1" },
-                { ".key": "p3", "location": "l2" },
+              '.key': '' + previousScore(recommendation, 1),
+              'people': [
+                { '.key': 'p1', 'location': 'l1' },
+                { '.key': 'p2', 'location': 'l1' },
+                { '.key': 'p3', 'location': 'l2' },
               ],
             },
           ],
@@ -219,18 +219,18 @@ describe("Recommendation", () => {
 
         expect(bestPairing).toEqual([
           {
-            lane: "l2",
-            pair: [ "p2" ],
+            lane: 'l2',
+            pair: ['p2'],
           },
           {
-            lane: "new-lane",
-            pair: [ "p1" ],
+            lane: 'new-lane',
+            pair: ['p1'],
           },
         ])
       })
     })
 
-    describe("fuzz", () => {
+    describe('fuzz', () => {
       for (let i = 0; i < 200; i++) {
         it(`fuzz #${i}`, () => {
           const peopleCount = randomInt(10)
@@ -248,11 +248,11 @@ describe("Recommendation", () => {
           const board = generateBoard(config)
 
           const bestPairing = recommendation.calculateMovesToBestPairing(board)
-          if (lanesCount*2-1 > peopleCount || peopleCount === 0) {
+          if (lanesCount * 2 - 1 > peopleCount || peopleCount === 0) {
             // too many lanes
-            assert.equal(bestPairing, undefined, JSON.stringify({config, current: board.current}))
+            assert.equal(bestPairing, undefined, JSON.stringify({ config, current: board.current }))
           } else {
-            assert.ok(bestPairing, JSON.stringify({config, current: board.current}))
+            assert.ok(bestPairing, JSON.stringify({ config, current: board.current }))
             expect(bestPairing).toBeTruthy()
           }
         })
@@ -260,25 +260,25 @@ describe("Recommendation", () => {
     })
   })
 
-  describe("scaleDate", () => {
-    it("converts milliseconds to the specified history chunk", () => {
+  describe('scaleDate', () => {
+    it('converts milliseconds to the specified history chunk', () => {
       expect(recommendation.scaleDate(1000)).toEqual(1)
     })
 
-    it("rounds decimals (down)", () => {
+    it('rounds decimals (down)', () => {
       expect(recommendation.scaleDate(1400)).toEqual(1)
     })
 
-    it("rounds decimals (up)", () => {
+    it('rounds decimals (up)', () => {
       expect(recommendation.scaleDate(1500)).toEqual(2)
     })
 
-    it("works with other numbers", () => {
+    it('works with other numbers', () => {
       expect(recommendation.scaleDate(3721931)).toEqual(3722)
     })
 
-    it("converts date objets to time if not already a number", () => {
-      const date = new Date("December 18, 1992 18:30:00")
+    it('converts date objets to time if not already a number', () => {
+      const date = new Date('December 18, 1992 18:30:00')
       expect(recommendation.scaleDate(date.getTime())).toEqual(724732200)
       expect(recommendation.scaleDate(date)).toEqual(724732200)
     })
@@ -291,8 +291,8 @@ const guid = () => {
       .toString(16)
       .substring(1)
   }
-  return s4() + s4() + "-" + s4() + "-" + s4() + "-" +
-    s4() + "-" + s4() + s4() + s4()
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4()
 }
 
 const generateBoard = ({
@@ -314,7 +314,7 @@ const generateBoard = ({
   for (let i = 0; i < lanesCount; i++) {
     const id = guid()
     locations.push(id)
-    board.current.lanes.push({ ".key": id })
+    board.current.lanes.push({ '.key': id })
   }
 
   let people = []
@@ -333,15 +333,15 @@ const generateBoard = ({
       let location = locations[randomInt(locations.length)]
 
       assignment.push({
-        ".key": people[i],
-        "location": location,
+        '.key': people[i],
+        'location': location,
       })
     }
 
     for (let i = 0; i < outCount; i++) {
       assignment.push({
-        ".key": people[people.length - outCount + i],
-        "location": constants.LOCATION.OUT,
+        '.key': people[people.length - outCount + i],
+        'location': constants.LOCATION.OUT,
       })
     }
 
@@ -352,16 +352,16 @@ const generateBoard = ({
 
   for (let i = 0; i < historyCount; i++) {
     board.history.push({
-      ".key": ""+ 1000000 - i*historyChunkDuration,
-      "people": generateAssignment(people, locations),
+      '.key': '' + 1000000 - i * historyChunkDuration,
+      'people': generateAssignment(people, locations),
     })
   }
 
   return board
 }
 
-const  previousScore = (recommendation, timeAgo) => {
-  return recommendation.scaleDate(new Date() - timeAgo*recommendation.historyChunkDuration)
+const previousScore = (recommendation, timeAgo) => {
+  return recommendation.scaleDate(new Date() - timeAgo * recommendation.historyChunkDuration)
 }
 
 const randomInt = (max) => {

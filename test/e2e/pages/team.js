@@ -1,34 +1,34 @@
-var util = require("util")
-var pluralize = require("pluralize")
+var util = require('util')
+var pluralize = require('pluralize')
 
 module.exports = {
   commands: [{
-    waitADay() {
+    waitADay () {
       this.api.pause(15000)
     },
 
-    track(name) {
-      return this.entity("tracks", name)
+    track (name) {
+      return this.entity('tracks', name)
     },
 
-    role(name) {
-      return this.entity("roles", name)
+    role (name) {
+      return this.entity('roles', name)
     },
 
-    person(name) {
-      return this.entity("people", name)
+    person (name) {
+      return this.entity('people', name)
     },
 
-    addList() {
-      this.api.useCss().click("#add-list")
+    addList () {
+      this.api.useCss().click('#add-list')
     },
 
-    list(index) {
+    list (index) {
       var self = this
-      var element = this.el("@list", index)
+      var element = this.el('@list', index)
 
       return {
-        rename(newName) {
+        rename (newName) {
           self.api.useXpath()
             .waitForElementPresent(
               `(${element}//div[@contenteditable = 'true'])[1]`,
@@ -41,19 +41,19 @@ module.exports = {
             .keys([newName, self.api.Keys.ENTER])
         },
 
-        toHaveName(name) {
+        toHaveName (name) {
           self.api.useXpath()
             .assert
             .containsText(element + "//div[@contenteditable = 'true']", name)
         },
 
-        addItem(item) {
+        addItem (item) {
           self.api.useXpath()
             .click(element + "//button[contains(@class, 'add-item')]")
             .keys([item, self.api.Keys.ENTER])
         },
 
-        remove() {
+        remove () {
           self.api.useXpath()
             .click(`${element}//button[contains(@class, 'remove-list')]`)
             .waitForElementPresent("//button//div[text()='Yes']", 2000)
@@ -62,55 +62,55 @@ module.exports = {
             .waitForElementNotPresent("//button//div[text()='Yes']", 2000)
         },
 
-        item(index) {
+        item (index) {
           var item = `(${element}//div[@class = 'list__tile'])[${index}]`
 
           return {
-            toHaveName(name) {
+            toHaveName (name) {
               self.api.useXpath()
                 .assert
                 .containsText(item, name)
             },
 
-            rename(name) {
+            rename (name) {
               self.api.useXpath()
                 .click(`${item}//div[@contenteditable = 'true']`)
                 .keys([name, self.api.Keys.ENTER])
             },
 
-            check() {
+            check () {
               self.api.useXpath()
                 .click(`${item}//*[@role = 'checkbox']`)
                 .pause(300)
             },
 
-            uncheck() {
+            uncheck () {
               self.api.useXpath()
                 .click(`${item}//*[@role = 'checkbox']`)
                 .pause(300)
             },
 
-            toBeChecked() {
+            toBeChecked () {
               self.api.useXpath()
                 .assert
                 .attributeContains(
                   `${item}//*[@role = 'checkbox']`,
-                  "aria-checked",
-                  "true",
+                  'aria-checked',
+                  'true',
                 )
             },
 
-            toBeUnchecked() {
+            toBeUnchecked () {
               self.api.useXpath()
                 .assert
                 .attributeContains(
                   `${item}//*[@role = 'checkbox']`,
-                  "aria-checked",
-                  "false",
+                  'aria-checked',
+                  'false',
                 )
             },
 
-            remove() {
+            remove () {
               self.api.useXpath()
                 .click(`${item}//button[contains(@class, 'remove-item')]`)
             },
@@ -119,18 +119,18 @@ module.exports = {
       }
     },
 
-    lane(lane) {
+    lane (lane) {
       var self = this
-      var element = this.el("@lane", lane)
+      var element = this.el('@lane', lane)
 
       return {
-        toHavePeople(...peopleNames) {
+        toHavePeople (...peopleNames) {
           peopleNames.forEach((person, i) => {
             self.api
               .useXpath()
               .assert
               .containsText(
-                element + `//*[contains(@class, 'person')][${i+1}]`,
+                element + `//*[contains(@class, 'person')][${i + 1}]`,
                 person
               )
           })
@@ -138,8 +138,8 @@ module.exports = {
       }
     },
 
-    logout() {
-      this.click("@moreMenuButton")
+    logout () {
+      this.click('@moreMenuButton')
       this.api
         .useXpath()
         .waitForElementPresent("//a//div[contains(text(), 'Logout')]", 2000)
@@ -148,38 +148,38 @@ module.exports = {
         .pause(500)
     },
 
-    lockLane(lane) {
+    lockLane (lane) {
       this.api
         .useXpath()
-        .moveToElement(this.el("@lane", lane),  50,  50)
+        .moveToElement(this.el('@lane', lane), 50, 50)
         .pause(300)
-        .click(this.el("@lane", lane) + "//i[contains(@class, 'mdi-lock-open')]//ancestor::button")
+        .click(this.el('@lane', lane) + "//i[contains(@class, 'mdi-lock-open')]//ancestor::button")
         .useCss()
-        .waitForElementVisible(".lock-button.is-locked", 2000)
+        .waitForElementVisible('.lock-button.is-locked', 2000)
         .pause(300)
     },
 
-    expectMessage(msg, type) {
+    expectMessage (msg, type) {
       this.api.pause(300)
       this.api.useCss()
-        .waitForElementPresent(".snack.snack--top .mdi-close", 2000)
+        .waitForElementPresent('.snack.snack--top .mdi-close', 2000)
 
       this.api.useCss()
         .assert
-        .containsText(".snack.snack--top div", msg)
+        .containsText('.snack.snack--top div', msg)
 
       this.api.useCss()
         .assert
-        .cssClassPresent(".snack.snack--top .snack__wrapper", type)
+        .cssClassPresent('.snack.snack--top .snack__wrapper', type)
 
-      this.api.click(".snack.snack--top .mdi-close")
+      this.api.click('.snack.snack--top .mdi-close')
     },
 
-    recommendPairs() {
-      this.click("@recommendPairsButton")
+    recommendPairs () {
+      this.click('@recommendPairsButton')
     },
 
-    el(elementName, data) {
+    el (elementName, data) {
       var element = this.elements[elementName.slice(1)]
       if (!data) {
         return element.selector
@@ -187,33 +187,33 @@ module.exports = {
       return util.format(element.selector, data)
     },
 
-    assertChildOf(child, parent) {
+    assertChildOf (child, parent) {
       return this.api.useXpath().waitForElementPresent(parent + child, 2000)
     },
 
-    move(el, destination) {
+    move (el, destination) {
       return this.api.useXpath()
-        .moveToElement(el,  0,  0)
+        .moveToElement(el, 0, 0)
         .mouseButtonDown(0)
-        .moveToElement(destination,  50,  50)
+        .moveToElement(destination, 50, 50)
         .mouseButtonUp(0)
         .pause(500)
     },
 
-    rightClick(el) {
+    rightClick (el) {
       return this.api.useXpath()
-        .moveToElement(el,  0,  0)
-        .mouseButtonClick("right")
+        .moveToElement(el, 0, 0)
+        .mouseButtonClick('right')
     },
 
-    entity(type, name) {
+    entity (type, name) {
       var self = this
       var singular = pluralize.singular(type)
       var plural = pluralize.plural(type)
       var element = this.el(`@${singular}`, name)
 
       return {
-        add(picture) {
+        add (picture) {
           self.click(`@add${self.capitalize(singular)}Button`)
 
           self.api.useCss()
@@ -228,19 +228,19 @@ module.exports = {
             .waitForElementNotPresent("input[type='text']", 2000)
         },
 
-        moveToLane(lane) {
-          return self.move(element, self.el("@lane", lane))
+        moveToLane (lane) {
+          return self.move(element, self.el('@lane', lane))
         },
 
-        moveToOut() {
+        moveToOut () {
           return self.move(element, self.el(`@out${self.capitalize(plural)}`))
         },
 
-        moveToUnassigned() {
+        moveToUnassigned () {
           return self.move(element, self.el(`@unassigned${self.capitalize(plural)}`))
         },
 
-        edit(newName, newPicture) {
+        edit (newName, newPicture) {
           self.rightClick(element)
           self.api
             .useXpath()
@@ -264,7 +264,7 @@ module.exports = {
             .pause(500)
         },
 
-        delete() {
+        delete () {
           self.rightClick(element)
           self.api
             .useXpath()
@@ -277,100 +277,100 @@ module.exports = {
             .waitForElementNotPresent("//button//div[text()='Yes']", 2000)
         },
 
-        notToExist() {
+        notToExist () {
           return self.api.useXpath().waitForElementNotPresent(element, 2000)
         },
 
-        toBeOut() {
+        toBeOut () {
           return self.assertChildOf(element, self.el(`@out${self.capitalize(plural)}`))
         },
 
-        toBeUnassigned() {
+        toBeUnassigned () {
           return self.assertChildOf(element, self.el(`@unassigned${self.capitalize(plural)}`))
         },
 
-        toBeInLane(lane) {
-          return self.assertChildOf(element, self.el("@lane", lane))
+        toBeInLane (lane) {
+          return self.assertChildOf(element, self.el('@lane', lane))
         },
       }
     },
 
-    capitalize(string) {
+    capitalize (string) {
       return string.charAt(0).toUpperCase() + string.slice(1)
     },
   }],
 
   elements: {
-    title: "nav .toolbar__title span:nth-child(2)",
+    title: 'nav .toolbar__title span:nth-child(2)',
 
     recommendPairsButton: {
       selector: "//nav[contains(@class, 'toolbar')]//i[contains(@class, 'mdi-shuffle-variant')]//ancestor::button",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
 
     moreMenuButton: {
       selector: "//nav[contains(@class, 'toolbar')]//i[text()='more_vert']//ancestor::button",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
 
     addTrackButton: {
       selector: "//*[contains(@class, 'tracks')]//button[//i[contains(@class, 'mdi-plus')]]",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
 
     addRoleButton: {
       selector: "//*[contains(@class, 'roles')]//button[//i[contains(@class, 'mdi-plus')]]",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
 
     addPersonButton: {
       selector: "//*[contains(@class, 'people')]//button[//i[contains(@class, 'mdi-plus')]]",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
 
     person: {
       selector: "//*[contains(@class, 'person')]//*[text()='%s']",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
 
     track: {
       selector: "//*[contains(@class, 'track')]//*[text()='%s']",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
 
     role: {
       selector: "//*[contains(@class, 'role')]//*[text()='%s']",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
 
     list: {
       selector: "(//div[contains(@class, 'lists')]//div[@class = 'list'])[%s]",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
 
     lane: {
       selector: "(//div[contains(concat(' ', @class, ' '), ' lane ')])[%s]",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
 
     unassignedTracks: {
       selector: "//*[contains(@class, 'tracks') and contains(@class, 'unassigned')]",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
 
     unassignedRoles: {
       selector: "//*[contains(@class, 'roles') and contains(@class, 'unassigned')]",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
 
     unassignedPeople: {
       selector: "//*[contains(@class, 'people') and contains(@class, 'unassigned')]",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
 
     outPeople: {
       selector: "//*[contains(@class, 'people') and contains(@class, 'out')]",
-      locateStrategy: "xpath",
+      locateStrategy: 'xpath',
     },
   },
 }

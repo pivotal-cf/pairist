@@ -39,30 +39,30 @@ export default {
   props: {
     actionType: {
       type: String,
-      default: "Edit",
+      default: 'Edit',
     },
     person: {
       type: Object,
-      default() { return {} },
+      default () { return {} },
     },
   },
 
-  data() {
+  data () {
     return {
       show: false,
     }
   },
 
   methods: {
-    async save() {
-      await this.$store.dispatch("entities/save", Object.assign({ type: "person" }, this.person))
+    async save () {
+      await this.$store.dispatch('entities/save', Object.assign({ type: 'person' }, this.person))
 
       this.show = false
-      this.person.name = ""
-      this.person.picture = ""
+      this.person.name = ''
+      this.person.picture = ''
     },
 
-    open() {
+    open () {
       this.show = true
     },
   },

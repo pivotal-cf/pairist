@@ -20,9 +20,9 @@
 </template>
 
 <script>
-import List from "@/components/team/List"
-import editable from "@/components/editable"
-import { mapGetters } from "vuex"
+import List from '@/components/team/List'
+import editable from '@/components/editable'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -31,13 +31,13 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["canWrite"]),
-    ...mapGetters("lists", { lists: "all" }),
+    ...mapGetters(['canWrite']),
+    ...mapGetters('lists', { lists: 'all' }),
   },
 
   methods: {
-    async addList() {
-      await this.$store.dispatch("lists/save", {})
+    async addList () {
+      await this.$store.dispatch('lists/save', {})
     },
   },
 }

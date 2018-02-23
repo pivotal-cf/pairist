@@ -139,13 +139,13 @@
 </template>
 
 <script>
-import Person from "./Person"
-import PersonDialog from "./PersonDialog"
-import Chip from "./Chip"
+import Person from './Person'
+import PersonDialog from './PersonDialog'
+import Chip from './Chip'
 
-import constants from "@/lib/constants"
+import constants from '@/lib/constants'
 
-import { mapGetters, mapActions } from "vuex"
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
@@ -154,41 +154,41 @@ export default {
     Chip,
   },
 
-  data() {
+  data () {
     return {
       newTrackDialog: false,
       newRoleDialog: false,
-      newTrackName: "",
-      newRoleName: "",
+      newTrackName: '',
+      newRoleName: '',
       constants: constants,
     }
   },
 
   computed: {
-    ...mapGetters(["canWrite", "dragging", "dropTarget"]),
+    ...mapGetters(['canWrite', 'dragging', 'dropTarget']),
 
-    ...mapGetters("entities", ["out", "unassigned"]),
+    ...mapGetters('entities', ['out', 'unassigned']),
   },
 
   methods: {
-    openPersonDialog() {
+    openPersonDialog () {
       this.$refs.personDialog.open()
     },
 
-    addTrack() {
-      this.$store.dispatch("entities/save", { name: this.newTrackName, type: "track" })
+    addTrack () {
+      this.$store.dispatch('entities/save', { name: this.newTrackName, type: 'track' })
 
       this.newTrackDialog = false
-      this.newTrackName = ""
+      this.newTrackName = ''
     },
 
-    addRole() {
-      this.$store.dispatch("entities/save", { name: this.newRoleName, type: "role" })
+    addRole () {
+      this.$store.dispatch('entities/save', { name: this.newRoleName, type: 'role' })
 
       this.newRoleDialog = false
-      this.newRoleName = ""
+      this.newRoleName = ''
     },
-    ...mapActions("entities", ["remove"]),
+    ...mapActions('entities', ['remove']),
   },
 }
 </script>

@@ -16,9 +16,9 @@
 </template>
 
 <script>
-import ContextMenu from "@/components/ContextMenu"
+import ContextMenu from '@/components/ContextMenu'
 
-import { mapGetters } from "vuex"
+import { mapGetters } from 'vuex'
 
 export default {
   components: { ContextMenu },
@@ -38,23 +38,23 @@ export default {
     },
     textColor: {
       type: String,
-      default: "",
+      default: '',
     },
   },
 
   computed: {
-    ...mapGetters(["canWrite"]),
+    ...mapGetters(['canWrite']),
   },
 
   methods: {
-    openMenu(event) {
+    openMenu (event) {
       if (this.canWrite) {
         this.$refs.menu.open(event)
       }
     },
 
-    remove() {
-      this.$store.dispatch("entities/remove", this.chip[".key"])
+    remove () {
+      this.$store.dispatch('entities/remove', this.chip['.key'])
     },
   },
 }

@@ -26,8 +26,8 @@
 </template>
 
 <script>
-import editable from "@/components/editable"
-import { mapGetters } from "vuex"
+import editable from '@/components/editable'
+import { mapGetters } from 'vuex'
 
 export default {
   components: { editable },
@@ -44,24 +44,24 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["canWrite"]),
+    ...mapGetters(['canWrite']),
 
     title: {
-      get() { return this.item.title },
-      async set(value) {
+      get () { return this.item.title },
+      async set (value) {
         const item = { ...this.item, title: value }
-        this.$emit("update", item)
+        this.$emit('update', item)
       },
     },
   },
 
   methods: {
-    save() {
-      this.$emit("update", this.item)
+    save () {
+      this.$emit('update', this.item)
     },
 
-    remove() {
-      this.$emit("remove", this.item[".key"])
+    remove () {
+      this.$emit('remove', this.item['.key'])
     },
   },
 }

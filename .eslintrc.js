@@ -1,23 +1,13 @@
 module.exports = {
-  extends: ["eslint:recommended", "plugin:vue/recommended"],
-  env: {
-    browser: true,
-    node: true,
-    jest: true,
-  },
-  parserOptions: {
-    parser: "babel-eslint",
-    ecmaVersion: 6,
-    sourceType: "module",
-  },
+  root: true,
+  extends: ['eslint:recommended', 'plugin:vue/recommended', '@vue/standard'],
   rules: {
-    "indent": ["error", 2],
-    "comma-dangle": ["error", "always-multiline"],
-    "quote-props": ["error", "consistent-as-needed"],
-    "quotes": ["error", "double"],
-    "semi": ["error", "never"],
-    "vue/max-attributes-per-line": [5, "multiline"],
-    "no-console": "off",
-    "no-debugger": "off",
+    'comma-dangle': ['error', 'always-multiline'],
+    'quote-props': ['error', 'consistent-as-needed'],
+    'vue/max-attributes-per-line': [5, 'multiline'],
+    'no-console': 'off',
+    'no-debugger': 'off',
+    'object-curly-spacing': [2, 'always'],
+    'array-bracket-spacing': [2, 'never'],
   },
 }

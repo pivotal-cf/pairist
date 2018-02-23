@@ -1,21 +1,20 @@
-import { shallow, createLocalVue } from "@vue/test-utils"
-import Vuex from "vuex"
+import { shallow, createLocalVue } from '@vue/test-utils'
+import Vuex from 'vuex'
+import DraggingController from '@/components/team/DraggingController'
+import Notification from '@/components/Notification'
+import Team from '@/components/team/Team'
 
 const localVue = createLocalVue()
 
 localVue.use(Vuex)
 
-import DraggingController from "@/components/team/DraggingController"
-import Notification from "@/components/Notification"
-import Team from "@/components/team/Team"
-
 const $route = {
   params: {
-    team: "TEAM-name",
+    team: 'TEAM-name',
   },
 }
 
-describe("Team", () => {
+describe('Team', () => {
   let actions
   let store
   let getters
@@ -47,23 +46,23 @@ describe("Team", () => {
     })
   })
 
-  it("renders with no exceptions", () => {
+  it('renders with no exceptions', () => {
     shallow(Team, { localVue, store, mocks: { $route } })
   })
 
-  it("renders a Notification", () => {
+  it('renders a Notification', () => {
     const wrapper = shallow(Team, { localVue, store, mocks: { $route } })
     expect(wrapper.find(Notification).exists()).toBeTruthy()
   })
 
-  it("renders a DraggingController if can write", () => {
+  it('renders a DraggingController if can write', () => {
     const wrapper = shallow(Team, { localVue, store, mocks: { $route } })
     expect(wrapper.find(DraggingController).exists()).toBeTruthy()
     expect(wrapper.find(DraggingController).vm.draggables)
-      .toEqual(["person", "track", "role"])
+      .toEqual(['person', 'track', 'role'])
   })
 
-  it("skips DraggingController if cannot write", () => {
+  it('skips DraggingController if cannot write', () => {
     getters.canWrite.mockReturnValue(false)
     const wrapper = shallow(Team, { localVue, store, mocks: { $route } })
     expect(wrapper.find(DraggingController).exists()).toBeFalsy()

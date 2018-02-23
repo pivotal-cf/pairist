@@ -9,9 +9,9 @@
 </template>
 
 <script>
-import Lists from "./Lists"
-import LaneList from "./LaneList"
-import Sidebar from "./Sidebar"
+import Lists from './Lists'
+import LaneList from './LaneList'
+import Sidebar from './Sidebar'
 
 export default {
   components: { LaneList, Sidebar, Lists },

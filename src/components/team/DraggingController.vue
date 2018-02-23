@@ -3,9 +3,9 @@
 </template>
 
 <script>
-import Interact from "interact.js"
+import Interact from 'interact.js'
 
-import { mapActions, mapMutations } from "vuex"
+import { mapActions, mapMutations } from 'vuex'
 
 export default {
   props: {
@@ -15,69 +15,69 @@ export default {
     },
   },
 
-  created() {
+  created () {
     const self = this
-    const draggableClassList = this.draggables.map(d => `.${d}`).join(", ")
+    const draggableClassList = this.draggables.map(d => `.${d}`).join(', ')
 
     Interact(draggableClassList).draggable({
       inertia: false,
       restrict: {
-        restriction: "main",
+        restriction: 'main',
         elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
         endOnly: false,
       },
       autoScroll: true,
 
-      onstart(event) {
+      onstart (event) {
         self.setDragging(true)
 
-        event.target.classList.add("dragging")
-        event.target.classList.add("elevation-10")
+        event.target.classList.add('dragging')
+        event.target.classList.add('elevation-10')
       },
 
-      onmove(event) {
-        const target = event.target,
-          x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx,
-          y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy
+      onmove (event) {
+        const target = event.target
+        const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
+        const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
 
         target.style.left = `${x}px`
         target.style.top = `${y}px`
 
-        target.setAttribute("data-x", x)
-        target.setAttribute("data-y", y)
+        target.setAttribute('data-x', x)
+        target.setAttribute('data-y', y)
       },
 
-      onend(event) {
+      onend (event) {
         self.setDragging(false)
         const target = event.target
 
-        target.classList.remove("dragging")
-        target.classList.remove("elevation-10")
-        target.style.left = ""
-        target.style.top = ""
+        target.classList.remove('dragging')
+        target.classList.remove('elevation-10')
+        target.style.left = ''
+        target.style.top = ''
 
-        target.removeAttribute("data-x")
-        target.removeAttribute("data-y")
+        target.removeAttribute('data-x')
+        target.removeAttribute('data-y')
       },
     })
 
-    Interact(".dropzone").dropzone({
+    Interact('.dropzone').dropzone({
       accept: draggableClassList,
       overlap: 0.50,
 
-      ondragenter(event) {
+      ondragenter (event) {
         self.setDropTarget(event.target.dataset.key)
       },
-      ondragleave() {
+      ondragleave () {
         self.setDropTarget(null)
       },
-      ondropdeactivate() {
+      ondropdeactivate () {
         self.setDropTarget(null)
       },
 
-      ondrop(event) {
-        const key = event.relatedTarget.dataset.key,
-          targetKey = event.target.dataset.key
+      ondrop (event) {
+        const key = event.relatedTarget.dataset.key
+        const targetKey = event.target.dataset.key
 
         self.move({ key, targetKey })
       },
@@ -85,8 +85,8 @@ export default {
   },
 
   methods: {
-    ...mapMutations(["setDragging", "setDropTarget"]),
-    ...mapActions(["move"]),
+    ...mapMutations(['setDragging', 'setDropTarget']),
+    ...mapActions(['move']),
   },
 }
 </script>

@@ -1,6 +1,6 @@
 export default Object.freeze({
   LOCATION: {
-    UNASSIGNED: "unassigned",
-    OUT: "out",
+    UNASSIGNED: 'unassigned',
+    OUT: 'out',
   },
 })
