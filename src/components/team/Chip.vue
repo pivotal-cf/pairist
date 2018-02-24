@@ -1,16 +1,19 @@
 <template>
   <transition name="highlight">
     <v-chip
-      color="accent"
-      class="chip"
       :class="chipClass"
       :outline="outline"
       :text-color="textColor"
       :data-key="chip['.key']"
+      color="accent"
+      class="chip"
       @contextmenu="openMenu">
       <span>{{ chip.name }}</span>
-      <ContextMenu @remove="remove" ref="menu"
-                   v-if="canWrite" />
+      <ContextMenu
+        v-if="canWrite"
+        ref="menu"
+        @remove="remove"
+      />
     </v-chip>
   </transition>
 </template>

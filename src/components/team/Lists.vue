@@ -5,8 +5,12 @@
         <span/>
         <v-toolbar-title>Lists</v-toolbar-title>
         <v-spacer/>
-        <v-btn icon id="add-list" @click="addList"
-               v-if="canWrite">
+        <v-btn
+          v-if="canWrite"
+          id="add-list"
+          icon
+          @click="addList"
+        >
           <v-icon>add</v-icon>
         </v-btn>
       </v-toolbar>

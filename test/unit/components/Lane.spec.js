@@ -1,6 +1,7 @@
 import { shallow, createLocalVue } from '@vue/test-utils'
 import flushPromises from 'flush-promises'
 import Vuex from 'vuex'
+import Vuetify from 'vuetify'
 import Person from '@/components/team/Person'
 import Chip from '@/components/team/Chip'
 import Lane from '@/components/team/Lane'
@@ -8,6 +9,7 @@ import Lane from '@/components/team/Lane'
 const localVue = createLocalVue()
 
 localVue.use(Vuex)
+localVue.use(Vuetify)
 
 describe('Lane', () => {
   let actions
@@ -48,7 +50,7 @@ describe('Lane', () => {
     })
 
     expect(wrapper.find('.lock-button').classes()).not.toContain('is-locked')
-    expect(wrapper.find('.lock-button').attributes().color).toEqual('accent')
+    expect(wrapper.find('.lock-button').classes()).toContain('accent')
 
     wrapper.find('.lock-button').trigger('click')
     expect(actions.setLocked).toHaveBeenCalled()
@@ -61,7 +63,7 @@ describe('Lane', () => {
     await flushPromises()
 
     expect(wrapper.find('.lock-button').classes()).toContain('is-locked')
-    expect(wrapper.find('.lock-button').attributes().color).toEqual('pink')
+    expect(wrapper.find('.lock-button').classes()).toContain('pink')
 
     wrapper.find('.lock-button').trigger('click')
     expect(actions.setLocked).toHaveBeenCalled()
@@ -102,7 +104,7 @@ describe('Lane', () => {
       propsData: { lane: {}, divider: true },
     })
 
-    expect(wrapper.find('v-divider').exists()).toBe(true)
+    expect(wrapper.find('hr.divider').exists()).toBe(true)
   })
 
   it("hides the divider when it's not desired", () => {

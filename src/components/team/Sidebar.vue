@@ -1,16 +1,21 @@
 <template>
   <v-flex>
     <div class="elevation-8 background sidebar">
-      <div class="background tracks unassigned"
-           :class="{
-             'phase-out': dragging && dropTarget,
-             'phase-in': dragging && !dropTarget
-      }">
+      <div
+        :class="{
+          'phase-out': dragging && dropTarget,
+          'phase-in': dragging && !dropTarget
+        }"
+        class="background tracks unassigned"
+      >
         <h2>
           Tracks
           <v-dialog v-model="newTrackDialog" max-width="300px">
-            <v-btn color="secondary" small dark slot="activator" icon
-                   v-if="canWrite">
+            <v-btn
+              v-if="canWrite"
+              slot="activator"
+              color="secondary" small dark icon
+            >
               <v-icon>mdi-plus</v-icon>
             </v-btn>
             <v-card v-if="newTrackDialog">
@@ -24,9 +29,10 @@
                       <v-text-field
                         v-model="newTrackName"
                         label="Name"
-                        @keyup.native.enter="addTrack"
                         autofocus
-                        required/>
+                        required
+                        @keyup.enter="addTrack"
+                      />
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -42,24 +48,30 @@
 
         <Chip
           v-for="track in unassigned('track')"
+          :key="track['.key']"
           :chip="track"
           chip-class="track"
           text-color="white"
           @remove="remove"
-          :key="track['.key']"
         />
       </div>
 
-      <div class="background roles unassigned"
-           :class="{
-             'phase-out': dragging && dropTarget,
-             'phase-in': dragging && !dropTarget
-      }">
+      <div
+        :class="{
+          'phase-out': dragging && dropTarget,
+          'phase-in': dragging && !dropTarget
+        }"
+        class="background roles unassigned"
+      >
         <h2>
           Roles
           <v-dialog v-model="newRoleDialog" max-width="300px">
-            <v-btn color="secondary" small dark slot="activator" icon
-                   v-if="canWrite">
+            <v-btn
+              v-if="canWrite"
+              slot="activator"
+              color="secondary"
+              small dark icon
+            >
               <v-icon>mdi-plus</v-icon>
             </v-btn>
             <v-card v-if="newRoleDialog">
@@ -73,9 +85,10 @@
                       <v-text-field
                         v-model="newRoleName"
                         label="Name"
-                        @keyup.native.enter="addRole"
                         autofocus
-                        required/>
+                        required
+                        @keyup.enter="addRole"
+                      />
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -91,23 +104,28 @@
 
         <Chip
           v-for="role in unassigned('role')"
+          :key="role['.key']"
           :chip="role"
           chip-class="role"
           outline
           @remove="remove"
-          :key="role['.key']"
         />
       </div>
 
-      <div class="background people unassigned"
-           :class="{
-             'phase-out': dragging && dropTarget,
-             'phase-in': dragging && !dropTarget
-      }">
+      <div
+        :class="{
+          'phase-out': dragging && dropTarget,
+          'phase-in': dragging && !dropTarget
+        }"
+        class="background people unassigned"
+      >
         <h2>
           People
-          <v-btn color="secondary" small dark @click="openPersonDialog" icon
-                 v-if="canWrite">
+          <v-btn
+            v-if="canWrite"
+            color="secondary" small dark icon
+            @click="openPersonDialog"
+          >
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         <PersonDialog ref="personDialog" :action-type="'New'"/></h2>
@@ -119,12 +137,12 @@
       </div>
 
       <div
-        class="background people out dropzone"
         :class="{
           'phase-out': dragging && dropTarget !== constants.LOCATION.OUT,
           'phase-in': dragging && dropTarget === constants.LOCATION.OUT
         }"
         :data-key="constants.LOCATION.OUT"
+        class="background people out dropzone"
       >
         <h2>PM / Out</h2>
 

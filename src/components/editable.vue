@@ -1,10 +1,14 @@
 <template>
   <div class="editable">
-    <div class="accent--text placeholder" v-if="contentText === ''">
+    <div v-if="contentText === ''" class="accent--text placeholder">
       {{ placeholder }}
     </div>
-    <div class="editable-content" contenteditable="true" @input="input" @keyup.enter="update"
-         ref="contentWrapper" @keydown.enter="disableEvent" @keypress.enter="disableEvent" />
+    <div
+      ref="contentWrapper"
+      class="editable-content" contenteditable="true"
+      @input="input" @keyup.enter="update"
+      @keydown.enter="disableEvent" @keypress.enter="disableEvent"
+    />
   </div>
 </template>
 

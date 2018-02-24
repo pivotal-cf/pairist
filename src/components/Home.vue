@@ -4,8 +4,8 @@
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
           <v-card class="elevation-12">
-            <v-container fill-height v-if="loading" class="loading-home">
-              <v-progress-circular indeterminate :size="150" :width="6" color="accent"/>
+            <v-container v-if="loading" fill-height class="loading-home">
+              <v-progress-circular :size="150" :width="6" color="accent" indeterminate />
             </v-container>
 
             <v-toolbar
@@ -18,35 +18,35 @@
             </v-toolbar>
 
             <v-card-text>
-              <v-form v-model="valid" ref="form">
+              <v-form ref="form" v-model="valid">
                 <v-text-field
-                  label="Team Name"
-                  prepend-icon="person"
                   v-model="name"
                   :rules="nameRules"
                   :counter="25"
-                  @keyup.native.enter="login"
+                  label="Team Name"
+                  prepend-icon="person"
                   required
+                  @keyup.enter="login"
                 />
                 <v-text-field
+                  v-model="password"
+                  :rules="passwordRules"
+                  type="password"
                   label="Password"
                   prepend-icon="lock"
-                  v-model="password"
-                  type="password"
-                  :rules="passwordRules"
-                  @keyup.native.enter="login"
                   required
+                  @keyup.enter="login"
                 />
               </v-form>
             </v-card-text>
 
             <v-card-actions>
-              <v-btn @click="create" color="secondary" :disabled="loading">
+              <v-btn :disabled="loading" color="secondary" @click="create">
                 <v-icon>mdi-plus</v-icon>
                 create
               </v-btn>
               <v-spacer/>
-              <v-btn @click="login" color="primary" :disabled="loading">
+              <v-btn :disabled="loading" color="primary" @click="login">
                 <v-icon>mdi-check</v-icon>
                 login
               </v-btn>

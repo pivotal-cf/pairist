@@ -1,9 +1,11 @@
 <template>
-  <div class="lane"
-       :class="{
-         'phase-out': dragging && dropTarget !== lane['.key'],
-         'phase-in': dragging && dropTarget === lane['.key'],
-  }">
+  <div
+    :class="{
+      'phase-out': dragging && dropTarget !== lane['.key'],
+      'phase-in': dragging && dropTarget === lane['.key'],
+    }"
+    class="lane"
+  >
     <v-list-tile ripple background>
       <v-layout row wrap>
         <v-flex order-xs2 xs12 order-lg1 lg6>
@@ -20,28 +22,26 @@
                 lg6>
           <Chip
             v-for="role in lane.roles"
+            :key="role['.key']"
             :chip="role"
             chip-class="role"
             outline
-            :key="role['.key']"
           />
           <Chip
             v-for="track in lane.tracks"
+            :key="track['.key']"
             :chip="track"
             chip-class="track"
             text-color="white"
-            :key="track['.key']"
           />
         </v-flex>
         <v-btn
-          class="lock-button"
-          :class="{'is-locked': lane.locked}"
-          dark
-          fab
-          small
-          :color="lane.locked? 'pink' : 'accent'"
-          @click="setLocked({ key: lane['.key'], locked: !lane.locked })"
           v-if="canWrite && lane['.key'] !== 'new-lane'"
+          :class="{'is-locked': lane.locked}"
+          :color="lane.locked? 'pink' : 'accent'"
+          dark fab small
+          class="lock-button"
+          @click="setLocked({ key: lane['.key'], locked: !lane.locked })"
         >
           <v-icon v-if="lane.locked">mdi-lock</v-icon>
           <v-icon v-else>mdi-lock-open</v-icon>

@@ -1,12 +1,14 @@
 import { shallow, createLocalVue } from '@vue/test-utils'
 import flushPromises from 'flush-promises'
 import Vuex from 'vuex'
+import Vuetify from 'vuetify'
 import ContextMenu from '@/components/ContextMenu'
 import Person from '@/components/team/Person'
 
 const localVue = createLocalVue()
 
 localVue.use(Vuex)
+localVue.use(Vuetify)
 
 jest.mock('@/assets/no-picture.svg', () => {
   return 'no-picture.svg'
@@ -58,7 +60,7 @@ describe('Person', () => {
     })
 
     expect(wrapper.find('.name').html()).toContain('Lisa')
-    expect(wrapper.find('v-avatar img').attributes().src).toEqual('lisas-picture.png')
+    expect(wrapper.find('img').attributes().src).toEqual('lisas-picture.png')
   })
 
   it('defaults to no avatar', () => {
@@ -70,7 +72,7 @@ describe('Person', () => {
     })
 
     expect(wrapper.find('.name').html()).toContain('Bob')
-    expect(wrapper.find('v-avatar img').attributes().src).toEqual('no-picture.svg')
+    expect(wrapper.find('img').attributes().src).toEqual('no-picture.svg')
   })
 
   it("shows an error image if avatar can't be loaded", async () => {
@@ -83,7 +85,7 @@ describe('Person', () => {
 
     expect(wrapper.find('.name').html()).toContain('Error')
 
-    const avatar = wrapper.find('v-avatar img')
+    const avatar = wrapper.find('img')
     avatar.trigger('error')
     await flushPromises()
     expect(avatar.attributes().src).toEqual('error-image.svg')

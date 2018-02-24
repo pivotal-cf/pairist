@@ -1,12 +1,14 @@
 import { shallow, createLocalVue } from '@vue/test-utils'
 import flushPromises from 'flush-promises'
 import Vuex from 'vuex'
+import Vuetify from 'vuetify'
 import ContextMenu from '@/components/ContextMenu'
 import Chip from '@/components/team/Chip'
 
 const localVue = createLocalVue()
 
 localVue.use(Vuex)
+localVue.use(Vuetify)
 
 describe('Chip', () => {
   let actions

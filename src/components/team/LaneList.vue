@@ -2,17 +2,17 @@
   <v-flex class="lanes" elevation-2>
     <v-list class="pb-0">
       <Lane
-        class="dropzone"
         v-for="lane in lanes"
         :lane="lane"
         :key="lane['.key']"
         :data-key="lane['.key']"
+        class="dropzone"
       />
       <Lane
-        class="dropzone"
         :lane="{'.key': 'new-lane'}"
-        data-key="new-lane"
         :divider="false"
+        data-key="new-lane"
+        class="dropzone"
       />
     </v-list>
   </v-flex>

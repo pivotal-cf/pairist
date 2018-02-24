@@ -1,13 +1,20 @@
 <template>
   <div class="list">
     <v-subheader>
-      <editable placeholder="Set list title..." :content="list.title"
-                @update="changeTitle" v-if="canWrite" />
+      <editable
+        v-if="canWrite"
+        :content="list.title"
+        placeholder="Set list title..."
+        @update="changeTitle"
+      />
       <div v-else>
         {{ list.title }}
       </div>
-      <v-btn icon ripple class="remove-list" @click="dialog = true"
-             v-if="canWrite">
+      <v-btn
+        v-if="canWrite"
+        icon ripple class="remove-list"
+        @click="dialog = true"
+      >
         <v-icon color="grey lighten-1">mdi-close-circle</v-icon>
       </v-btn>
     </v-subheader>
@@ -19,7 +26,7 @@
       <v-divider :key="item['.key']"/>
     </template>
 
-    <v-list-tile class="new-item" v-if="canWrite">
+    <v-list-tile v-if="canWrite" class="new-item">
       <v-list-tile-action>
         <v-btn icon ripple class="add-item" @click="addItemFocus">
           <v-icon color="grey lighten-1">add</v-icon>
@@ -28,9 +35,13 @@
 
       <v-list-tile-content>
         <v-list-tile-title>
-          <editable :save-on-input="false" placeholder="Add item..."
-                    :content="newItem.title" ref="newItemEl"
-                    @update="addItem(list, $event)"/>
+          <editable
+            ref="newItemEl"
+            :save-on-input="false"
+            :content="newItem.title"
+            placeholder="Add item..."
+            @update="addItem(list, $event)"
+          />
         </v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>

@@ -4,8 +4,8 @@
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
           <v-card class="elevation-12">
-            <v-container fill-height v-if="loading" class="loading-home">
-              <v-progress-circular indeterminate :size="150" :width="6" color="accent"/>
+            <v-container v-if="loading" fill-height class="loading-home">
+              <v-progress-circular :size="150" :width="6" color="accent" indeterminate />
             </v-container>
 
             <v-toolbar

@@ -2,7 +2,7 @@
   <v-app id="app">
     <template v-if="dbSchema">
       <template v-if="!migrating && dbSchemaVersion === appSchemaVersion">
-        <Toolbar :team-name="$route.params.team.toUpperCase()" v-if="$route.params.team" />
+        <Toolbar v-if="$route.params.team" :team-name="$route.params.team.toUpperCase()" />
         <router-view :key="$route.fullPath" />
         <Update v-if="localVersion < remoteVersion" />
       </template>

@@ -3,18 +3,30 @@
     <router-view/>
 
     <Notification/>
-    <DraggingController :draggables="['person', 'track', 'role']"
-                        v-if="canWrite" />
+    <DraggingController
+      v-if="canWrite"
+      :draggables="['person', 'track', 'role']"
+    />
 
-    <v-snackbar class="history-notification" :timeout="0" color="info" bottom
-                vertical auto-height :value="showingDate !== null" v-if="showingDate">
+    <v-snackbar
+      v-if="showingDate"
+      :timeout="0"
+      :value="showingDate !== null"
+      class="history-notification"
+      color="info"
+      bottom
+      vertical
+      auto-height
+    >
       <h3>Browsing history from {{ showingDate | moment("calendar") }}</h3>
       <p>
         Editing may affect recommendations for the present state.
       </p>
 
-      <v-btn flat
-             :to="{ name: 'TeamCurrent', params: { team: $route.params.team } }">
+      <v-btn
+        :to="{ name: 'TeamCurrent', params: { team: $route.params.team } }"
+        flat
+      >
         <v-icon>refresh</v-icon>
         Go back
       </v-btn>
@@ -23,12 +35,18 @@
     <v-system-bar class="history-bar" color="secondary" lights-out status fixed height="32">
       <div class="history-viewport">
         <div class="history-entries">
-          <router-link active-class="accent"
-                       :to="{ name: 'TeamCurrent', params: { team: $route.params.team } }">
+          <router-link
+            :to="{ name: 'TeamCurrent', params: { team: $route.params.team } }"
+            active-class="accent"
+          >
             current
           </router-link>
-          <router-link v-for="h in history" :key="h['.key']" active-class="accent"
-                       :to="{ name: 'TeamHistory', params: { team: $route.params.team, date: h['.key'] } }">
+          <router-link
+            v-for="h in history"
+            :key="h['.key']"
+            :to="{ name: 'TeamHistory', params: { team: $route.params.team, date: h['.key'] } }"
+            active-class="accent"
+          >
             {{ toDate(h['.key']) | moment("calendar") }}
           </router-link>
         </div>

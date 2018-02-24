@@ -1,7 +1,10 @@
 <template>
   <transition name="highlight">
-    <v-card class="person title" dark color="secondary"
-            :data-key="person['.key']" @contextmenu="openMenu">
+    <v-card
+      :data-key="person['.key']"
+      class="person title" dark color="secondary"
+      @contextmenu="openMenu"
+    >
       <v-card-text>
         <v-avatar
           size="86px"
@@ -17,8 +20,12 @@
         </div>
       </v-card-text>
 
-      <ContextMenu @remove="remove" :show-edit="true" @edit="edit" ref="menu"
-                   v-if="canWrite" />
+      <ContextMenu
+        v-if="canWrite"
+        ref="menu"
+        :show-edit="true"
+        @edit="edit" @remove="remove"
+      />
       <PersonDialog ref="personDialog" :person="Object.assign({}, person)"/>
     </v-card>
   </transition>

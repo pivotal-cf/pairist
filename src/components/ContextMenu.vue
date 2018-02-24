@@ -1,7 +1,7 @@
 <template>
-  <v-menu class="context-menu" offset-y v-model="showMenu" absolute :position-x="x" :position-y="y">
+  <v-menu v-model="showMenu" :position-x="x" :position-y="y" class="context-menu" offset-y absolute>
     <v-list v-if="showMenu">
-      <v-list-tile @click="$emit('edit')" v-if="showEdit">
+      <v-list-tile v-if="showEdit" @click="$emit('edit')">
         <v-list-tile-title>
           <v-icon>mdi-pencil</v-icon>
           Edit

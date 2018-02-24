@@ -1,15 +1,21 @@
 <template>
   <v-list-tile>
     <v-list-tile-action>
-      <v-checkbox v-model="item.checked" @change="save"
-                  :disabled="!canWrite" />
+      <v-checkbox
+        v-model="item.checked"
+        :disabled="!canWrite"
+        @change="save"
+      />
     </v-list-tile-action>
     <v-list-tile-content>
       <v-list-tile-sub-title>
-        <editable placeholder="Add title..." :content="item.title"
-                  :class="{ checked: item.checked }"
-                  @update="title = $event"
-                  v-if="canWrite" />
+        <editable
+          v-if="canWrite"
+          :class="{ checked: item.checked }"
+          :content="item.title"
+          placeholder="Add title..."
+          @update="title = $event"
+        />
         <div v-else
              :class="{ checked: item.checked }" >
           {{ item.title }}

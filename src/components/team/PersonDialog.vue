@@ -11,16 +11,18 @@
               <v-text-field
                 v-model="person.name"
                 label="Name"
-                @keyup.native.enter="save"
                 autofocus
-                required/>
+                required
+                @keyup.enter="save"
+              />
             </v-flex>
             <v-flex xs12 sm6>
               <v-text-field
                 v-model="person.picture"
-                @keyup.native.enter="save"
                 type="url"
-                label="Picture URL"/>
+                label="Picture URL"
+                @keyup.enter="save"
+              />
             </v-flex>
           </v-layout>
         </v-container>
