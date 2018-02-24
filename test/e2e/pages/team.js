@@ -1,5 +1,5 @@
-var util = require('util')
-var pluralize = require('pluralize')
+let util = require('util')
+let pluralize = require('pluralize')
 
 module.exports = {
   commands: [{
@@ -24,8 +24,8 @@ module.exports = {
     },
 
     list (index) {
-      var self = this
-      var element = this.el('@list', index)
+      let self = this
+      let element = this.el('@list', index)
 
       return {
         rename (newName) {
@@ -63,7 +63,7 @@ module.exports = {
         },
 
         item (index) {
-          var item = `(${element}//div[@class = 'list__tile'])[${index}]`
+          let item = `(${element}//div[@class = 'list__tile'])[${index}]`
 
           return {
             toHaveName (name) {
@@ -120,8 +120,8 @@ module.exports = {
     },
 
     lane (lane) {
-      var self = this
-      var element = this.el('@lane', lane)
+      let self = this
+      let element = this.el('@lane', lane)
 
       return {
         toHavePeople (...peopleNames) {
@@ -180,7 +180,7 @@ module.exports = {
     },
 
     el (elementName, data) {
-      var element = this.elements[elementName.slice(1)]
+      let element = this.elements[elementName.slice(1)]
       if (!data) {
         return element.selector
       }
@@ -207,10 +207,10 @@ module.exports = {
     },
 
     entity (type, name) {
-      var self = this
-      var singular = pluralize.singular(type)
-      var plural = pluralize.plural(type)
-      var element = this.el(`@${singular}`, name)
+      let self = this
+      let singular = pluralize.singular(type)
+      let plural = pluralize.plural(type)
+      let element = this.el(`@${singular}`, name)
 
       return {
         add (picture) {

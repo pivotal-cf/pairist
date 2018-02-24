@@ -26,7 +26,7 @@ class Recommendation {
   }
 
   _findMatchingLanes ({ pairing, lanes, people }) {
-    pairing = pairing
+    const matching = pairing
       .map(pair => pair
         .map(key => people
           .find(person => person['.key'] === key)
@@ -40,13 +40,13 @@ class Recommendation {
       )
     )
     const emptyLaneKeys = _.difference(lanes.map(lane => lane['.key']), laneKeysWithPeople)
-    const orders = permutations(pairing)
+    const orders = permutations(matching)
     const match = orders.find(pairing =>
-      laneKeysWithPeople.every((laneKey, i) => {
-        if (!pairing[i]) { return false }
-        return pairing[i]
-          .some(person => person && person.location === laneKey)
-      })
+      laneKeysWithPeople.every((laneKey, i) =>
+        pairing[i]
+          ? pairing[i].some(person => person && person.location === laneKey)
+          : false
+      )
     )
     if (!match) {
       return null

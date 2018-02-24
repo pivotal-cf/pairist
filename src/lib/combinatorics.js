@@ -3,7 +3,7 @@ export const permutations = (array) => {
   let used = []
 
   let permute = (input) => {
-    var i, ch
+    let i, ch
     for (i = 0; i < input.length; i++) {
       ch = input.splice(i, 1)[0]
       used.push(ch)

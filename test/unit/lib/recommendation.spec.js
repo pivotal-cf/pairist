@@ -5,12 +5,8 @@ import Recommendation from '@/lib/recommendation'
 import constants from '@/lib/constants'
 
 describe('Recommendation', () => {
-  let recommendation
-
-  beforeEach(() => {
-    recommendation = new Recommendation({
-      historyChunkDuration: 1000,
-    })
+  const recommendation = new Recommendation({
+    historyChunkDuration: 1000,
   })
 
   describe('_isPairingValid', () => {

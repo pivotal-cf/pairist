@@ -17,7 +17,7 @@ exports.assertion = function (selector, count) {
     return res.value
   }
   this.command = function (cb) {
-    var self = this
+    let self = this
     return this.api.execute(
       function (selector) {
         return document.querySelectorAll(selector).length

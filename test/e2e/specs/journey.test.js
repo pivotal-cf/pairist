@@ -35,7 +35,7 @@ module.exports = {
     client.url(devServer)
     client.waitForElementPresent('body', 1000)
 
-    var home = client.page.home()
+    let home = client.page.home()
     home.waitForElementPresent('@createButton', 4000)
     home.setValue('@teamNameInput', 'my-team')
     home.setValue('@passwordInput', 'password')
@@ -44,7 +44,7 @@ module.exports = {
   },
 
   'lists' (client) {
-    var team = client.page.team()
+    let team = client.page.team()
 
     team.addList()
     team.list('1').rename('list1')
@@ -78,7 +78,7 @@ module.exports = {
   },
 
   'DAY 0: create team members and tracks' (client) {
-    var team = client.page.team()
+    let team = client.page.team()
     team.waitForElementPresent('@title', 2000)
     team.assert.containsText('@title', 'MY-TEAM')
 
@@ -108,7 +108,7 @@ module.exports = {
   },
 
   'DAY 1: allocate people' (client) {
-    var team = client.page.team()
+    let team = client.page.team()
 
     team.person('person-1').moveToLane('last()')
     team.person('person-2').moveToLane('1')
@@ -142,7 +142,7 @@ module.exports = {
   },
 
   'DAY 2: allocate people' (client) {
-    var team = client.page.team()
+    let team = client.page.team()
 
     team.person('person-3').moveToLane('3')
     team.person('person-4').moveToLane('2')
@@ -156,7 +156,7 @@ module.exports = {
   },
 
   'DAY 3: delete some elements and recommend' (client) {
-    var team = client.page.team()
+    let team = client.page.team()
 
     team.role('role-3').delete()
     team.track('track-3').delete()
@@ -194,7 +194,7 @@ module.exports = {
     client.url(devServer)
     client.pause(1000)
 
-    var team = client.page.team()
+    let team = client.page.team()
     team.waitForElementPresent('@title', 2000)
     team.assert.containsText('@title', 'MY-TEAM')
 
@@ -207,7 +207,7 @@ module.exports = {
     team.expectMessage('You need to be logged in to access this page.', 'error')
     team.waitForElementNotPresent('@title', 2000)
 
-    var home = client.page.home()
+    let home = client.page.home()
     home.waitForElementPresent('@teamNameInput', 2000)
 
     home.setValue('@teamNameInput', 'my-team')
@@ -230,7 +230,7 @@ module.exports = {
   },
 
   'DAY 4: locks and recommend' (client) {
-    var team = client.page.team()
+    let team = client.page.team()
 
     team.lockLane('1')
     team.person('person-2').moveToUnassigned()
