@@ -183,28 +183,20 @@ export default {
     },
 
     recommendPairs ({ commit, dispatch, getters }) {
-      try {
-        const moves = recommendation.calculateMovesToBestPairing({
-          history: getters['history/people'].slice(),
-          current: {
-            people: getters['entities/all']('person').slice(),
-            lanes: getters['lanes/all'].slice(),
-          },
-        })
+      const moves = recommendation.calculateMovesToBestPairing({
+        history: getters['history/withGroupedEntities'].slice(),
+        current: {
+          people: getters['entities/all']('person').slice(),
+          lanes: getters['lanes/all'].slice(),
+        },
+      })
 
-        if (moves) {
-          dispatch('applyPairing', moves)
-        } else {
-          commit('notify', {
-            message: 'Cannot make a valid pairing assignment. Do you have too many lanes?',
-            color: 'warning',
-          })
-        }
-      } catch (error) {
-        console.error(error)
+      if (moves) {
+        dispatch('applyPairing', moves)
+      } else {
         commit('notify', {
-          message: 'Error finding best pair setting.',
-          color: 'error',
+          message: 'Cannot make a valid pairing assignment. Do you have too many lanes?',
+          color: 'warning',
         })
       }
     },

@@ -341,7 +341,7 @@ describe('Team Store', () => {
         const dispatch = jest.fn()
         const commit = jest.fn()
         const getters = {
-          'history/people': [1, 2, 3],
+          'history/withGroupedEntities': [1, 2, 3],
           'entities/all': entityGetter,
           'lanes/all': [7, 8, 9],
         }
@@ -368,7 +368,7 @@ describe('Team Store', () => {
         const dispatch = jest.fn()
         const commit = jest.fn()
         const getters = {
-          'history/people': [],
+          'history/withGroupedEntities': [],
           'entities/all': jest.fn().mockReturnValue([]),
           'lanes/all': [],
         }
@@ -385,33 +385,6 @@ describe('Team Store', () => {
         expect(commit).toHaveBeenCalledWith('notify', {
           message: 'Cannot make a valid pairing assignment. Do you have too many lanes?',
           color: 'warning',
-        })
-      })
-
-      it('catches errors and notifies', () => {
-        const dispatch = jest.fn()
-        const commit = jest.fn()
-        const getters = {
-          'history/people': [],
-          'entities/all': jest.fn().mockReturnValue([]),
-          'lanes/all': [],
-        }
-        const error = new Error('recommend')
-
-        console.error = jest.fn()
-
-        global.calculateMovesToBestPairing.mockImplementation(() => { throw error })
-
-        store.actions.recommendPairs({ commit, dispatch, getters })
-
-        expect(global.calculateMovesToBestPairing)
-          .toHaveBeenCalledWith({ history: [], current: { people: [], lanes: [] } })
-        expect(console.error).toHaveBeenCalledWith(error)
-        expect(dispatch).toHaveBeenCalledTimes(0)
-        expect(commit).toHaveBeenCalledTimes(1)
-        expect(commit).toHaveBeenCalledWith('notify', {
-          message: 'Error finding best pair setting.',
-          color: 'error',
         })
       })
     })

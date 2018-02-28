@@ -1,5 +1,7 @@
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 import recommendation from './recommendation'
+import _ from 'lodash'
+import { plural } from 'pluralize'
 
 export default {
   namespaced: true,
@@ -21,13 +23,14 @@ export default {
       )
     },
 
-    people (state, getters) {
+    withGroupedEntities (state, getters) {
       return getters.all.map(history => {
+        const entities = Object.keys(history.entities || {}).map(key =>
+          Object.assign({ '.key': key }, history.entities[key])
+        )
         return {
           '.key': history['.key'],
-          'people': Object.keys(history.entities || {}).map(key =>
-            Object.assign({ '.key': key }, history.entities[key])
-          ).filter(person => person.type === 'person'),
+          ..._.groupBy(entities, e => plural(e.type)),
         }
       })
     },
