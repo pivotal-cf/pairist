@@ -18,7 +18,7 @@
     "array-bracket-spacing": [2, "never"],
     "lodash/prefer-lodash-method": [2, {
       "ignoreMethods": ["assign"],
-      "ignoreObjects": ["wrapper"]
+      "ignoreObjects": ["wrapper", "permutation"]
     }],
     "lodash/prefer-compact": "off"
   }

@@ -1,4 +1,5 @@
-import { pairs, pairings, permutations } from './combinatorics'
+import { pairs, pairings } from './combinatorics'
+import { permutation } from 'js-combinatorics'
 import _ from 'lodash/fp'
 import constants from './constants'
 
@@ -38,8 +39,7 @@ class Recommendation {
       _.map(_.prop('.key'), lanes),
       laneKeysWithPeople,
     )
-    const orders = permutations(matching)
-    const match = _.find(pairing =>
+    const match = permutation(matching).find(pairing =>
       _.every(i =>
         pairing[i]
           ? _.any(_.allPass([
@@ -47,7 +47,7 @@ class Recommendation {
           ]))(pairing[i])
           : false
       )(_.keys(laneKeysWithPeople))
-    )(orders)
+    )
 
     if (!match) {
       return null

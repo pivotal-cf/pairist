@@ -1,25 +1,3 @@
-export const permutations = (array) => {
-  let results = []
-  let used = []
-
-  let permute = (input) => {
-    let i, ch
-    for (i = 0; i < input.length; i++) {
-      ch = input.splice(i, 1)[0]
-      used.push(ch)
-      if (input.length === 0) {
-        results.push(used.slice())
-      }
-      permute(input)
-      input.splice(i, 0, ch)
-      used.pop()
-    }
-    return results
-  }
-
-  return permute(array)
-}
-
 export const pairs = (array) => {
   let results = []
 
@@ -33,7 +11,6 @@ export const pairs = (array) => {
 }
 
 export const pairings = (array) => {
-  array = array.slice()
   if (array.length % 2 === 1) {
     array.push(null)
   }

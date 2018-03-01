@@ -42,6 +42,7 @@
     "firebase-admin": "^5.8.2",
     "firebase-functions": "^0.8.1",
     "interact.js": "^1.2.8",
+    "js-combinatorics": "^0.5.3",
     "lodash": "^4.17.4",
     "pluralize": "^7.0.0",
     "vue": "^2.5.13",
