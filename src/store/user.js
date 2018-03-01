@@ -1,5 +1,6 @@
 import { db, firebaseApp } from '@/firebase'
 import router from '@/router'
+import _ from 'lodash/fp'
 
 const auth = firebaseApp.auth()
 
@@ -22,7 +23,10 @@ export default {
 
   actions: {
     async autoLogin ({ commit }, payload) {
-      const name = payload.email.replace('@pair.ist', '').toLowerCase()
+      const name = _.flow(
+        _.replace('@pair.ist', ''),
+        _.toLower,
+      )(payload.email)
 
       commit('setUser', {
         uid: payload.uid,
@@ -32,7 +36,7 @@ export default {
 
     async signup ({ commit, dispatch }, { name, password }) {
       commit('loading', true)
-      name = name.toLowerCase()
+      name = _.toLower(name)
       const email = `${name}@pair.ist`
       let user
 
@@ -40,7 +44,7 @@ export default {
         user = await auth.createUserWithEmailAndPassword(email, password)
       } catch (error) {
         commit('notify', {
-          message: error.message.replace('email address', 'name'),
+          message: _.replace('email address', 'name', error.message),
           color: 'error',
         })
         commit('loading', false)
@@ -64,7 +68,7 @@ export default {
 
     async signin ({ commit, dispatch }, { name, password }) {
       commit('loading', true)
-      name = name.toLowerCase()
+      name = _.toLower(name)
       const email = `${name}@pair.ist`
 
       try {
@@ -74,7 +78,7 @@ export default {
         router.push({ name: 'TeamCurrent', params: { team: name } })
       } catch (error) {
         commit('notify', {
-          message: error.message.replace('email address', 'name'),
+          message: _.replace('email address', 'name', error.message),
           color: 'error',
         })
         commit('loading', false)

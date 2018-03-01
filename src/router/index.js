@@ -4,6 +4,7 @@ import Home from '@/components/Home'
 import Team from '@/components/team/Team'
 import Pairs from '@/components/team/Pairs'
 import { Auth, RedirectToTeam } from '@/router/auth'
+import _ from 'lodash/fp'
 
 Vue.use(Router)
 
@@ -50,7 +51,7 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   document.title = 'Pairist'
   if (to.params.team) {
-    document.title += ` - ${to.params.team.toUpperCase()}`
+    document.title += ` - ${_.toUpper(to.params.team)}`
   }
   next()
 })

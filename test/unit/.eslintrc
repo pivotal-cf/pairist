@@ -3,7 +3,8 @@
     "jest": true
   },
   "rules": {
-    "import/no-extraneous-dependencies": "off"
+    "import/no-extraneous-dependencies": "off",
+    "lodash/prefer-constant": "off"
   }
 }
 

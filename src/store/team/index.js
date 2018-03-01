@@ -1,4 +1,5 @@
 import { firebaseAction } from 'vuexfire'
+import _ from 'lodash/fp'
 
 import { db } from '@/firebase'
 
@@ -158,41 +159,40 @@ export default {
       dispatch('lanes/clearEmpty')
     },
 
-    applyPairing ({ commit, getters, dispatch }, pairsAndLanes) {
-      let actionsTaken = 0
-      pairsAndLanes.forEach(async ({ pair, lane }) => {
+    applyMoves ({ commit, getters, dispatch }, pairsAndLanes) {
+      _.forEach(async ({ entities, lane }) => {
         if (lane === 'new-lane') {
           await dispatch('lanes/add')
           lane = getters['lanes/lastAddedKey']
         }
 
-        pair.forEach(personKey => {
+        _.forEach(key => {
           dispatch('move', {
-            key: personKey,
+            key: key,
             targetKey: lane,
           })
-          actionsTaken++
-        })
-      })
-      if (actionsTaken === 0) {
-        commit('notify', {
-          message: 'Pairing setting is already the optimal one. No actions taken',
-          color: 'accent',
-        })
-      }
+        }, entities)
+      }, pairsAndLanes)
     },
 
     recommendPairs ({ commit, dispatch, getters }) {
       const moves = recommendation.calculateMovesToBestPairing({
-        history: getters['history/withGroupedEntities'].slice(),
+        history: getters['history/all'].slice(),
         current: {
-          people: getters['entities/all']('person').slice(),
+          entities: getters['entities/all'].slice(),
           lanes: getters['lanes/all'].slice(),
         },
       })
 
       if (moves) {
-        dispatch('applyPairing', moves)
+        if (moves.length === 0) {
+          commit('notify', {
+            message: 'Pairing setting is already the optimal one. No actions taken',
+            color: 'accent',
+          })
+        } else {
+          dispatch('applyMoves', moves)
+        }
       } else {
         commit('notify', {
           message: 'Cannot make a valid pairing assignment. Do you have too many lanes?',

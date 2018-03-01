@@ -1,4 +1,5 @@
 import { firebaseMutations, firebaseAction } from 'vuexfire'
+import _ from 'lodash/fp'
 
 export default {
   namespaced: true,
@@ -17,14 +18,14 @@ export default {
 
   getters: {
     all (state, _getters, _rootState, rootGetters) {
-      return state.lanes.map(lane => (
+      return _.map(lane => (
         {
           people: rootGetters['entities/inLocation'](lane['.key'])('person'),
           tracks: rootGetters['entities/inLocation'](lane['.key'])('track'),
           roles: rootGetters['entities/inLocation'](lane['.key'])('role'),
           ...lane,
         }
-      ))
+      ))(state.lanes)
     },
 
     lastAddedKey (state) { return state.lastAddedKey },
@@ -50,11 +51,11 @@ export default {
     },
 
     clearEmpty ({ dispatch, getters }) {
-      getters.all.forEach(lane => {
+      _.forEach(lane => {
         if (lane.people.length === 0 && lane.tracks.length === 0 && lane.roles.length === 0) {
           dispatch('remove', lane['.key'])
         }
-      })
+      }, getters.all)
     },
 
   },

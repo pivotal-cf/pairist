@@ -1,5 +1,5 @@
 import { pairs, pairings, permutations } from './combinatorics'
-import _ from 'lodash'
+import _ from 'lodash/fp'
 import constants from './constants'
 
 class Recommendation {
@@ -15,54 +15,61 @@ class Recommendation {
     return parseInt((date / this.historyChunkDuration).toFixed(0))
   }
 
-  _isPairingValid ({ pairing, solos }) {
-    const soloKeys = solos.map(person => person['.key'])
-    return !pairing
-      .some(pair => pair
-        .every(personKey => soloKeys
-          .includes(personKey)
-        )
-      )
+  isPairingValid ({ pairing, solos }) {
+    const soloKeys = _.map(_.prop('.key'))(solos)
+    return !_.any(_.every(_.includes(_, soloKeys)))(pairing)
   }
 
   _findMatchingLanes ({ pairing, lanes, people }) {
-    const matching = pairing
-      .map(pair => pair
-        .map(key => people
-          .find(person => person['.key'] === key)
-        )
+    const matching = _.map(
+      _.map(key =>
+        _.find(_.matchesProperty('.key', key), people),
       )
+    )(pairing)
 
-    const laneKeysWithPeople = _.uniq(people
-      .map(({ location }) => location)
-      .filter(location =>
+    const laneKeysWithPeople = _.flow(
+      _.map(({ location }) => location),
+      _.filter(location =>
         location !== constants.LOCATION.OUT && location !== constants.LOCATION.UNASSIGNED
-      )
+      ),
+      _.uniq,
+    )(people)
+    const emptyLaneKeys = _.difference(
+      _.map(_.prop('.key'), lanes),
+      laneKeysWithPeople,
     )
-    const emptyLaneKeys = _.difference(lanes.map(lane => lane['.key']), laneKeysWithPeople)
     const orders = permutations(matching)
-    const match = orders.find(pairing =>
-      laneKeysWithPeople.every((laneKey, i) =>
+    const match = _.find(pairing =>
+      _.every(i =>
         pairing[i]
-          ? pairing[i].some(person => person && person.location === laneKey)
+          ? _.any(_.allPass([
+            _.identity, _.matchesProperty('location', laneKeysWithPeople[i]),
+          ]))(pairing[i])
           : false
-      )
-    )
+      )(_.keys(laneKeysWithPeople))
+    )(orders)
+
     if (!match) {
       return null
     }
 
     const laneKeys = laneKeysWithPeople.concat(emptyLaneKeys)
 
-    return match.map((pair) => {
-      const lane = laneKeys.shift() || 'new-lane'
-      return {
-        pair: pair.map(person =>
-          person && person.location !== lane && person['.key']
-        ).filter(Boolean),
-        lane,
-      }
-    }).filter(({ pair }) => pair.length > 0)
+    return _.flow(
+      _.map(pair => {
+        const lane = laneKeys.shift() || 'new-lane'
+        return {
+          entities: _.flow(
+            _.map(person =>
+              person && person.location !== lane && person['.key']
+            ),
+            _.compact,
+          )(pair),
+          lane,
+        }
+      }),
+      _.filter(({ entities }) => entities.length > 0)
+    )(match)
   }
 
   _calculateScores (availablePeople, history) {
@@ -75,34 +82,36 @@ class Recommendation {
       ? parseInt(history[0]['.key']) - 1
       : 0
 
-    availablePeople.forEach(left => {
+    _.forEach(left => {
       lastPairings[left['.key']] = {}
       lastPairings[left['.key']][null] = maxScore
 
-      availablePeople.forEach(right => {
+      _.forEach(right => {
         lastPairings[left['.key']][right['.key']] = maxScore
-      })
-    })
+      }, availablePeople)
+    }, availablePeople)
 
-    history.forEach(state => {
+    _.forEach(state => {
       const epoch = parseInt(state['.key'])
-      const people = Object.keys(state.people || {}).map(key =>
-        Object.assign({ '.key': key }, state.people[key])
-      ).filter(person =>
-        person.location !== constants.LOCATION.OUT && person.location !== constants.LOCATION.UNASSIGNED &&
-      availablePeople.some(currentPerson => person['.key'] === currentPerson['.key'])
-      )
-      const groups = _.groupBy(people, 'location')
+      const people = _.filter(_.allPass([
+        _.matchesProperty('type', 'person'),
+        person => (
+          person.location !== constants.LOCATION.OUT &&
+          person.location !== constants.LOCATION.UNASSIGNED &&
+          _.some(currentPerson => person['.key'] === currentPerson['.key'], availablePeople)
+        ),
+      ]), state.entities)
+      const groups = _.groupBy('location', people)
 
-      Object.values(groups).forEach(group => {
-        const personKeys = group.map(person => person['.key'])
+      _.forEach(group => {
+        const personKeys = _.map(_.prop('.key'), group)
         // solos are 'null' in the map of last pairings.
         // this allows us to not have to special case it on the cost computation below
         if (personKeys.length === 1) {
           lastPairings[personKeys[0]][null] = epoch
           return
         }
-        pairs(personKeys).forEach(pair => {
+        _.forEach(pair => {
           if (
             lastPairings[pair[0]] === null ||
               lastPairings[pair[1]] === null
@@ -113,26 +122,33 @@ class Recommendation {
             lastPairings[pair[0]][pair[1]] = epoch
             lastPairings[pair[1]][pair[0]] = epoch
           }
-        })
-      })
-    })
+        }, pairs(personKeys))
+      }, _.values(groups))
+    }, history)
 
     return lastPairings
   }
 
   calculateMovesToBestPairing ({ history, current }) {
-    const lanes = current.lanes
-      .filter(({ locked }) => !locked)
-    const laneKeys = lanes.map(lane => lane['.key'])
-    const availablePeople = current.people
-      .filter(({ location }) =>
+    const lanes = _.filter(_.negate(_.prop('locked')), current.lanes)
+    const laneKeys = _.map(_.prop('.key'), lanes)
+    const availablePeople = _.filter(_.allPass([
+      _.matchesProperty('type', 'person'),
+      ({ location }) => (
         location === constants.LOCATION.UNASSIGNED ||
-        laneKeys.includes(location))
-    const peopleInLanes = availablePeople.filter(({ location }) => location !== constants.LOCATION.UNASSIGNED)
-    const solos = _.flatten(
-      Object.values(_.groupBy(peopleInLanes, 'location'))
-        .filter(group => group.length === 1)
+        _.includes(location, laneKeys)
+      ),
+    ]), current.entities)
+    const peopleInLanes = _.filter(
+      ({ location }) => location !== constants.LOCATION.UNASSIGNED,
+      availablePeople,
     )
+    const solos = _.flow(
+      _.groupBy('location'),
+      _.values,
+      _.filter(_.matchesProperty('length', 1)),
+      _.flatten,
+    )(peopleInLanes)
 
     if ((2 * lanes.length - 1) > availablePeople.length) {
       return
@@ -143,14 +159,15 @@ class Recommendation {
     let bestCost = Infinity
     let bestPairing
 
-    const possiblePairings = pairings(availablePeople.map(person => person['.key']))
-    _.shuffle(possiblePairings).forEach(pairing => {
-      pairing = _.chunk(pairing, 2)
-      const cost = _.sum(_.map(pairing, pair =>
-        lastPairings[pair[0]][pair[1]]
-      ))
+    const possiblePairings = pairings(_.map(person => person['.key'], availablePeople))
 
-      if (this._isPairingValid({ pairing, solos }) && cost < bestCost) {
+    _.forEach(pairing => {
+      pairing = _.chunk(2, pairing)
+      const cost = _.sum(_.map(pair =>
+        lastPairings[pair[0]][pair[1]]
+      )(pairing))
+
+      if (this.isPairingValid({ pairing, solos }) && cost < bestCost) {
         const pairingWithLanes = this._findMatchingLanes({
           pairing: pairing,
           lanes,
@@ -162,13 +179,17 @@ class Recommendation {
           bestPairing = pairingWithLanes
         }
       }
-    })
+    }, _.shuffle(possiblePairings))
 
     if (!bestPairing) {
       return null
     }
 
     return bestPairing
+  }
+
+  calculateMovesToBestRoleAssignment ({ history, current }) {
+    return []
   }
 }
 

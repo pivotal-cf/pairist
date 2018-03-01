@@ -1,6 +1,13 @@
 {
   "root": true,
-  "extends": ["eslint:recommended", "plugin:vue/recommended", "@vue/standard"],
+  "plugins": ["lodash", "lodash-fp"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:vue/recommended",
+    "@vue/standard",
+    "plugin:lodash/canonical",
+    "plugin:lodash-fp/recommended"
+  ],
   "rules": {
     "comma-dangle": ["error", "always-multiline"],
     "quote-props": ["error", "consistent-as-needed"],
@@ -8,6 +15,11 @@
     "no-console": "off",
     "no-debugger": "off",
     "object-curly-spacing": [2, "always"],
-    "array-bracket-spacing": [2, "never"]
+    "array-bracket-spacing": [2, "never"],
+    "lodash/prefer-lodash-method": [2, {
+      "ignoreMethods": ["assign"],
+      "ignoreObjects": ["wrapper"]
+    }],
+    "lodash/prefer-compact": "off"
   }
 }

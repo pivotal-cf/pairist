@@ -1,7 +1,6 @@
 import { firebaseMutations, firebaseAction } from 'vuexfire'
 import recommendation from './recommendation'
-import _ from 'lodash'
-import { plural } from 'pluralize'
+import _ from 'lodash/fp'
 
 export default {
   namespaced: true,
@@ -18,21 +17,16 @@ export default {
   getters: {
     all (state, getters) {
       // disregard history entries created > 3 timeslots ago
-      return state.history.filter(history =>
-        parseInt(history['.key']) <= (getters.currentScaledDate - 3)
-      )
-    },
+      const startDate = getters.currentScaledDate - 3
+      const withKey = entities =>
+        _.map(key =>
+          _.assign({ '.key': key }, entities[key]),
+        )(_.keys(entities))
 
-    withGroupedEntities (state, getters) {
-      return getters.all.map(history => {
-        const entities = Object.keys(history.entities || {}).map(key =>
-          Object.assign({ '.key': key }, history.entities[key])
-        )
-        return {
-          '.key': history['.key'],
-          ..._.groupBy(entities, e => plural(e.type)),
-        }
-      })
+      return _.flow(
+        _.filter(_.flow(_.prop('.key'), parseInt, _.lte(_, startDate))),
+        _.map(h => _.assoc('entities', withKey(h.entities), h)),
+      )(state.history)
     },
 
     currentScaledDate (_state, _getters, rootState) {

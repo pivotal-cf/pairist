@@ -3,9 +3,10 @@ const serviceAccount = require(`${process.env.HOME}/.secrets/pairist-test-servic
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
 const devServer = process.env.VUE_DEV_SERVER_URL
+const _ = require('lodash/fp')
 
 module.exports = {
-  async before (_, done) {
+  async before (_client, done) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       databaseURL: 'https://pairist-test.firebaseio.com',
@@ -13,9 +14,9 @@ module.exports = {
 
     try {
       const users = await admin.auth().listUsers()
-      await users.users.forEach(async (userRecord) =>
+      await _.map(async (userRecord) =>
         admin.auth().deleteUser(userRecord.uid)
-      )
+      )(users.users)
       await admin.database().ref().remove()
 
       await exec('TARGET_ENV=e2e yarn migrate')

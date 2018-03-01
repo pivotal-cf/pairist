@@ -6,6 +6,7 @@ import user from './user'
 
 import { db } from '@/firebase'
 import { firebaseMutations, firebaseAction } from 'vuexfire'
+import _ from 'lodash/fp'
 
 import version from '@/version'
 
@@ -60,7 +61,7 @@ export const store = new Vuex.Store({
       return schema
     },
 
-    appSchemaVersion () { return 2 },
+    appSchemaVersion: _.constant(2),
   },
 
   actions: {

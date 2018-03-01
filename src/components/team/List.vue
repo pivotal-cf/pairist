@@ -62,6 +62,7 @@
 <script>
 import ListItem from '@/components/team/ListItem'
 import editable from '@/components/editable'
+import _ from 'lodash/fp'
 
 import { mapGetters } from 'vuex'
 
@@ -90,7 +91,7 @@ export default {
     ...mapGetters(['canWrite']),
 
     isLoading () {
-      return (key) => this.loading.includes(key)
+      return (key) => _.includes(key, this.loading)
     },
   },
 

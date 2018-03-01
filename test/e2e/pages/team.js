@@ -1,5 +1,6 @@
-let util = require('util')
-let pluralize = require('pluralize')
+const util = require('util')
+const pluralize = require('pluralize')
+const _ = require('lodash/fp')
 
 module.exports = {
   commands: [{
@@ -125,15 +126,16 @@ module.exports = {
 
       return {
         toHavePeople (...peopleNames) {
-          peopleNames.forEach((person, i) => {
+          let i = 0
+          _.forEach(person => {
             self.api
               .useXpath()
               .assert
               .containsText(
-                element + `//*[contains(@class, 'person')][${i + 1}]`,
+                element + `//*[contains(@class, 'person')][${++i}]`,
                 person
               )
-          })
+          }, peopleNames)
         },
       }
     },
@@ -296,7 +298,7 @@ module.exports = {
     },
 
     capitalize (string) {
-      return string.charAt(0).toUpperCase() + string.slice(1)
+      return _.toUpper(string.charAt(0)) + string.slice(1)
     },
   }],
 

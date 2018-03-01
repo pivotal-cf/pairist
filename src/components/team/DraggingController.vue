@@ -4,6 +4,7 @@
 
 <script>
 import Interact from 'interact.js'
+import _ from 'lodash/fp'
 
 import { mapActions, mapMutations } from 'vuex'
 
@@ -17,7 +18,7 @@ export default {
 
   created () {
     const self = this
-    const draggableClassList = this.draggables.map(d => `.${d}`).join(', ')
+    const draggableClassList = _.map(d => `.${d}`, this.draggables).join(', ')
 
     Interact(draggableClassList).draggable({
       inertia: false,

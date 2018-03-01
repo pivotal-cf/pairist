@@ -1,4 +1,5 @@
 import { firebaseMutations, firebaseAction } from 'vuexfire'
+import _ from 'lodash/fp'
 
 import constants from '@/lib/constants'
 
@@ -17,11 +18,14 @@ export default {
   getters: {
     byKey (state) {
       return key =>
-        state.entities.find(entity => entity['.key'] === key)
+        _.find(e => e['.key'] === key)(state.entities)
     },
     all (state) {
+      return state.entities
+    },
+    byType (state) {
       return type =>
-        state.entities.filter(entity => entity.type === type)
+        _.filter(e => e.type === type)(state.entities)
     },
     unassigned (_, getters) {
       return type =>
@@ -34,8 +38,7 @@ export default {
     inLocation (state, getters) {
       return location =>
         type =>
-          getters.all(type)
-            .filter(entity => entity.location === location)
+          _.filter(entity => entity.location === location)(getters.byType(type))
     },
   },
 

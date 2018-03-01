@@ -24,13 +24,47 @@ describe('History Store', () => {
         const currentScaledDate = 1003
 
         expect(store.getters.all({ history }, { currentScaledDate })).toEqual([
-          { '.key': '999', 'before': null },
-          { '.key': '1000', 'at': null },
+          { '.key': '999', 'before': null, 'entities': [] },
+          { '.key': '1000', 'at': null, 'entities': [] },
+        ])
+      })
+
+      it('adds .key to entities', () => {
+        const history = [
+          {
+            '.key': '999',
+            'entities': {
+              e1: { name: 'name' },
+              e2: { name: 'name' },
+            },
+          },
+          {
+            '.key': '1000',
+            'entities': {
+              e3: { name: 'name' },
+              e4: { name: 'name' },
+            },
+          },
+        ]
+        const currentScaledDate = 1003
+
+        expect(store.getters.all({ history }, { currentScaledDate })).toEqual([
+          {
+            '.key': '999',
+            'entities': [
+              { '.key': 'e1', 'name': 'name' },
+              { '.key': 'e2', 'name': 'name' },
+            ],
+          },
+          {
+            '.key': '1000',
+            'entities': [
+              { '.key': 'e3', 'name': 'name' },
+              { '.key': 'e4', 'name': 'name' },
+            ],
+          },
         ])
       })
     })
-  })
-
-  describe('actions', () => {
   })
 })
