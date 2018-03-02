@@ -1,5 +1,6 @@
 import assert from 'assert'
 import _ from 'lodash/fp'
+import { Map, Set } from 'immutable'
 
 import Recommendation from '@/lib/recommendation'
 import constants from '@/lib/constants'
@@ -102,11 +103,14 @@ describe('Recommendation', () => {
         rightType: 'person',
       })
 
-      expect(scores).toEqual({
-        p1: { null: 1, p2: 13, p3: 0 },
-        p2: { null: 0, p1: 13, p3: 1 },
-        p3: { null: 13, p1: 0, p2: 1 },
-      })
+      expect(scores).toEqual(Map([
+        [Set(['p1']), 13],
+        [Set(['p2', 'p1']), 13],
+        [Set(['p3', 'p1']), 0],
+        [Set(['p2']), 13],
+        [Set(['p3', 'p2']), 1],
+        [Set(['p3']), 13],
+      ]))
     })
   })
 

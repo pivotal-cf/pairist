@@ -26,23 +26,22 @@ describe('Entities Store', () => {
 
     describe('all', () => {
       it('returns the entities from the state', () => {
-        const a = { type: 'a' }
-        const entities = [a, { type: 'b' }]
+        const entities = [{ type: 'a' }, { type: 'b' }]
 
-        expect(store.getters.all({ entities })('a')).toEqual([a])
+        expect(store.getters.all({ entities })).toEqual(entities)
       })
     })
 
     describe('inLocation', () => {
       it('returns a function that can filter by location', () => {
         const entities = [{ location: 1 }, { location: 2 }, {}]
-        const all = jest.fn().mockReturnValue(entities)
-        const f = store.getters.inLocation(null, { all })
+        const byType = jest.fn().mockReturnValue(entities)
+        const f = store.getters.inLocation(null, { byType })
 
         expect(f(1)('type')).toEqual([{ location: 1 }])
-        expect(all).toHaveBeenCalledWith('type')
+        expect(byType).toHaveBeenCalledWith('type')
         expect(f(2)('other-type')).toEqual([{ location: 2 }])
-        expect(all).toHaveBeenCalledWith('other-type')
+        expect(byType).toHaveBeenCalledWith('other-type')
       })
     })
 

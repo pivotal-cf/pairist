@@ -1,7 +1,8 @@
 import { pairings } from './combinatorics'
-import { permutation } from 'js-combinatorics'
+import { cartesianProduct, permutation } from 'js-combinatorics'
 import _ from 'lodash/fp'
 import constants from './constants'
+import { Map, Set } from 'immutable'
 
 class Recommendation {
   constructor ({ historyChunkDuration }) {
@@ -72,8 +73,17 @@ class Recommendation {
     )(match)
   }
 
+  scoresForProduct (left, right, score) {
+    if (left.length === 0 || right.length === 0) { return Map() }
+
+    return Map(
+      Set(
+        cartesianProduct(left, right).map(Set)
+      ).map(pair => [pair, score])
+    )
+  }
+
   calculateScores ({ current, history, leftType, rightType }) {
-    let lastAssignment = {}
     const maxScore = _.flow(
       _.head,
       _.prop('.key'),
@@ -85,17 +95,14 @@ class Recommendation {
     const leftPredicate = _.matchesProperty('type', leftType)
     const rightPredicate = _.matchesProperty('type', rightType)
 
-    const leftEntities = _.filter(leftPredicate, current.entities)
-    const rightEntities = _.filter(rightPredicate, current.entities)
-
-    _.forEach(left => {
-      lastAssignment[left['.key']] = {}
-      lastAssignment[left['.key']][null] = maxScore
-
-      _.forEach(right => {
-        lastAssignment[left['.key']][right['.key']] = maxScore
-      }, _.reject(_.equals(left), rightEntities))
-    }, leftEntities)
+    const leftEntities = _.flow(
+      _.filter(leftPredicate),
+      _.map(_.prop('.key')),
+    )(current.entities)
+    const rightEntities = _.flow(
+      _.filter(rightPredicate),
+      _.map(_.prop('.key')),
+    )(current.entities)
 
     const inLane = e =>
       e.location !== constants.LOCATION.OUT &&
@@ -104,42 +111,38 @@ class Recommendation {
     const isCurrent = roster => e =>
       _.any(_.matchesProperty('.key', e['.key']))(roster)
 
-    _.forEach(state => {
-      const epoch = parseInt(state['.key'])
-      const group = _.flow(
-        _.filter(_.allPass([
-          inLane,
-          isCurrent(current.entities),
-        ])),
-        _.groupBy('location')
-      )(state.entities)
+    return _.flow(
+      _.map(state => {
+        const epoch = parseInt(state['.key'])
+        const group = _.flow(
+          _.filter(_.allPass([
+            inLane,
+            isCurrent(current.entities),
+          ])),
+          _.groupBy('location')
+        )(state.entities)
 
-      _.forEach(location => {
-        const leftKeys = _.flow(
-          _.filter(leftPredicate),
-          _.map(_.prop('.key')),
-        )(group[location])
+        return _.flow(
+          _.keys,
+          _.map(location => {
+            const leftKeys = _.flow(
+              _.filter(leftPredicate),
+              _.map(_.prop('.key')),
+            )(group[location])
 
-        const rightKeys = _.flow(
-          _.filter(rightPredicate),
-          _.map(_.prop('.key')),
-        )(group[location])
+            const rightKeys = _.flow(
+              _.filter(rightPredicate),
+              _.map(_.prop('.key')),
+            )(group[location])
 
-        _.forEach(left => {
-          const r = _.reject(_.equals(left), rightKeys)
-          if (r.length === 0) {
-            lastAssignment[left][null] = epoch
-          }
-          _.forEach(right => {
-            if (lastAssignment[left][right] < epoch) {
-              lastAssignment[left][right] = epoch
-            }
-          }, r)
-        }, leftKeys)
-      }, _.keys(group))
-    }, history)
-
-    return lastAssignment
+            return this.scoresForProduct(leftKeys, rightKeys, epoch)
+          }),
+          _.reduce((merged, m) => merged.merge(m), Map()),
+        )(group)
+      }),
+      _.reduce((merged, m) => merged.merge(m), Map()),
+      m => this.scoresForProduct(leftEntities, rightEntities, maxScore).merge(m),
+    )(history)
   }
 
   calculateMovesToBestPairing ({ history, current }) {
@@ -177,7 +180,7 @@ class Recommendation {
     _.forEach(pairing => {
       pairing = _.chunk(2, pairing)
       const cost = _.sum(_.map(pair =>
-        lastPairings[pair[0]][pair[1]]
+        lastPairings.get(Set(_.compact([pair[0], pair[1]]))),
       )(pairing))
 
       if (this.isPairingValid({ pairing, solos }) && cost < bestCost) {
