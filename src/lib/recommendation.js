@@ -1,4 +1,4 @@
-import { pairs, pairings } from './combinatorics'
+import { pairings } from './combinatorics'
 import { permutation } from 'js-combinatorics'
 import _ from 'lodash/fp'
 import constants from './constants'
@@ -72,61 +72,74 @@ class Recommendation {
     )(match)
   }
 
-  _calculateScores (availablePeople, history) {
-    if (!history) {
-      history = []
-    }
+  calculateScores ({ current, history, leftType, rightType }) {
+    let lastAssignment = {}
+    const maxScore = _.flow(
+      _.head,
+      _.prop('.key'),
+      _.defaultTo('1'),
+      parseInt,
+      _.subtract(_, 1),
+    )(history)
 
-    let lastPairings = {}
-    const maxScore = history.length > 0
-      ? parseInt(history[0]['.key']) - 1
-      : 0
+    const leftPredicate = _.matchesProperty('type', leftType)
+    const rightPredicate = _.matchesProperty('type', rightType)
+
+    const leftEntities = _.filter(leftPredicate, current.entities)
+    const rightEntities = _.filter(rightPredicate, current.entities)
 
     _.forEach(left => {
-      lastPairings[left['.key']] = {}
-      lastPairings[left['.key']][null] = maxScore
+      lastAssignment[left['.key']] = {}
+      lastAssignment[left['.key']][null] = maxScore
 
       _.forEach(right => {
-        lastPairings[left['.key']][right['.key']] = maxScore
-      }, availablePeople)
-    }, availablePeople)
+        lastAssignment[left['.key']][right['.key']] = maxScore
+      }, _.reject(_.equals(left), rightEntities))
+    }, leftEntities)
+
+    const inLane = e =>
+      e.location !== constants.LOCATION.OUT &&
+      e.location !== constants.LOCATION.UNASSIGNED
+
+    const isCurrent = roster => e =>
+      _.any(_.matchesProperty('.key', e['.key']))(roster)
 
     _.forEach(state => {
       const epoch = parseInt(state['.key'])
-      const people = _.filter(_.allPass([
-        _.matchesProperty('type', 'person'),
-        person => (
-          person.location !== constants.LOCATION.OUT &&
-          person.location !== constants.LOCATION.UNASSIGNED &&
-          _.some(currentPerson => person['.key'] === currentPerson['.key'], availablePeople)
-        ),
-      ]), state.entities)
-      const groups = _.groupBy('location', people)
+      const group = _.flow(
+        _.filter(_.allPass([
+          inLane,
+          isCurrent(current.entities),
+        ])),
+        _.groupBy('location')
+      )(state.entities)
 
-      _.forEach(group => {
-        const personKeys = _.map(_.prop('.key'), group)
-        // solos are 'null' in the map of last pairings.
-        // this allows us to not have to special case it on the cost computation below
-        if (personKeys.length === 1) {
-          lastPairings[personKeys[0]][null] = epoch
-          return
-        }
-        _.forEach(pair => {
-          if (
-            lastPairings[pair[0]] === null ||
-              lastPairings[pair[1]] === null
-          ) {
-            return
+      _.forEach(location => {
+        const leftKeys = _.flow(
+          _.filter(leftPredicate),
+          _.map(_.prop('.key')),
+        )(group[location])
+
+        const rightKeys = _.flow(
+          _.filter(rightPredicate),
+          _.map(_.prop('.key')),
+        )(group[location])
+
+        _.forEach(left => {
+          const r = _.reject(_.equals(left), rightKeys)
+          if (r.length === 0) {
+            lastAssignment[left][null] = epoch
           }
-          if (lastPairings[pair[0]][pair[1]] < epoch) {
-            lastPairings[pair[0]][pair[1]] = epoch
-            lastPairings[pair[1]][pair[0]] = epoch
-          }
-        }, pairs(personKeys))
-      }, _.values(groups))
+          _.forEach(right => {
+            if (lastAssignment[left][right] < epoch) {
+              lastAssignment[left][right] = epoch
+            }
+          }, r)
+        }, leftKeys)
+      }, _.keys(group))
     }, history)
 
-    return lastPairings
+    return lastAssignment
   }
 
   calculateMovesToBestPairing ({ history, current }) {
@@ -154,7 +167,7 @@ class Recommendation {
       return
     }
 
-    const lastPairings = this._calculateScores(availablePeople, history)
+    const lastPairings = this.calculateScores({ current, history, leftType: 'person', rightType: 'person' })
 
     let bestCost = Infinity
     let bestPairing
