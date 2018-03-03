@@ -3,9 +3,9 @@ import 'babel-polyfill'
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 
-import Recommendation from './lib/recommendation'
+import History from './lib/history'
 const historyChunkDuration = parseInt(functions.config().pairist.history_chunk_duration)
-const recommendation = new Recommendation({ historyChunkDuration })
+const history = new History(historyChunkDuration)
 
 admin.initializeApp(functions.config().firebase)
 
@@ -16,7 +16,7 @@ export const saveHistory = functions.database.ref('/teams/{teamName}/current').o
 
   console.log(`| _START: Recording history for team ${event.params.teamName} (chunk duration: ${historyChunkDuration})`)
   const current = (await event.data.ref.once('value')).val()
-  const historyKey = recommendation.scaleDate(Date.now())
+  const historyKey = history.scaleDate(Date.now())
 
   try {
     await event.data.ref.parent.child('history').child(historyKey).set(current)

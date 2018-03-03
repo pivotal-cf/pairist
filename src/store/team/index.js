@@ -9,7 +9,8 @@ import lanes from './lanes'
 import history from './history'
 import lists from './lists'
 
-import recommendation from './recommendation'
+import history_ from '@/history'
+import { calculateMovesToBestPairing } from '@/lib/recommendation'
 
 export default {
   modules: {
@@ -56,7 +57,7 @@ export default {
     },
 
     toDate () {
-      return (key) => recommendation.toDate(key)
+      return (key) => history_.toDate(key)
     },
 
     dragging (state) { return state.dragging },
@@ -176,7 +177,7 @@ export default {
     },
 
     recommendPairs ({ commit, dispatch, getters }) {
-      const moves = recommendation.calculateMovesToBestPairing({
+      const moves = calculateMovesToBestPairing({
         history: getters['history/all'].slice(),
         current: {
           entities: getters['entities/all'].slice(),

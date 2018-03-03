@@ -1,5 +1,5 @@
 import { firebaseMutations, firebaseAction } from 'vuexfire'
-import recommendation from './recommendation'
+import history from '@/history'
 import _ from 'lodash/fp'
 
 export default {
@@ -30,7 +30,7 @@ export default {
     },
 
     currentScaledDate (_state, _getters, rootState) {
-      return recommendation.scaleDate(rootState.shared.now)
+      return history.scaleDate(rootState.shared.now)
     },
   },
 

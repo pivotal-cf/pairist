@@ -31,11 +31,16 @@ jest.mock('vuexfire', () => {
   }
 })
 
-jest.mock('@/store/team/recommendation', () => {
+jest.mock('@/store/team/history', () => {
+  return {
+    toDate (date) { return new Date(date) },
+  }
+})
+
+jest.mock('@/lib/recommendation', () => {
   global.calculateMovesToBestPairing = jest.fn()
   return {
     calculateMovesToBestPairing: global.calculateMovesToBestPairing,
-    toDate (date) { return new Date(date) },
   }
 })
 
