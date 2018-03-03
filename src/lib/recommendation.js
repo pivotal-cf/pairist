@@ -4,8 +4,17 @@ import _ from 'lodash/fp'
 import constants from './constants'
 import { Map, Set } from 'immutable'
 
+const typePredicate = (type) => { return _.matchesProperty('type', type) }
+
+const keysToInt = _.map(_.flow(
+  _.prop('.key'),
+  _.defaultTo('0'),
+  parseInt,
+))
+
+const keys = _.map(_.prop('.key'))
 const isPairingValid = ({ pairing, solos }) => {
-  const soloKeys = _.map(_.prop('.key'))(solos)
+  const soloKeys = keys(solos)
   return !_.any(_.every(_.includes(_, soloKeys)))(pairing)
 }
 
@@ -77,46 +86,34 @@ const scoresForProduct = (pairs, score, rejectSolos) => {
   )
 }
 
-const typePredicate = (type) => { return _.matchesProperty('type', type) }
-
 const calculateScores = ({ pairs, roster, history, allowSolos }) => {
   const inLane = e =>
     e.location !== constants.LOCATION.OUT &&
-      e.location !== constants.LOCATION.UNASSIGNED
+    e.location !== constants.LOCATION.UNASSIGNED
 
   const inRoster = e => roster.has(e['.key'])
 
-  const currentDate = _.flow(
-    _.last,
-    _.prop('.key'),
-    _.defaultTo('0'),
-    parseInt,
-  )(history)
+  const historyKeys = keysToInt(history)
+  const currentDate = _.last(historyKeys)
   const maxScore = _.flow(
     _.head,
-    _.prop('.key'),
-    _.defaultTo('0'),
-    parseInt,
     _.subtract(currentDate),
     _.add(1),
-  )(history)
+  )(historyKeys)
 
   return _.flow(
     _.map(state => {
       const score = currentDate - parseInt(state['.key'])
       const group = _.flow(
-        _.filter(_.overEvery([
-          inLane,
-          inRoster,
-        ])),
+        _.filter(_.allPass([inLane, inRoster])),
         _.groupBy('location'),
       )(state.entities)
 
       return _.flow(
         _.keys,
         _.map(location => {
-          const leftKeys = _.map(_.prop('.key'))(group[location])
-          const rightKeys = _.map(_.prop('.key'))(group[location])
+          const leftKeys = keys(group[location])
+          const rightKeys = keys(group[location])
 
           const rejectSolos = !allowSolos || leftKeys.length > 1
           return scoresForProduct(
@@ -160,10 +157,10 @@ export const calculateMovesToBestPairing = ({ history, current }) => {
 
   const people = _.flow(
     _.filter(typePredicate('person')),
-    _.map(_.prop('.key')),
+    keys,
   )(current.entities)
 
-  const roster = Set(_.map(_.prop('.key'))(current.entities))
+  const roster = Set(keys(current.entities))
   const pairs = computePairs(people)
 
   const scores = calculateScores({ pairs, roster, history, allowSolos: true })
