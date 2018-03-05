@@ -37,6 +37,14 @@
         </v-flex>
         <v-btn
           v-if="canWrite && lane['.key'] !== 'new-lane'"
+          class="close-button"
+          dark fab small
+          @click="closeLane({ key: lane['.key']})"
+        >
+          <v-icon>close</v-icon>
+        </v-btn>
+        <v-btn
+          v-if="canWrite && lane['.key'] !== 'new-lane'"
           :class="{'is-locked': lane.locked}"
           :color="lane.locked? 'pink' : 'accent'"
           dark fab small
@@ -83,6 +91,9 @@ export default {
 
   methods: {
     ...mapActions('lanes', ['setLocked']),
+    closeLane ({ key }) {
+      this.$store.dispatch('entities/resetLocation', key)
+    },
   },
 }
 </script>

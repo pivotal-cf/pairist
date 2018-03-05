@@ -161,6 +161,17 @@ module.exports = {
         .pause(300)
     },
 
+    closeLane (lane) {
+      this.api
+        .useXpath()
+        .moveToElement(this.el('@lane', lane), 50, 50)
+        .pause(300)
+        .click(this.el('@lane', lane) + "//i[contains(@class, 'close')]//ancestor::button")
+        .useCss()
+        .waitForElementNotPresent(this.el('@lane', lane), 2000)
+        .pause(300)
+    },
+
     expectMessage (msg, type) {
       this.api.pause(300)
       this.api.useCss()
