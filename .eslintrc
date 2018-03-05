@@ -4,9 +4,7 @@
   "extends": [
     "eslint:recommended",
     "plugin:vue/recommended",
-    "@vue/standard",
-    "plugin:lodash/canonical",
-    "plugin:lodash-fp/recommended"
+    "@vue/standard"
   ],
   "rules": {
     "comma-dangle": ["error", "always-multiline"],
@@ -15,8 +13,6 @@
     "no-console": "off",
     "no-debugger": "off",
     "object-curly-spacing": [2, "always"],
-    "array-bracket-spacing": [2, "never"],
-    "lodash/prefer-lodash-method": "off",
-    "lodash/prefer-compact": "off"
+    "array-bracket-spacing": [2, "never"]
   }
 }

@@ -1,210 +1,142 @@
-import { pairings } from './combinatorics'
-import { cartesianProduct, permutation } from 'js-combinatorics'
-import _ from 'lodash/fp'
 import constants from './constants'
-import { Map, Set } from 'immutable'
+import { pairs, pairings } from './combinatorics'
+import _ from 'lodash'
 
-const typePredicate = (type) => { return _.matchesProperty('type', type) }
+export const matchLanes = ({ pairing, lanes }) => {
+  let result = []
 
-const keysToInt = _.map(_.flow(
-  _.prop('.key'),
-  _.defaultTo('0'),
-  parseInt,
-))
-
-const keys = _.map(_.prop('.key'))
-const isPairingValid = ({ pairing, solos }) => {
-  const soloKeys = keys(solos)
-  return !_.any(_.every(_.includes(_, soloKeys)))(pairing)
-}
-
-const findMatchingLanes = ({ pairing, lanes, people }) => {
-  const matching = _.map(
-    _.map(key =>
-      _.find(_.matchesProperty('.key', key), people),
-    )
-  )(pairing)
-
-  const laneKeysWithPeople = _.flow(
-    _.map(({ location }) => location),
-    _.filter(location =>
-      location !== constants.LOCATION.OUT && location !== constants.LOCATION.UNASSIGNED
-    ),
-    _.uniq,
-  )(people)
-  const emptyLaneKeys = _.difference(
-    _.map(_.prop('.key'), lanes),
-    laneKeysWithPeople,
-  )
-  const match = permutation(matching).find(pairing =>
-    _.every(i =>
-      pairing[i]
-        ? _.any(_.allPass([
-          _.identity, _.matchesProperty('location', laneKeysWithPeople[i]),
-        ]))(pairing[i])
-        : false
-    )(_.keys(laneKeysWithPeople))
-  )
-
-  if (!match) {
-    return null
-  }
-
-  const laneKeys = laneKeysWithPeople.concat(emptyLaneKeys)
-
-  return _.flow(
-    _.map(pair => {
-      const lane = laneKeys.shift() || 'new-lane'
-      return {
-        entities: _.flow(
-          _.map(person =>
-            person && person.location !== lane && person['.key']
-          ),
-          _.compact,
-        )(pair),
-        lane,
+  Object.keys(lanes).forEach(key => {
+    const lane = lanes[key]
+    let entities = []
+    const p = pairing.find(p => {
+      if (lane.length > 0) {
+        if (p.some(q => lane.includes(q))) {
+          entities = p.filter(i => !lane.includes(i))
+          return true
+        }
+        return false
       }
-    }),
-    _.filter(({ entities }) => entities.length > 0)
-  )(match)
-}
-
-const computePairs = (left, right) => {
-  if (!right) { right = left }
-  if (left.toJS) { left = left.toJS() }
-  if (right.toJS) { right = right.toJS() }
-  if (left.length === 0 || right.length === 0) { return Set() }
-
-  return Set(cartesianProduct(left, right).map(Set))
-}
-
-const scoresForProduct = (pairs, score, rejectSolos) => {
-  return Map(
-    pairs
-      .filterNot(pair => rejectSolos && pair.size === 1)
-      .map(pair => [pair, (score / (pair.size === 1 ? 2 : 1))])
-  )
-}
-
-const calculateScores = ({ pairs, roster, history, allowSolos }) => {
-  const inLane = e =>
-    e.location !== constants.LOCATION.OUT &&
-    e.location !== constants.LOCATION.UNASSIGNED
-
-  const inRoster = e => roster.has(e['.key'])
-
-  const historyKeys = keysToInt(history)
-  const currentDate = _.last(historyKeys)
-  const maxScore = _.flow(
-    _.head,
-    _.subtract(currentDate),
-    _.add(1),
-  )(historyKeys)
-
-  return _.flow(
-    _.map(state => {
-      const score = currentDate - parseInt(state['.key'])
-      const group = _.flow(
-        _.filter(_.allPass([inLane, inRoster])),
-        _.groupBy('location'),
-      )(state.entities)
-
-      return _.flow(
-        _.keys,
-        _.map(location => {
-          const leftKeys = keys(group[location])
-          const rightKeys = keys(group[location])
-
-          const rejectSolos = !allowSolos || leftKeys.length > 1
-          return scoresForProduct(
-            computePairs(leftKeys, rightKeys),
-            score,
-            rejectSolos,
-          )
-        }),
-        _.reduce((merged, m) => merged.merge(m), Map()),
-      )(group)
-    }),
-    _.reduce((merged, m) => merged.merge(m), Map()),
-    m => scoresForProduct(pairs, maxScore, !allowSolos).merge(m),
-  )(history)
-}
-
-export const calculateMovesToBestPairing = ({ history, current }) => {
-  const lanes = _.filter(_.negate(_.prop('locked')), current.lanes)
-  const laneKeys = _.map(_.prop('.key'), lanes)
-  const availablePeople = _.filter(_.allPass([
-    _.matchesProperty('type', 'person'),
-    ({ location }) => (
-      location === constants.LOCATION.UNASSIGNED ||
-        _.includes(location, laneKeys)
-    ),
-  ]))(current.entities)
-  const peopleInLanes = _.filter(
-    ({ location }) => location !== constants.LOCATION.UNASSIGNED,
-    availablePeople,
-  )
-  const solos = _.flow(
-    _.groupBy('location'),
-    _.values,
-    _.filter(_.matchesProperty('length', 1)),
-    _.flatten,
-  )(peopleInLanes)
-
-  if ((2 * lanes.length - 1) > availablePeople.length) {
-    return
-  }
-
-  const people = _.flow(
-    _.filter(typePredicate('person')),
-    keys,
-  )(current.entities)
-
-  const roster = Set(keys(current.entities))
-  const pairs = computePairs(people)
-
-  const scores = calculateScores({ pairs, roster, history, allowSolos: true })
-
-  let bestScore = -1
-  let bestPairing
-
-  const possiblePairings = pairings(_.map(person => person['.key'], availablePeople))
-
-  _.forEach(pairing => {
-    pairing = _.chunk(2, pairing)
-    const score = _.sum(_.map(pair =>
-      scores.get(Set(_.compact([pair[0], pair[1]]))),
-    )(pairing))
-
-    if (isPairingValid({ pairing, solos }) && score > bestScore) {
-      const pairingWithLanes = findMatchingLanes({
-        pairing: pairing,
-        lanes,
-        people: availablePeople,
-      })
-
-      if (pairingWithLanes) {
-        bestScore = score
-        bestPairing = pairingWithLanes
-      }
+      entities = p
+      return true
+    })
+    pairing = pairing.filter(i => i !== p)
+    entities = entities.filter(e => e !== '<solo>')
+    if (entities.length > 0) {
+      result.push({ lane: key, entities })
     }
-  }, _.shuffle(possiblePairings))
+  })
 
-  if (!bestPairing) {
-    return null
+  pairing.forEach(p => (
+    result.push({
+      lane: 'new-lane',
+      entities: p.filter(Boolean),
+    })
+  ))
+
+  return result
+}
+
+export const scoreMatrix = (left, right, history, maxScore) => {
+  const scores = {}
+
+  left.forEach(l => {
+    scores[l] = {}
+    right.forEach(r => {
+      scores[l][r] = maxScore
+    })
+  })
+
+  history.forEach(h => {
+    h.lanes.forEach(lane => {
+      lane.left.forEach(l => {
+        lane.right.forEach(r => {
+          if (scores[l] && scores[l][r] !== undefined) {
+            scores[l][r] = l !== r ? h.score : -maxScore
+          }
+        })
+      })
+    })
+  })
+
+  return left.map((l, i) => right.map((r, j) => {
+    return scores[l][r]
+  }))
+}
+
+const key = e => e['.key']
+
+export const calculateMovesToBestPairing = ({ current, history }) => {
+  const laneKeys = current.lanes.filter(l => !l.locked).map(key)
+  const people = current.entities.filter(e =>
+    e.type === 'person' &&
+    (e.location === constants.LOCATION.UNASSIGNED || laneKeys.includes(e.location))
+  )
+
+  if ((2 * laneKeys.length - 1) > people.length) { return null }
+
+  const peopleKeys = people.map(key)
+  if (peopleKeys.length % 2 === 1) { peopleKeys.push('<solo>') }
+  const lanes = _.mapValues(_.groupBy(
+    people.filter(e => laneKeys.includes(e.location)),
+    'location',
+  ), v => v.map(key))
+
+  if (peopleKeys.length === 0) { return [] }
+
+  let maxScore = 0
+
+  if (history && history.length > 0) {
+    maxScore = parseInt(_.last(history)['.key'])
+
+    history = history.map(h => {
+      const groups = _.groupBy(h.entities.filter(e =>
+        e.type === 'person' &&
+        e.location !== constants.LOCATION.UNASSIGNED &&
+        e.location !== constants.LOCATION.OUT
+      ), 'location')
+      const lanes = []
+      const score = maxScore - parseInt(h['.key'])
+
+      Object.values(groups).forEach(people => {
+        people = people.map(key)
+        if (people.length === 1) { people.push('<solo>') }
+
+        lanes.push({
+          left: people,
+          right: people,
+        })
+      })
+      return { score, lanes }
+    })
+  } else {
+    history = []
   }
 
-  return bestPairing
-}
+  const scores = scoreMatrix(peopleKeys, peopleKeys, history, maxScore + 1)
+  // set pairing solos to lowest possible score
+  const solos = _.flatten(Object.values(lanes).filter(l => l.length === 1))
+    .map(p => peopleKeys.indexOf(p))
+  pairs(solos).forEach(p => {
+    scores[p[0]][p[1]] = -maxScore
+    scores[p[1]][p[0]] = -maxScore
+  })
 
-export const calculateMovesToBestRoleAssignment = ({ history, current }) => {
-  return []
-}
+  let highestScore = -maxScore
+  let bestPairing
+  pairings(_.times(peopleKeys.length)).forEach(p => {
+    const score = p.reduce((sum, p) => sum + scores[p[0]][p[1]], 0)
+    if (score > highestScore) {
+      bestPairing = p
+      highestScore = score
+    }
+  })
 
-export default {
-  isPairingValid,
-  calculateScores,
-  computePairs,
-  calculateMovesToBestPairing,
-  calculateMovesToBestRoleAssignment,
+  const pairing = bestPairing.map(pair =>
+    [
+      peopleKeys[pair[0]],
+      peopleKeys[pair[1]],
+    ].filter(e => e !== '<solo>')
+  )
+
+  return matchLanes({ pairing, lanes })
 }

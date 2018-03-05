@@ -1,127 +1,10 @@
 import assert from 'assert'
 import _ from 'lodash/fp'
-import { Map, Set } from 'immutable'
 
-import Recommendation from '@/lib/recommendation'
+import * as Recommendation from '@/lib/recommendation'
 import constants from '@/lib/constants'
 
 describe('Recommendation', () => {
-  describe('isPairingValid', () => {
-    it('is always valid without solos', () => {
-      expect(Recommendation.isPairingValid({ pairing: [], solos: [] })).toBeTruthy()
-    })
-
-    it('is invalid if pairing two solos but not together', () => {
-      expect(Recommendation.isPairingValid({
-        pairing: [[1, 3], [2, 4]],
-        solos: [{ '.key': 1 }, { '.key': 2 }],
-      })).toBeTruthy()
-    })
-
-    it('is invalid if pairing two solos together', () => {
-      expect(Recommendation.isPairingValid({
-        pairing: [[1, 2]],
-        solos: [{ '.key': 1 }, { '.key': 2 }],
-      })).toBeFalsy()
-    })
-  })
-
-  describe('calculateScores', () => {
-    const roster = Set(['p1', 'p2', 'p3'])
-    const pairs = Recommendation.computePairs(roster)
-
-    it('allows solos to be filtered out', () => {
-      const scores = Recommendation.calculateScores({
-        pairs,
-        roster,
-        history: [
-          {
-            '.key': '1',
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l2' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '11',
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '12',
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '13',
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-        ],
-        allowSolos: false,
-      })
-
-      expect(scores).toEqual(Map([
-        [Set(['p1', 'p2']), 0],
-        [Set(['p1', 'p3']), 13],
-        [Set(['p2', 'p3']), 12],
-      ]))
-    })
-
-    it('defaults to a maxium score halving solos', () => {
-      const scores = Recommendation.calculateScores({
-        pairs,
-        roster,
-        history: [
-          {
-            '.key': '1',
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '2',
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '3',
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-        ],
-        allowSolos: true,
-      })
-
-      expect(scores).toEqual(Map([
-        [Set(['p1']), 1.5],
-        [Set(['p1', 'p2']), 0],
-        [Set(['p1', 'p3']), 3],
-        [Set(['p2']), 1.5],
-        [Set(['p2', 'p3']), 3],
-        [Set(['p3']), 0],
-      ]))
-    })
-  })
-
   describe('calculateMovesToBestPairing', () => {
     it('does not blow up if history is not set', () => {
       const bestPairing = Recommendation.calculateMovesToBestPairing({
@@ -158,7 +41,7 @@ describe('Recommendation', () => {
               { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
               { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
             ],
-            lanes: [{ '.key': 'l1' }],
+            lanes: [],
           },
           history: [
             {
@@ -186,7 +69,7 @@ describe('Recommendation', () => {
 
         expect(bestPairing).toEqual([
           {
-            lane: 'l1',
+            lane: 'new-lane',
             entities: ['p1'],
           },
           {
@@ -320,6 +203,75 @@ describe('Recommendation', () => {
       })
     })
 
+    describe('multiple solos', () => {
+      it('does not pair them together', () => {
+        const bestPairing = Recommendation.calculateMovesToBestPairing({
+          current: {
+            entities: [
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l3' },
+              { '.key': 'p4', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'p5', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'p6', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'role', 'type': 'role', 'location': constants.LOCATION.UNASSIGNED },
+            ],
+            lanes: [{ '.key': 'l1' }, { '.key': 'l2' }, { '.key': 'l3' }],
+          },
+          history: [
+            {
+              '.key': '' + previousScore(3),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l3' },
+                { '.key': 'p4', 'type': 'person', 'location': 'l3' },
+                { '.key': 'p5', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p6', 'type': 'person', 'location': 'l2' },
+              ],
+            },
+            {
+              '.key': '' + previousScore(2),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l3' },
+                { '.key': 'p4', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p5', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p6', 'type': 'person', 'location': 'l3' },
+              ],
+            },
+            {
+              '.key': '' + previousScore(1),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l3' },
+                { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p5', 'type': 'person', 'location': 'l3' },
+                { '.key': 'p6', 'type': 'person', 'location': 'l1' },
+              ],
+            },
+          ],
+        })
+
+        expect(bestPairing).toEqual([
+          {
+            lane: 'l1',
+            entities: ['p5'],
+          },
+          {
+            lane: 'l2',
+            entities: ['p6'],
+          },
+          {
+            lane: 'l3',
+            entities: ['p4'],
+          },
+        ])
+      })
+    })
+
     describe('fuzz', () => {
       for (let i = 0; i < 200; i++) {
         it(`fuzz #${i}`, () => {
@@ -336,7 +288,7 @@ describe('Recommendation', () => {
           const board = generateBoard(config)
 
           const bestPairing = Recommendation.calculateMovesToBestPairing(board)
-          if (lanesCount * 2 - 1 > peopleCount || peopleCount === 0) {
+          if (lanesCount * 2 - 1 > peopleCount) {
             // too many lanes
             assert.equal(bestPairing, undefined, JSON.stringify({ config, current: board.current }))
           } else {
