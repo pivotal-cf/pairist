@@ -123,13 +123,13 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
 
   let highestScore = -maxScore
   let bestPairing
-  pairings(_.times(peopleKeys.length)).forEach(p => {
-    const score = p.reduce((sum, p) => sum + scores[p[0]][p[1]], 0)
+  for (let pairing of pairings(_.times(peopleKeys.length))) {
+    const score = pairing.reduce((sum, pair) => sum + scores[pair[0]][pair[1]], 0)
     if (score > highestScore) {
-      bestPairing = p
+      bestPairing = pairing
       highestScore = score
     }
-  })
+  }
 
   const pairing = bestPairing.map(pair =>
     [
