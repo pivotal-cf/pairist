@@ -161,9 +161,9 @@ export default {
     },
 
     applyMoves ({ commit, getters, dispatch }, pairsAndLanes) {
-      _.forEach(async ({ entities, lane }) => {
+      _.forEach(({ entities, lane }) => {
         if (lane === 'new-lane') {
-          await dispatch('lanes/add')
+          Promise.resolve(dispatch('lanes/add'))
           lane = getters['lanes/lastAddedKey']
         }
 
