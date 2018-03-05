@@ -9,23 +9,20 @@ export const pairs = (array) => {
   return results
 }
 
-export const pairings = (array) => {
+export const pairings = function * (array) {
   if (array.length === 2) {
-    return [[array]]
+    yield [array]
+    return
   }
-
-  let results = []
 
   for (let i = 1; i < array.length; i++) {
     const buff = array[1]
     array[1] = array[i]
     array[i] = buff
-    const more = pairings(array.slice(2))
+    const result = [array.slice(0, 2)]
 
-    for (let j = 0; j < more.length; j++) {
-      results.push([array.slice(0, 2)].concat(more[j]))
+    for (let more of pairings(array.slice(2))) {
+      yield result.concat(more)
     }
   }
-
-  return results
 }
