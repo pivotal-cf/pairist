@@ -2,10 +2,11 @@
   <v-chip
     :text-color="textColor"
     :color="color"
+    :label="entity.type === 'track'"
     class="chip"
     @contextmenu="contextmenu"
   >
-    <v-avatar v-if="entity.icon" :class="iconColor">
+    <v-avatar v-if="entity.icon && entity.type === 'track'" :class="iconColor" :tile="entity.type === 'track'">
       <v-icon>{{ entity.icon }}</v-icon>
     </v-avatar>
     <span v-if="entity.name">{{ entity.name }}</span>

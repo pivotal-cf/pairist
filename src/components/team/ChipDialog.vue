@@ -143,9 +143,11 @@ export default {
       await this.$store.dispatch('entities/save', Object.assign({ type: this.editingEntity.type }, this.editingEntity))
 
       this.show = false
-      for (let k in this.editingEntity) {
-        if (k === 'type') { continue }
-        this.editingEntity[k] = ''
+      if (!this.entity['.key']) {
+        for (let k in this.editingEntity) {
+          if (k === 'type') { continue }
+          this.editingEntity[k] = ''
+        }
       }
     },
 
