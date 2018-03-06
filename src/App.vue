@@ -15,12 +15,11 @@
 <script>
 import Migrating from '@/components/Migrating'
 import Loading from '@/components/Loading'
-import Update from '@/components/Update'
 import Toolbar from '@/components/team/Toolbar'
 import { mapGetters } from 'vuex'
 
 export default {
-  components: { Migrating, Loading, Update, Toolbar },
+  components: { Migrating, Loading, Toolbar },
 
   computed: {
     ...mapGetters([
@@ -36,6 +35,12 @@ export default {
 
     migrating () {
       this.checkVersion()
+    },
+
+    remoteVersion () {
+      if (this.localVersion < this.remoteVersion) {
+        location.reload(true)
+      }
     },
   },
 
