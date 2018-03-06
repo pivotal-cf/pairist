@@ -115,7 +115,7 @@ describe('Lane', () => {
       propsData: { lane },
     })
 
-    wrapper.find('.close-button').trigger('click')
+    wrapper.find('.sweep-button').trigger('click')
     expect(entityActions.resetLocation).toHaveBeenCalled()
     expect(entityActions.resetLocation).toHaveBeenLastCalledWith(expect.anything(), 'a-key', undefined)
   })
@@ -130,7 +130,7 @@ describe('Lane', () => {
       propsData: { lane },
     })
 
-    expect(wrapper.find('.close-button').exists()).toBeFalsy()
+    expect(wrapper.find('.sweep-button').exists()).toBeFalsy()
   })
 
   it('shows a new lane without a close button if new-lane is passed', async () => {
@@ -141,7 +141,7 @@ describe('Lane', () => {
       propsData: { lane },
     })
 
-    expect(wrapper.find('.close-button').exists()).toBeFalsy()
+    expect(wrapper.find('.sweep-button').exists()).toBeFalsy()
   })
   it('shows a divider if applicable', () => {
     const wrapper = shallow(Lane, {

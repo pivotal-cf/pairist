@@ -37,11 +37,11 @@
         </v-flex>
         <v-btn
           v-if="canWrite && lane['.key'] !== 'new-lane'"
-          class="close-button"
+          class="sweep-button"
           dark fab small
-          @click="closeLane({ key: lane['.key']})"
+          @click="sweepLane({ key: lane['.key']})"
         >
-          <v-icon>close</v-icon>
+          <v-icon>mdi-broom</v-icon>
         </v-btn>
         <v-btn
           v-if="canWrite && lane['.key'] !== 'new-lane'"
@@ -91,7 +91,7 @@ export default {
 
   methods: {
     ...mapActions('lanes', ['setLocked']),
-    closeLane ({ key }) {
+    sweepLane ({ key }) {
       this.$store.dispatch('entities/resetLocation', key)
     },
   },
@@ -111,10 +111,10 @@ export default {
     .list__tile__content
       overflow: visible !important
 
-  &:hover .close-button
+  &:hover .sweep-button
     opacity: 1
 
-  .close-button
+  .sweep-button
     transition: opacity .1s linear
     position: absolute
     bottom: 55px

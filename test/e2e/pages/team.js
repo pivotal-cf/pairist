@@ -161,12 +161,12 @@ module.exports = {
         .pause(300)
     },
 
-    closeLane (lane) {
+    sweepLane (lane) {
       this.api
         .useXpath()
         .moveToElement(this.el('@lane', lane), 50, 50)
         .pause(300)
-        .click(this.el('@lane', lane) + "//i[contains(@class, 'close')]//ancestor::button")
+        .click(this.el('@lane', lane) + "//i[contains(@class, 'mdi-broom')]//ancestor::button")
         .useCss()
         .waitForElementNotPresent(this.el('@lane', lane), 2000)
         .pause(300)
