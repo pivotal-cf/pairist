@@ -111,6 +111,20 @@ export default {
     .list__tile__content
       overflow: visible !important
 
+  &:hover .close-button
+    opacity: 1
+
+  .close-button
+    transition: opacity .1s linear
+    position: absolute
+    bottom: 55px
+    right: 10px
+
+    @media (min-width: 960px)
+      opacity: 0
+      top: 80px
+      right: -30px
+
   &:hover .lock-button
     opacity: 1
 
