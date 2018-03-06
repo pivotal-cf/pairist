@@ -10,7 +10,7 @@ import history from './history'
 import lists from './lists'
 
 import history_ from '@/history'
-import { calculateMovesToBestPairing } from '@/lib/recommendation'
+import { calculateMovesToBestPairing, calculateMovesToBestAssignment } from '@/lib/recommendation'
 
 export default {
   modules: {
@@ -176,6 +176,22 @@ export default {
       }, pairsAndLanes)
     },
 
+    recommendRoles ({ commit, dispatch, getters }) {
+      const moves = calculateMovesToBestAssignment({
+        left: 'person',
+        right: 'role',
+        history: getters['history/all'].slice(),
+        current: {
+          entities: getters['entities/all'].slice(),
+          lanes: getters['lanes/all'].slice(),
+        },
+      })
+
+      if (moves) {
+        dispatch('applyMoves', moves)
+      }
+    },
+
     recommendPairs ({ commit, dispatch, getters }) {
       const moves = calculateMovesToBestPairing({
         history: getters['history/all'].slice(),
@@ -192,8 +208,9 @@ export default {
             color: 'accent',
           })
         } else {
-          dispatch('applyMoves', moves)
+          Promise.resolve(dispatch('applyMoves', moves))
         }
+        dispatch('recommendRoles')
       } else {
         commit('notify', {
           message: 'Cannot make a valid pairing assignment. Do you have too many lanes?',

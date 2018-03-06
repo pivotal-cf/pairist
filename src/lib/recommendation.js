@@ -1,5 +1,6 @@
 import constants from './constants'
 import { pairs, pairings } from './combinatorics'
+import munkres from 'munkres-js'
 import _ from 'lodash'
 
 export const matchLanes = ({ pairing, lanes }) => {
@@ -61,6 +62,18 @@ export const scoreMatrix = (left, right, history, maxScore) => {
   return left.map((l, i) => right.map((r, j) => {
     return scores[l][r]
   }))
+}
+
+export const mergePairsScores = (scores, pairs) => {
+  const merged = []
+  pairs.forEach(pair => {
+    merged.push(scores[pair[0]].map((score, i) => {
+      let other = score
+      if (pair[1]) { other = scores[pair[1]][i] }
+      return score + other
+    }))
+  })
+  return merged
 }
 
 const key = e => e['.key']
@@ -139,4 +152,73 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
   )
 
   return matchLanes({ pairing, lanes })
+}
+
+export const calculateMovesToBestAssignment = ({ left, right, current, history }) => {
+  const laneKeys = current.lanes.filter(l => !l.locked).map(key)
+  const leftEntities = current.entities.filter(e =>
+    e.type === left &&
+    (e.location === constants.LOCATION.UNASSIGNED || laneKeys.includes(e.location))
+  )
+  const rightEntities = current.entities.filter(e =>
+    e.type === right &&
+    (e.location === constants.LOCATION.UNASSIGNED || laneKeys.includes(e.location))
+  )
+
+  const leftKeys = leftEntities.map(key)
+  const rightKeys = rightEntities.map(key)
+
+  if (leftKeys.length === 0) { return [] }
+
+  let maxScore = 0
+
+  if (history && history.length > 0) {
+    maxScore = parseInt(_.last(history)['.key'])
+
+    history = history.map(h => {
+      const groups = _.groupBy(h.entities.filter(e =>
+        e.location !== constants.LOCATION.UNASSIGNED &&
+        e.location !== constants.LOCATION.OUT
+      ), 'location')
+      const lanes = []
+      const score = maxScore - parseInt(h['.key'])
+
+      Object.values(groups).forEach(entities => {
+        entities = entities.map(key)
+
+        lanes.push({
+          left: entities.filter(e => e.type === left),
+          right: entities.filter(e => e.type === right),
+        })
+      })
+      return { score, lanes }
+    })
+  } else {
+    history = []
+  }
+
+  const scores = scoreMatrix(leftKeys, rightKeys, history, maxScore + 1)
+  let pairs = Object.values(_.groupBy(leftEntities.filter(e => e.location !== constants.LOCATION.OUT), 'location'))
+    .map(p => p.map(e => leftKeys.indexOf(key(e))))
+  let mergedScores = mergePairsScores(scores, pairs)
+
+  while (pairs.length < rightKeys.length) {
+    pairs = pairs.concat(pairs)
+    mergedScores = mergedScores.concat(mergedScores)
+  }
+
+  const assignment = munkres(mergedScores)
+    .map(a => [pairs[a[0]], rightKeys[a[1]]])
+
+  const results = []
+  assignment.forEach(a => {
+    const lane = leftEntities.find(e => e['.key'] === leftKeys[a[0][0]]).location
+    if (rightEntities.find(e => e['.key'] === a[1]).location !== lane) {
+      results.push({
+        lane,
+        entities: [a[1]],
+      })
+    }
+  })
+  return results
 }

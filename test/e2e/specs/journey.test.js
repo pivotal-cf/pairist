@@ -133,11 +133,13 @@ module.exports = {
     team.track('track-1').toBeInLane('1')
     team.track('track-2').toBeInLane('2')
 
-    team.role('role-3').moveToLane('1')
+    team.role('role-1').moveToLane('1')
     team.role('role-2').moveToLane('2')
+    team.role('role-3').moveToLane('1')
 
-    team.role('role-3').toBeInLane('1')
+    team.role('role-1').toBeInLane('1')
     team.role('role-2').toBeInLane('2')
+    team.role('role-3').toBeInLane('1')
 
     team.waitADay()
   },
@@ -184,6 +186,8 @@ module.exports = {
 
     team.lane('1').toHavePeople('renamed-1', 'person-2')
     team.lane('2').toHavePeople('person-4', 'person-3')
+    team.role('role-1').toBeInLane('1')
+    team.role('role-2').toBeInLane('2')
 
     team.recommendPairs()
     team.expectMessage('Pairing setting is already the optimal one. No actions taken', 'accent')
@@ -241,5 +245,7 @@ module.exports = {
     team.lane('1').toHavePeople('renamed-1')
     team.lane('2').toHavePeople('person-4')
     team.lane('3').toHavePeople('person-3', 'person-2')
+    team.role('role-1').toBeInLane('1')
+    team.role('role-2').toBeInLane('2')
   },
 }

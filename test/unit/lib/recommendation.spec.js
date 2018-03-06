@@ -272,7 +272,7 @@ describe('Recommendation', () => {
       })
     })
 
-    describe('fuzz', () => {
+    describe('fuzz pairing', () => {
       for (let i = 0; i < 200; i++) {
         it(`fuzz #${i}`, () => {
           const peopleCount = randomInt(10)
@@ -299,6 +299,282 @@ describe('Recommendation', () => {
       }
     })
   })
+
+  describe('calculateMovesToBestAssignment', () => {
+    it('does not blow up if history is not set', () => {
+      const best = Recommendation.calculateMovesToBestAssignment({
+        current: {
+          entities: [{ '.key': 'p1', 'type': 'person', 'location': 'l1' }],
+          lanes: [{ '.key': 'l1' }],
+        },
+      })
+
+      expect(best).toEqual([])
+    })
+
+    it("returns the single possibility if there's only one", () => {
+      const best = Recommendation.calculateMovesToBestAssignment({
+        left: 'person',
+        right: 'potato',
+        current: {
+          entities: [
+            { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+            { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+            { '.key': 'spud', 'type': 'potato', 'location': constants.LOCATION.UNASSIGNED },
+          ],
+          lanes: [{ '.key': 'l1' }],
+        },
+        history: [],
+      })
+
+      expect(best).toEqual([{
+        lane: 'l1',
+        entities: ['spud'],
+      }])
+    })
+
+    describe('with 3 people', () => {
+      it("assigns roles to pairs that haven't had them for longer", () => {
+        const best = Recommendation.calculateMovesToBestAssignment({
+          left: 'person',
+          right: 'role',
+          current: {
+            entities: [
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+              { '.key': 'r1', 'type': 'role', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'r2', 'type': 'role', 'location': constants.LOCATION.UNASSIGNED },
+            ],
+            lanes: [{ '.key': 'l1' }, { '.key': 'l2' }],
+          },
+          history: [
+            {
+              '.key': '' + previousScore(3),
+              'entities': [],
+            },
+            {
+              '.key': '' + previousScore(2),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l1' },
+                { '.key': 'r1', 'type': 'role', 'location': 'l1' },
+                { '.key': 'r2', 'type': 'role', 'location': 'l2' },
+              ],
+            },
+            {
+              '.key': '' + previousScore(1),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+                { '.key': 'r1', 'type': 'role', 'location': 'l1' },
+                { '.key': 'r2', 'type': 'role', 'location': 'l2' },
+              ],
+            },
+          ],
+        })
+
+        expect(best).toEqual([
+          {
+            lane: 'l1',
+            entities: ['r1'],
+          },
+          {
+            lane: 'l2',
+            entities: ['r2'],
+          },
+        ])
+      })
+    })
+
+    describe('with locked lanes', () => {
+      it('ignores locked lanes completely', () => {
+        const best = Recommendation.calculateMovesToBestAssignment({
+          left: 'person',
+          right: 'role',
+          current: {
+            entities: [
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+              { '.key': 'r1', 'type': 'role', 'location': 'l1' },
+              { '.key': 'r2', 'type': 'role', 'location': 'l2' },
+            ],
+            lanes: [
+              { '.key': 'l1', 'locked': true },
+              { '.key': 'l2', 'locked': false },
+            ],
+          },
+          history: [
+            {
+              '.key': '' + previousScore(2),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l1' },
+              ],
+            },
+            {
+              '.key': '' + previousScore(1),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+                { '.key': 'r1', 'type': 'role', 'location': 'l1' },
+                { '.key': 'r2', 'type': 'role', 'location': 'l1' },
+              ],
+            },
+          ],
+        })
+
+        expect(best).toEqual([])
+      })
+
+      it("even when they're empty", () => {
+        const best = Recommendation.calculateMovesToBestAssignment({
+          left: 'person',
+          right: 'role',
+          current: {
+            entities: [
+              { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+              { '.key': 'r1', 'type': 'role', 'location': 'l1' },
+              { '.key': 'r2', 'type': 'role', 'location': 'l2' },
+            ],
+            lanes: [
+              { '.key': 'l1', 'locked': true },
+              { '.key': 'l2', 'locked': false },
+            ],
+          },
+          history: [
+            {
+              '.key': '' + previousScore(2),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l1' },
+                { '.key': 'r1', 'type': 'role', 'location': 'l1' },
+                { '.key': 'r2', 'type': 'role', 'location': 'l2' },
+              ],
+            },
+            {
+              '.key': '' + previousScore(1),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+                { '.key': 'r1', 'type': 'role', 'location': 'l1' },
+                { '.key': 'r2', 'type': 'role', 'location': 'l2' },
+              ],
+            },
+          ],
+        })
+
+        expect(best).toEqual([])
+      })
+    })
+
+    describe('less right than lanes', () => {
+      it('puts multiple on the same lane', () => {
+        const best = Recommendation.calculateMovesToBestAssignment({
+          left: 'person',
+          right: 'role',
+          current: {
+            entities: [
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+              { '.key': 'r1', 'type': 'role', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'r2', 'type': 'role', 'location': constants.LOCATION.UNASSIGNED },
+              { '.key': 'r3', 'type': 'role', 'location': constants.LOCATION.UNASSIGNED },
+            ],
+            lanes: [{ '.key': 'l1' }, { '.key': 'l2' }],
+          },
+          history: [
+            {
+              '.key': '' + previousScore(3),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l3' },
+                { '.key': 'p4', 'type': 'person', 'location': 'l3' },
+                { '.key': 'r1', 'type': 'role', 'location': 'l3' },
+                { '.key': 'r2', 'type': 'role', 'location': 'l2' },
+                { '.key': 'r3', 'type': 'role', 'location': 'l1' },
+              ],
+            },
+            {
+              '.key': '' + previousScore(2),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l3' },
+                { '.key': 'p4', 'type': 'person', 'location': 'l1' },
+                { '.key': 'r1', 'type': 'role', 'location': 'l1' },
+                { '.key': 'r2', 'type': 'role', 'location': 'l3' },
+                { '.key': 'r3', 'type': 'role', 'location': 'l2' },
+              ],
+            },
+            {
+              '.key': '' + previousScore(1),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l3' },
+                { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+                { '.key': 'r1', 'type': 'role', 'location': 'l2' },
+                { '.key': 'r2', 'type': 'role', 'location': 'l1' },
+                { '.key': 'r3', 'type': 'role', 'location': 'l3' },
+              ],
+            },
+          ],
+        })
+
+        expect(best).toEqual([
+          {
+            lane: 'l2',
+            entities: ['r3'],
+          },
+          {
+            lane: 'l1',
+            entities: ['r2'],
+          },
+          {
+            lane: 'l2',
+            entities: ['r1'],
+          },
+        ])
+      })
+    })
+
+    describe('fuzz assignment', () => {
+      for (let i = 0; i < 200; i++) {
+        it(`fuzz #${i}`, () => {
+          const peopleCount = randomInt(10)
+          const outCount = randomInt(4)
+          const lanesCount = randomInt(5)
+          const thingCount = randomInt(5)
+          const historyCount = randomInt(200)
+          const config = {
+            peopleCount,
+            outCount,
+            thingCount,
+            lanesCount,
+            historyCount,
+          }
+          const board = generateBoard(config)
+
+          const best = Recommendation.calculateMovesToBestAssignment({ left: 'person', right: 'thing', ...board })
+          assert.ok(best, JSON.stringify({ config, current: board.current }))
+          expect(best).toBeTruthy()
+        })
+      }
+    })
+  })
 })
 
 const guid = () => {
@@ -315,6 +591,7 @@ const generateBoard = ({
   peopleCount,
   outCount,
   lanesCount,
+  thingCount,
   historyCount,
 }) => {
   let board = {
@@ -341,6 +618,11 @@ const generateBoard = ({
     people.push(guid())
   }
 
+  let thing = []
+  for (let i = 0; i < thingCount; i++) {
+    thing.push(guid())
+  }
+
   const generateAssignment = (people, locations) => {
     let assignment = []
     people = _.shuffle(people)
@@ -350,6 +632,16 @@ const generateBoard = ({
       assignment.push({
         '.key': people[i],
         'type': 'person',
+        'location': location,
+      })
+    }
+
+    for (let i = 0; i < thing.length; i++) {
+      let location = locations[randomInt(locations.length)]
+
+      assignment.push({
+        '.key': thing[i],
+        'type': 'thing',
         'location': location,
       })
     }
