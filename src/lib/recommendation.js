@@ -5,9 +5,13 @@ import _ from 'lodash'
 
 export const matchLanes = ({ pairing, lanes }) => {
   let result = []
+  const sortedLanes = []
+  for (let key in lanes) {
+    sortedLanes.push([key, lanes[key]])
+  }
+  sortedLanes.sort((a, b) => a[1].length - b[1].length)
 
-  Object.keys(lanes).forEach(key => {
-    const lane = lanes[key]
+  sortedLanes.forEach(([key, lane]) => {
     let entities = []
     const p = pairing.find(p => {
       if (lane.length > 0) {

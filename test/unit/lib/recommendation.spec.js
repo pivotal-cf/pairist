@@ -78,6 +78,64 @@ describe('Recommendation', () => {
           },
         ])
       })
+
+      it('assigns people with context to the right lanes', () => {
+        const bestPairing = Recommendation.calculateMovesToBestPairing({
+          current: {
+            entities: [
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p5', 'type': 'person', 'location': 'l3' },
+            ],
+            lanes: [{ '.key': 'l1' }, { '.key': 'l2' }, { '.key': 'l3' }],
+          },
+          history: [
+            {
+              '.key': '' + previousScore(3),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l3' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p5', 'type': 'person', 'location': 'l2' },
+              ],
+            },
+            {
+              '.key': '' + previousScore(2),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l3' },
+                { '.key': 'p4', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p5', 'type': 'person', 'location': 'l2' },
+              ],
+            },
+            {
+              '.key': '' + previousScore(1),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p5', 'type': 'person', 'location': 'l3' },
+              ],
+            },
+          ],
+        })
+
+        expect(bestPairing).toEqual([
+          {
+            lane: 'l3',
+            entities: ['p1'],
+          },
+          {
+            lane: 'l1',
+            entities: ['p3'],
+          },
+        ])
+      })
     })
 
     describe('with people out', () => {
