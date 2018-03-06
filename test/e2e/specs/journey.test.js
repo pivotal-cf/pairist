@@ -248,4 +248,19 @@ module.exports = {
     team.role('role-1').toBeInLane('1')
     team.role('role-2').toBeInLane('2')
   },
+
+  'DAY 5: sweeps and recommends' (client) {
+    let team = client.page.team()
+
+    team.unlockLane('1')
+    team.sweepLane('1')
+
+    team.recommendPairs()
+
+    team.lane('1').toHavePeople('renamed-1')
+    team.lane('2').toHavePeople('person-4')
+    team.lane('3').toHavePeople('person-3', 'person-2')
+    team.role('role-1').toBeInLane('1')
+    team.role('role-2').toBeInLane('2')
+  },
 }
