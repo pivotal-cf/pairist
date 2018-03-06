@@ -141,9 +141,6 @@ describe('Person', () => {
       },
     })
 
-    const menu = wrapper.find(ContextMenu)
-    expect(menu.vm.showEdit).toBe(true)
-
     const open = wrapper.vm.$refs.personDialog.open = jest.fn()
     wrapper.vm.edit()
     expect(open).toHaveBeenCalled()

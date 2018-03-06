@@ -30,7 +30,7 @@
       <v-card-actions>
         <v-spacer/>
         <v-btn color="secondary darken-2" flat @click.native="show = false">Close</v-btn>
-        <v-btn color="secondary darken-2" flat @click.native="save">Save</v-btn>
+        <v-btn color="secondary darken-2 dialog-save" flat @click.native="save">Save</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -45,7 +45,7 @@ export default {
     },
     person: {
       type: Object,
-      default () { return {} },
+      default: () => ({}),
     },
   },
 

@@ -23,7 +23,6 @@
       <ContextMenu
         v-if="canWrite"
         ref="menu"
-        :show-edit="true"
         @edit="edit" @remove="remove"
       />
       <PersonDialog ref="personDialog" :person="Object.assign({}, person)"/>

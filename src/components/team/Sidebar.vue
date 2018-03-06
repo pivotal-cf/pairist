@@ -10,48 +10,21 @@
       >
         <h2>
           Tracks
-          <v-dialog v-model="newTrackDialog" max-width="300px">
-            <v-btn
-              v-if="canWrite"
-              slot="activator"
-              color="secondary" small dark icon
-            >
-              <v-icon>mdi-plus</v-icon>
-            </v-btn>
-            <v-card v-if="newTrackDialog">
-              <v-card-title>
-                <span class="headline">New Track</span>
-              </v-card-title>
-              <v-card-text>
-                <v-container grid-list-md>
-                  <v-layout wrap>
-                    <v-flex xs12>
-                      <v-text-field
-                        v-model="newTrackName"
-                        label="Name"
-                        autofocus
-                        required
-                        @keyup.enter="addTrack"
-                      />
-                    </v-flex>
-                  </v-layout>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer/>
-                <v-btn color="secondary darken-2" flat @click.native="newTrackDialog = false">Close</v-btn>
-                <v-btn color="secondary darken-2" flat @click.native="addTrack">Save</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+          <v-btn
+            v-if="canWrite"
+            color="secondary" small dark icon
+            @click="openTrackDialog"
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+          <ChipDialog ref="trackDialog" :entity="{ type: 'track' }" action-type="New" />
         </h2>
 
         <Chip
           v-for="track in unassigned('track')"
           :key="track['.key']"
-          :chip="track"
+          :entity="track"
           chip-class="track"
-          text-color="white"
           @remove="remove"
         />
       </div>
@@ -65,49 +38,21 @@
       >
         <h2>
           Roles
-          <v-dialog v-model="newRoleDialog" max-width="300px">
-            <v-btn
-              v-if="canWrite"
-              slot="activator"
-              color="secondary"
-              small dark icon
-            >
-              <v-icon>mdi-plus</v-icon>
-            </v-btn>
-            <v-card v-if="newRoleDialog">
-              <v-card-title>
-                <span class="headline">New Role</span>
-              </v-card-title>
-              <v-card-text>
-                <v-container grid-list-md>
-                  <v-layout wrap>
-                    <v-flex xs12>
-                      <v-text-field
-                        v-model="newRoleName"
-                        label="Name"
-                        autofocus
-                        required
-                        @keyup.enter="addRole"
-                      />
-                    </v-flex>
-                  </v-layout>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer/>
-                <v-btn color="secondary darken-2" flat @click.native="newRoleDialog = false">Close</v-btn>
-                <v-btn color="secondary darken-2" flat @click.native="addRole">Save</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+          <v-btn
+            v-if="canWrite"
+            color="secondary" small dark icon
+            @click="openRoleDialog"
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+          <ChipDialog ref="roleDialog" :entity="{ type: 'role' }" action-type="New" />
         </h2>
 
         <Chip
           v-for="role in unassigned('role')"
           :key="role['.key']"
-          :chip="role"
+          :entity="role"
           chip-class="role"
-          outline
           @remove="remove"
         />
       </div>
@@ -128,7 +73,7 @@
           >
             <v-icon>mdi-plus</v-icon>
           </v-btn>
-        <PersonDialog ref="personDialog" :action-type="'New'"/></h2>
+        <PersonDialog ref="personDialog" action-type="New"/></h2>
         <Person
           v-for="person in unassigned('person')"
           :person="person"
@@ -159,6 +104,7 @@
 <script>
 import Person from './Person'
 import PersonDialog from './PersonDialog'
+import ChipDialog from './ChipDialog'
 import Chip from './Chip'
 
 import constants from '@/lib/constants'
@@ -169,13 +115,12 @@ export default {
   components: {
     Person,
     PersonDialog,
+    ChipDialog,
     Chip,
   },
 
   data () {
     return {
-      newTrackDialog: false,
-      newRoleDialog: false,
       newTrackName: '',
       newRoleName: '',
       constants: constants,
@@ -193,19 +138,14 @@ export default {
       this.$refs.personDialog.open()
     },
 
-    addTrack () {
-      this.$store.dispatch('entities/save', { name: this.newTrackName, type: 'track' })
-
-      this.newTrackDialog = false
-      this.newTrackName = ''
+    openTrackDialog () {
+      this.$refs.trackDialog.open()
     },
 
-    addRole () {
-      this.$store.dispatch('entities/save', { name: this.newRoleName, type: 'role' })
-
-      this.newRoleDialog = false
-      this.newRoleName = ''
+    openRoleDialog () {
+      this.$refs.roleDialog.open()
     },
+
     ...mapActions('entities', ['remove']),
   },
 }

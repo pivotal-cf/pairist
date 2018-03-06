@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify'
 import './moment'
+import './filters'
 import App from './App'
 import router from './router'
 import { store } from './store'

@@ -23,16 +23,14 @@
           <Chip
             v-for="role in lane.roles"
             :key="role['.key']"
-            :chip="role"
+            :entity="role"
             chip-class="role"
-            outline
           />
           <Chip
             v-for="track in lane.tracks"
             :key="track['.key']"
-            :chip="track"
+            :entity="track"
             chip-class="track"
-            text-color="white"
           />
         </v-flex>
         <v-btn

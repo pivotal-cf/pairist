@@ -58,14 +58,9 @@ export default {
         state.ref.child(key).update(entity)
       } else {
         const entityToCreate = {
-          name: entity.name,
-          type: entity.type,
+          ...entity,
           location: constants.LOCATION.UNASSIGNED,
           updatedAt: Date.now(),
-        }
-
-        if (entity.picture) {
-          entityToCreate.picture = entity.picture
         }
 
         state.ref.push(entityToCreate)

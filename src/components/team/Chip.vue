@@ -1,47 +1,39 @@
 <template>
   <transition name="highlight">
-    <v-chip
+    <ChipView
       :class="chipClass"
-      :outline="outline"
-      :text-color="textColor"
-      :data-key="chip['.key']"
-      color="accent"
-      class="chip"
+      :entity="entity"
+      :data-key="entity['.key']"
       @contextmenu="openMenu">
-      <span>{{ chip.name }}</span>
       <ContextMenu
         v-if="canWrite"
         ref="menu"
+        @edit="edit"
         @remove="remove"
       />
-    </v-chip>
+      <ChipDialog ref="chipDialog" :entity="Object.assign({}, entity)" />
+    </ChipView>
   </transition>
 </template>
 
 <script>
 import ContextMenu from '@/components/ContextMenu'
+import ChipDialog from './ChipDialog'
+import ChipView from './ChipView'
 
 import { mapGetters } from 'vuex'
 
 export default {
-  components: { ContextMenu },
+  components: { ContextMenu, ChipDialog, ChipView },
 
   props: {
-    chip: {
+    entity: {
       type: Object,
       required: true,
     },
     chipClass: {
       type: String,
       required: true,
-    },
-    outline: {
-      type: Boolean,
-      default: false,
-    },
-    textColor: {
-      type: String,
-      default: '',
     },
   },
 
@@ -56,8 +48,12 @@ export default {
       }
     },
 
+    edit () {
+      this.$refs.chipDialog.open()
+    },
+
     remove () {
-      this.$store.dispatch('entities/remove', this.chip['.key'])
+      this.$store.dispatch('entities/remove', this.entity['.key'])
     },
   },
 }

@@ -145,8 +145,8 @@ describe('Lane', () => {
 
     const roles = wrapper.findAll(Chip)
     expect(roles.length).toEqual(2)
-    expect(roles.wrappers[0].vm.chip).toEqual({ '.key': 'r1' })
-    expect(roles.wrappers[1].vm.chip).toEqual({ '.key': 'r2' })
+    expect(roles.wrappers[0].vm.entity).toEqual({ '.key': 'r1' })
+    expect(roles.wrappers[1].vm.entity).toEqual({ '.key': 'r2' })
   })
 
   it('renders tracks', () => {
@@ -161,7 +161,7 @@ describe('Lane', () => {
 
     const tracks = wrapper.findAll(Chip)
     expect(tracks.length).toEqual(2)
-    expect(tracks.wrappers[0].vm.chip).toEqual({ '.key': 't1' })
-    expect(tracks.wrappers[1].vm.chip).toEqual({ '.key': 't2' })
+    expect(tracks.wrappers[0].vm.entity).toEqual({ '.key': 't1' })
+    expect(tracks.wrappers[1].vm.entity).toEqual({ '.key': 't2' })
   })
 })

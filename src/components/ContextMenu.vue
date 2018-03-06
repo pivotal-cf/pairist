@@ -1,7 +1,7 @@
 <template>
   <v-menu v-model="showMenu" :position-x="x" :position-y="y" class="context-menu" offset-y absolute>
     <v-list v-if="showMenu">
-      <v-list-tile v-if="showEdit" @click="$emit('edit')">
+      <v-list-tile @click="$emit('edit')">
         <v-list-tile-title>
           <v-icon>mdi-pencil</v-icon>
           Edit
@@ -30,13 +30,6 @@
 
 <script>
 export default {
-  props: {
-    showEdit: {
-      type: Boolean,
-      default: false,
-    },
-  },
-
   data () {
     return {
       showMenu: false,
