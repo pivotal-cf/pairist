@@ -72,6 +72,15 @@ export default {
       dispatch('lanes/clearEmpty', null, { root: true })
     },
 
+    resetLocation ({ getters, dispatch, state }, key) {
+      getters.all.forEach(e => {
+        if (e.location === key) {
+          dispatch('move', { key: e['.key'], location: constants.LOCATION.UNASSIGNED })
+        }
+      })
+      dispatch('lanes/clearEmpty', null, { root: true })
+    },
+
     move ({ getters, state }, { key, location }) {
       const entity = getters.byKey(key)
       if (!entity) { return }

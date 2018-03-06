@@ -13,12 +13,16 @@ localVue.use(Vuetify)
 
 describe('Lane', () => {
   let actions
+  let entityActions
   let store
   let getters
 
   beforeEach(() => {
     actions = {
       setLocked: jest.fn(),
+    }
+    entityActions = {
+      resetLocation: jest.fn(),
     }
     getters = {
       canWrite: jest.fn().mockReturnValue(true),
@@ -32,6 +36,12 @@ describe('Lane', () => {
         lanes: {
           namespaced: true,
           actions,
+        },
+        entities: {
+          namespaced: true,
+          actions: {
+            ...entityActions,
+          },
         },
       },
     })
@@ -97,6 +107,42 @@ describe('Lane', () => {
     expect(wrapper.find('.lock-button').exists()).toBeFalsy()
   })
 
+  it('can be closed', async () => {
+    const lane = { '.key': 'a-key' }
+    const wrapper = shallow(Lane, {
+      store,
+      localVue,
+      propsData: { lane },
+    })
+
+    wrapper.find('.sweep-button').trigger('click')
+    expect(entityActions.resetLocation).toHaveBeenCalled()
+    expect(entityActions.resetLocation).toHaveBeenLastCalledWith(expect.anything(), 'a-key', undefined)
+  })
+
+  it('cannot be closed if cannot write', () => {
+    getters.canWrite.mockReturnValue(false)
+
+    const lane = { '.key': 'a-key' }
+    const wrapper = shallow(Lane, {
+      store,
+      localVue,
+      propsData: { lane },
+    })
+
+    expect(wrapper.find('.sweep-button').exists()).toBeFalsy()
+  })
+
+  it('shows a new lane without a close button if new-lane is passed', async () => {
+    const lane = { '.key': 'new-lane' }
+    const wrapper = shallow(Lane, {
+      store,
+      localVue,
+      propsData: { lane },
+    })
+
+    expect(wrapper.find('.sweep-button').exists()).toBeFalsy()
+  })
   it('shows a divider if applicable', () => {
     const wrapper = shallow(Lane, {
       store,

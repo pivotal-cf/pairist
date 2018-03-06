@@ -248,4 +248,13 @@ module.exports = {
     team.role('role-1').toBeInLane('1')
     team.role('role-2').toBeInLane('2')
   },
+
+  'DAY 5: sweeps' (client) {
+    let team = client.page.team()
+
+    team.sweepLane('2')
+
+    team.track('track-2').toBeUnassigned()
+    team.person('person-4').toBeUnassigned()
+  },
 }
