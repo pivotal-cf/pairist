@@ -536,16 +536,16 @@ describe('Recommendation', () => {
 
         expect(best).toEqual([
           {
-            lane: 'l2',
-            entities: ['r3'],
+            lane: 'l1',
+            entities: ['r1'],
           },
           {
-            lane: 'l1',
+            lane: 'l2',
             entities: ['r2'],
           },
           {
-            lane: 'l2',
-            entities: ['r1'],
+            lane: 'l1',
+            entities: ['r3'],
           },
         ])
       })

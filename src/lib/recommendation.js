@@ -157,8 +157,7 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
 export const calculateMovesToBestAssignment = ({ left, right, current, history }) => {
   const laneKeys = current.lanes.filter(l => !l.locked).map(key)
   const leftEntities = current.entities.filter(e =>
-    e.type === left &&
-    (e.location === constants.LOCATION.UNASSIGNED || laneKeys.includes(e.location))
+    e.type === left && laneKeys.includes(e.location)
   )
   const rightEntities = current.entities.filter(e =>
     e.type === right &&
@@ -207,7 +206,7 @@ export const calculateMovesToBestAssignment = ({ left, right, current, history }
     mergedScores = mergedScores.concat(mergedScores)
   }
 
-  const assignment = munkres(mergedScores)
+  const assignment = munkres(munkres.make_cost_matrix(mergedScores))
     .map(a => [pairs[a[0]], rightKeys[a[1]]])
 
   const results = []
