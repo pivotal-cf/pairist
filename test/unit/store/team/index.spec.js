@@ -363,8 +363,9 @@ describe('Team Store', () => {
             lanes: [7, 8, 9],
           },
         })
-        expect(dispatch).toHaveBeenCalledTimes(1)
+        expect(dispatch).toHaveBeenCalledTimes(2)
         expect(dispatch).toHaveBeenCalledWith('applyMoves', moves)
+        expect(dispatch).toHaveBeenCalledWith('recommendRoles')
         expect(commit).toHaveBeenCalledTimes(0)
       })
 
@@ -383,7 +384,8 @@ describe('Team Store', () => {
         store.actions.recommendPairs({ commit, dispatch, getters })
 
         expect(global.calculateMovesToBestPairing).toHaveBeenCalledTimes(1)
-        expect(dispatch).toHaveBeenCalledTimes(0)
+        expect(dispatch).toHaveBeenCalledTimes(1)
+        expect(dispatch).toHaveBeenCalledWith('recommendRoles')
         expect(commit).toHaveBeenCalledTimes(1)
         expect(commit).toHaveBeenCalledWith('notify', {
           message: 'Pairing setting is already the optimal one. No actions taken',

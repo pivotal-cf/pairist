@@ -29,15 +29,15 @@ describe('combinatorics', () => {
 
   describe('pairings', () => {
     it('returns nothing if empty', () => {
-      expect(pairings([])).toEqual([])
+      expect(Array.from(pairings([]))).toEqual([])
     })
 
     it('returns only the single possibility if size is 2', () => {
-      expect(pairings([1, 2])).toEqual([[[1, 2]]])
+      expect(Array.from(pairings([1, 2]))).toEqual([[[1, 2]]])
     })
 
     it('can compute pairings for size 4', () => {
-      expect(pairings([1, 2, 3, 4])).toEqual([
+      expect(Array.from(pairings([1, 2, 3, 4]))).toEqual([
         [[1, 2], [3, 4]], [[1, 3], [2, 4]], [[1, 4], [2, 3]],
       ])
     })
