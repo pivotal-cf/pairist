@@ -165,6 +165,25 @@ describe('Entities Store', () => {
       })
     })
 
+    describe('resetLocation', () => { // ({ getters, dispatch, state }, key) {
+      const dispatch = jest.fn()
+      const remove = jest.fn()
+      const child = jest.fn().mockReturnValue({ remove })
+      const state = { ref: { child } }
+      const all = [
+        { '.key': 'foo', 'location': 'thisLocation' },
+        { '.key': 'bar', 'location': 'anotherLocation' },
+        { '.key': 'baz', 'location': 'thisLocation' },
+      ]
+      const getters = { all }
+
+      store.actions.resetLocation({ getters, dispatch, state }, 'thisLocation')
+      expect(dispatch).toHaveBeenCalledTimes(3)
+      expect(dispatch).toHaveBeenCalledWith('move', { key: 'foo', location: constants.LOCATION.UNASSIGNED })
+      expect(dispatch).toHaveBeenCalledWith('move', { key: 'baz', location: constants.LOCATION.UNASSIGNED })
+      expect(dispatch).toHaveBeenCalledWith('lanes/clearEmpty', null, { root: true })
+    })
+
     describe('move', () => {
       it('moves existing entity to location', () => {
         const update = jest.fn()

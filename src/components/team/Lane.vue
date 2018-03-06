@@ -37,6 +37,14 @@
         </v-flex>
         <v-btn
           v-if="canWrite && lane['.key'] !== 'new-lane'"
+          class="sweep-button"
+          dark fab small
+          @click="sweepLane({ key: lane['.key']})"
+        >
+          <v-icon>mdi-broom</v-icon>
+        </v-btn>
+        <v-btn
+          v-if="canWrite && lane['.key'] !== 'new-lane'"
           :class="{'is-locked': lane.locked}"
           :color="lane.locked? 'pink' : 'accent'"
           dark fab small
@@ -83,6 +91,9 @@ export default {
 
   methods: {
     ...mapActions('lanes', ['setLocked']),
+    sweepLane ({ key }) {
+      this.$store.dispatch('entities/resetLocation', key)
+    },
   },
 }
 </script>
@@ -99,6 +110,20 @@ export default {
 
     .list__tile__content
       overflow: visible !important
+
+  &:hover .sweep-button
+    opacity: 1
+
+  .sweep-button
+    transition: opacity .1s linear
+    position: absolute
+    bottom: 55px
+    right: 10px
+
+    @media (min-width: 960px)
+      opacity: 0
+      top: 80px
+      right: -30px
 
   &:hover .lock-button
     opacity: 1
