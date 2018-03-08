@@ -864,6 +864,12 @@ describe('Recommendation', () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing(board)
         expect(bestPairing).toBeTruthy()
       })
+
+      it('fuzz 3', () => {
+        const board = require('./fixtures/board-from-fuzz-3.json')
+        const bestPairing = Recommendation.calculateMovesToBestPairing(board)
+        expect(bestPairing).toBeTruthy()
+      })
     })
 
     describe('fuzz pairing', () => {

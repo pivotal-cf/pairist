@@ -16,7 +16,7 @@ export const matchLanes = ({ pairing, lanes }) => {
       lanes[key].length === 0 ||
       lanes[key].some(p => pair.includes(p))
   )
-  if (product.length === 0) {
+  if (product.length < pairing.length) {
     return false
   }
   const match = combination(
