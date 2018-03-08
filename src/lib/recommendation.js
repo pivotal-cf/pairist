@@ -11,13 +11,16 @@ export const matchLanes = ({ pairing, lanes }) => {
 
   const keys = Object.keys(lanes)
   while (keys.length < pairing.length) { keys.push('new-lane') }
+  console.log(pairing)
 
   const match = combination(
     cartesianProduct(pairing, keys).filter(([pair, key]) =>
       key === 'new-lane' ||
       lanes[key].length === 0 ||
       lanes[key].some(p => pair.includes(p))
-    ), pairing.length)
+    ),
+    pairing.length,
+  )
     .find(match => {
       const laneCounts = _.countBy(match.map(m => m[1]))
       for (let key in laneCounts) {
@@ -30,17 +33,16 @@ export const matchLanes = ({ pairing, lanes }) => {
 
   if (!match) { return false }
 
-  let rs = match.map(([pair, key]) => {
+  return match.map(([pair, key]) => {
     return {
       lane: key,
-      entities: pair.filter(p => {
-        return key === 'new-lane' ||
+      entities: pair.filter(p =>
+        key === 'new-lane' ||
         lanes[key].length === 0 ||
         !lanes[key].includes(p)
-      }),
+      ),
     }
   }).filter(p => p.entities.length)
-  return rs
 }
 
 export const scoreMatrix = (left, right, history, maxScore) => {

@@ -858,9 +858,15 @@ describe('Recommendation', () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing(board)
         expect(bestPairing).toBeTruthy()
       })
+
+      fit('fuzz 2', () => {
+        const board = require('./fixtures/board-from-fuzz-2.json')
+        const bestPairing = Recommendation.calculateMovesToBestPairing(board)
+        expect(bestPairing).toBeTruthy()
+      })
     })
 
-    xdescribe('fuzz pairing', () => {
+    describe('fuzz pairing', () => {
       for (let i = 0; i < 500; i++) {
         it(`fuzz #${i}`, () => {
           const peopleCount = randomInt(10)
