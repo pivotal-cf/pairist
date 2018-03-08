@@ -225,8 +225,6 @@ export const calculateMovesToBestTrackAssignment = ({ pairing, current, lanes, h
       })
       return { score, lanes }
     })
-  } else {
-    optimizedHistory = []
   }
 
   const scores = scoreMatrix(leftKeys, rightKeys, optimizedHistory, maxScore + 1)
