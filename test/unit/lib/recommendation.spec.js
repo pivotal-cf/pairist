@@ -881,7 +881,7 @@ describe('Recommendation', () => {
           }
           const board = generateBoard(config)
 
-          fs.writeFile(`/tmp/pairist-fuzz-pairing/board-${i}.json`, JSON.stringify(board), 'utf-8')
+          fs.writeFileSync(`/tmp/pairist-fuzz-pairing/board-${i}.json`, JSON.stringify(board), 'utf-8')
           const bestPairing = Recommendation.calculateMovesToBestPairing(board)
           if (lanesCount * 2 - 1 > peopleCount) {
             // too many lanes
