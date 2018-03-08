@@ -189,6 +189,11 @@ module.exports = {
     team.role('role-1').toBeInLane('1')
     team.role('role-2').toBeInLane('2')
 
+    team.person('person-2').moveToLane('2')
+    team.person('person-3').moveToUnassigned()
+
+    team.recommendPairs()
+    team.recommendPairs()
     team.recommendPairs()
     team.expectMessage('Pairing setting is already the optimal one. No actions taken', 'accent')
 
