@@ -98,13 +98,13 @@ export default {
 
 <style lang="stylus">
 .lane li
-
   @media (min-width: 960px)
     min-height: 121px !important
 
   .list__tile
     height: auto
     padding: 0 5px 5px 10px
+    line-height: 0
 
     .list__tile__content
       overflow: visible !important

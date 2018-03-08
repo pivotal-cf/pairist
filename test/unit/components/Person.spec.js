@@ -2,7 +2,6 @@ import { shallow, createLocalVue } from '@vue/test-utils'
 import flushPromises from 'flush-promises'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
-import ContextMenu from '@/components/ContextMenu'
 import Person from '@/components/team/Person'
 
 const localVue = createLocalVue()
@@ -19,14 +18,10 @@ jest.mock('@/assets/error-image.svg', () => {
 })
 
 describe('Person', () => {
-  let actions
   let store
   let getters
 
   beforeEach(() => {
-    actions = {
-      remove: jest.fn(),
-    }
     getters = {
       canWrite: jest.fn().mockReturnValue(true),
     }
@@ -36,7 +31,6 @@ describe('Person', () => {
       modules: {
         entities: {
           namespaced: true,
-          actions,
         },
       },
     })
@@ -117,22 +111,6 @@ describe('Person', () => {
     expect(name.element.style.fontSize).toEqual('12px')
   })
 
-  it('shows a context menu on right click', async () => {
-    const wrapper = shallow(Person, { store,
-      localVue,
-      propsData: {
-        person: { '.key': 'p', 'name': 'Person' },
-      },
-    })
-
-    const menu = wrapper.find(ContextMenu)
-    const open = wrapper.vm.$refs.menu.open = jest.fn()
-    expect(menu.exists()).toBeTruthy()
-    wrapper.find('.person').trigger('contextmenu')
-    await flushPromises()
-    expect(open).toHaveBeenCalled()
-  })
-
   it('shows person edit when clicking edit', () => {
     const wrapper = shallow(Person, { store,
       localVue,
@@ -144,33 +122,5 @@ describe('Person', () => {
     const open = wrapper.vm.$refs.personDialog.open = jest.fn()
     wrapper.vm.edit()
     expect(open).toHaveBeenCalled()
-  })
-
-  it('removes person when clicking remove', () => {
-    const wrapper = shallow(Person, { store,
-      localVue,
-      propsData: {
-        person: { '.key': 'p', 'name': 'Person' },
-      },
-    })
-
-    wrapper.vm.remove()
-    expect(actions.remove).toHaveBeenCalled()
-    expect(actions.remove).toHaveBeenCalledWith(expect.anything(), 'p', undefined)
-  })
-
-  it('does not show menu if cannot write', () => {
-    getters.canWrite.mockReturnValue(false)
-
-    const wrapper = shallow(Person, { store,
-      localVue,
-      propsData: {
-        person: { '.key': 'p', 'name': 'person' },
-      },
-    })
-
-    const menu = wrapper.find(ContextMenu)
-    expect(menu.exists()).toBeFalsy()
-    wrapper.find('.person').trigger('contextmenu')
   })
 })

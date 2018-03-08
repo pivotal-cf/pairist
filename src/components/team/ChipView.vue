@@ -3,8 +3,6 @@
     :text-color="textColor"
     :color="color"
     :label="entity.type === 'track'"
-    class="chip"
-    @contextmenu="contextmenu"
   >
     <v-avatar v-if="entity.icon" :class="iconColor" :tile="entity.type === 'track'">
       <v-icon>{{ entity.icon }}</v-icon>
@@ -54,12 +52,6 @@ export default {
       if (this.entity.color) { return this.entity.color }
       if (this.entity.type === 'role') { return 'accent lighten-2' }
       return 'accent'
-    },
-  },
-
-  methods: {
-    contextmenu (e) {
-      this.$emit('contextmenu', e)
     },
   },
 }

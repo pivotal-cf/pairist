@@ -55,11 +55,26 @@
         </v-container>
       </v-card-text>
       <v-card-actions>
+        <v-btn color="error" depressed @click="confirmRemove = true">
+          <v-icon>mdi-delete-forever</v-icon>
+          Remove
+        </v-btn>
         <v-spacer/>
         <v-btn color="secondary darken-2" flat @click.native="show = false">Close</v-btn>
         <v-btn color="secondary darken-2 dialog-save" flat @click.native="save">Save</v-btn>
       </v-card-actions>
     </v-card>
+
+    <v-dialog v-if="confirmRemove" v-model="confirmRemove" hide-overlay max-width="290">
+      <v-card>
+        <v-card-title class="headline">Are you sure?</v-card-title>
+        <v-card-actions>
+          <v-spacer/>
+          <v-btn color="secondary darken-1" flat="flat" @click="confirmRemove = false">No</v-btn>
+          <v-btn color="secondary darken-1" flat="flat" @click="remove">Yes</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-dialog>
 </template>
 
@@ -88,6 +103,7 @@ export default {
       editingEntity: this.entity,
       show: false,
       icons: icons,
+      confirmRemove: false,
     }
   },
 
@@ -153,6 +169,10 @@ export default {
 
     open () {
       this.show = true
+    },
+
+    remove () {
+      this.$store.dispatch('entities/remove', this.entity['.key'])
     },
   },
 }

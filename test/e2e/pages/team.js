@@ -254,12 +254,13 @@ module.exports = {
         },
 
         edit (newName, newPicture) {
-          self.rightClick(element)
           self.api
             .useXpath()
-            .waitForElementPresent("//a//div[contains(text(), 'Edit')]", 2000)
-            .pause(500)
-            .click("//a//div[contains(text(), 'Edit')]")
+            .moveToElement(element, 10, 10)
+            .pause(200)
+            .click(element + "/../..//button[contains(@class, 'edit-hover')]")
+          self.api
+            .useXpath()
             .useCss()
             .waitForElementVisible("input[type='text']", 2000)
             .pause(500)
@@ -278,12 +279,16 @@ module.exports = {
         },
 
         delete () {
-          self.rightClick(element)
           self.api
             .useXpath()
-            .waitForElementPresent("//a//div[contains(text(), 'Remove')]", 2000)
+            .moveToElement(element, 10, 10)
+            .pause(200)
+            .click(element + "/../..//button[contains(@class, 'edit-hover')]")
+          self.api
+            .useXpath()
+            .waitForElementPresent("//button//div[contains(text(), 'Remove')]", 2000)
             .pause(500)
-            .click("//a//div[contains(text(), 'Remove')]")
+            .click("//button//div[contains(text(), 'Remove')]")
             .waitForElementPresent("//button//div[text()='Yes']", 2000)
             .pause(500)
             .click("//button//div[text()='Yes']")
@@ -342,7 +347,7 @@ module.exports = {
     },
 
     person: {
-      selector: "//*[contains(@class, 'person')]//*[text()='%s']",
+      selector: "//*[contains(@class, 'person')]//*[text()='%s']/..",
       locateStrategy: 'xpath',
     },
 

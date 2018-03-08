@@ -9,7 +9,6 @@ localVue.use(Vuex)
 localVue.use(Vuetify)
 
 describe('Chip', () => {
-  let actions
   let store
   let getters
 
@@ -17,15 +16,11 @@ describe('Chip', () => {
     getters = {
       canWrite: jest.fn().mockReturnValue(true),
     }
-    actions = {
-      remove: jest.fn(),
-    }
     store = new Vuex.Store({
       state: {},
       modules: {
         entities: {
           namespaced: true,
-          actions,
         },
       },
       getters,
@@ -40,18 +35,5 @@ describe('Chip', () => {
         chipClass: 'chip',
       },
     })
-  })
-
-  it('emits a remove event when it is removed', () => {
-    const wrapper = shallow(Chip, { store,
-      localVue,
-      propsData: {
-        entity: { '.key': 'p', 'name': 'Chip' },
-        chipClass: 'chip',
-      },
-    })
-
-    wrapper.vm.remove()
-    expect(actions.remove).toHaveBeenCalledWith(expect.anything(), 'p', undefined)
   })
 })

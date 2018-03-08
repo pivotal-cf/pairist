@@ -3,8 +3,11 @@
     <v-card
       :data-key="person['.key']"
       class="person title" dark color="secondary"
-      @contextmenu="openMenu"
     >
+      <v-btn v-if="canWrite" class="edit-hover" color="primary" depressed small @click="edit">
+        <v-icon>edit</v-icon>
+        Edit
+      </v-btn>
       <v-card-text>
         <v-avatar
           size="86px"
@@ -20,23 +23,17 @@
         </div>
       </v-card-text>
 
-      <ContextMenu
-        v-if="canWrite"
-        ref="menu"
-        @edit="edit" @remove="remove"
-      />
       <PersonDialog ref="personDialog" :person="Object.assign({}, person)"/>
     </v-card>
   </transition>
 </template>
 
 <script>
-import ContextMenu from '@/components/ContextMenu'
 import PersonDialog from './PersonDialog'
 import { mapGetters } from 'vuex'
 
 export default {
-  components: { ContextMenu, PersonDialog },
+  components: { PersonDialog },
 
   props: {
     person: {
@@ -88,10 +85,6 @@ export default {
     edit () {
       this.$refs.personDialog.open()
     },
-
-    remove () {
-      this.$store.dispatch('entities/remove', this.person['.key'])
-    },
   },
 }
 </script>
@@ -102,6 +95,23 @@ export default {
   margin-right: 10px
   margin-top: 3px
   text-align: center
+  overflow-y: hidden
+
+  .edit-hover
+    bottom: -30px
+    left: 0
+    margin: 0
+    width: 100%
+    opacity: 0
+    position: absolute
+    transition: bottom linear .1s
+    z-index: 100
+
+  &:hover
+    .edit-hover
+      display: block
+      bottom: 0
+      opacity: 0.9
 
   .avatar img
     object-fit: cover
