@@ -3,6 +3,9 @@ import _ from 'lodash/fp'
 
 import * as Recommendation from '@/lib/recommendation'
 import constants from '@/lib/constants'
+import fs from 'fs'
+import mkdirp from 'mkdirp'
+mkdirp.sync('/tmp/pairist-fuzz-pairing/')
 
 describe('Recommendation', () => {
   describe('calculateMovesToBestPairing', () => {
@@ -30,6 +33,126 @@ describe('Recommendation', () => {
       })
 
       expect(bestPairing).toEqual([])
+    })
+
+    it('assigns people with context to the right lanes', () => {
+      const bestPairing = Recommendation.calculateMovesToBestPairing({
+        current: {
+          entities: [
+            { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+            { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+            { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+            { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+            { '.key': 'p5', 'type': 'person', 'location': 'l3' },
+          ],
+          lanes: [{ '.key': 'l1' }, { '.key': 'l2' }, { '.key': 'l3' }],
+        },
+        history: [
+          {
+            '.key': '' + previousScore(3),
+            'entities': [
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l3' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p5', 'type': 'person', 'location': 'l2' },
+            ],
+          },
+          {
+            '.key': '' + previousScore(2),
+            'entities': [
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l3' },
+              { '.key': 'p4', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p5', 'type': 'person', 'location': 'l2' },
+            ],
+          },
+          {
+            '.key': '' + previousScore(1),
+            'entities': [
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p5', 'type': 'person', 'location': 'l3' },
+            ],
+          },
+        ],
+      })
+
+      expect(bestPairing).toEqual([
+        {
+          lane: 'l1',
+          entities: ['p3'],
+        },
+        {
+          lane: 'l3',
+          entities: ['p1'],
+        },
+      ])
+    })
+
+    it('fills in empty lanes first', () => {
+      const bestPairing = Recommendation.calculateMovesToBestPairing({
+        current: {
+          entities: [
+            { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+            { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+            { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 'p4', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 'p5', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          ],
+          lanes: [{ '.key': 'l1' }, { '.key': 'l2' }],
+        },
+        history: [
+          {
+            '.key': '' + previousScore(3),
+            'entities': [
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l3' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p5', 'type': 'person', 'location': 'l2' },
+            ],
+          },
+          {
+            '.key': '' + previousScore(2),
+            'entities': [
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l3' },
+              { '.key': 'p4', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p5', 'type': 'person', 'location': 'l2' },
+            ],
+          },
+          {
+            '.key': '' + previousScore(1),
+            'entities': [
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p5', 'type': 'person', 'location': 'l3' },
+            ],
+          },
+        ],
+      })
+
+      expect(bestPairing).toEqual([
+        {
+          lane: 'l1',
+          entities: ['p3'],
+        },
+        {
+          lane: 'l2',
+          entities: ['p4'],
+        },
+        {
+          lane: 'new-lane',
+          entities: ['p1', 'p5'],
+        },
+      ])
     })
 
     describe('with 3 people', () => {
@@ -75,64 +198,6 @@ describe('Recommendation', () => {
           {
             lane: 'new-lane',
             entities: ['p2', 'p3'],
-          },
-        ])
-      })
-
-      it('assigns people with context to the right lanes', () => {
-        const bestPairing = Recommendation.calculateMovesToBestPairing({
-          current: {
-            entities: [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-              { '.key': 'p4', 'type': 'person', 'location': 'l2' },
-              { '.key': 'p5', 'type': 'person', 'location': 'l3' },
-            ],
-            lanes: [{ '.key': 'l1' }, { '.key': 'l2' }, { '.key': 'l3' }],
-          },
-          history: [
-            {
-              '.key': '' + previousScore(3),
-              'entities': [
-                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-                { '.key': 'p2', 'type': 'person', 'location': 'l3' },
-                { '.key': 'p3', 'type': 'person', 'location': 'l1' },
-                { '.key': 'p4', 'type': 'person', 'location': 'l2' },
-                { '.key': 'p5', 'type': 'person', 'location': 'l2' },
-              ],
-            },
-            {
-              '.key': '' + previousScore(2),
-              'entities': [
-                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
-                { '.key': 'p3', 'type': 'person', 'location': 'l3' },
-                { '.key': 'p4', 'type': 'person', 'location': 'l1' },
-                { '.key': 'p5', 'type': 'person', 'location': 'l2' },
-              ],
-            },
-            {
-              '.key': '' + previousScore(1),
-              'entities': [
-                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-                { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-                { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-                { '.key': 'p4', 'type': 'person', 'location': 'l2' },
-                { '.key': 'p5', 'type': 'person', 'location': 'l3' },
-              ],
-            },
-          ],
-        })
-
-        expect(bestPairing).toEqual([
-          {
-            lane: 'l3',
-            entities: ['p1'],
-          },
-          {
-            lane: 'l1',
-            entities: ['p3'],
           },
         ])
       })
@@ -330,8 +395,16 @@ describe('Recommendation', () => {
       })
     })
 
+    describe('fuzz pairing static (repro from interesting failures)', () => {
+      it('fuzz 1', () => {
+        const board = require('./fixtures/board-from-fuzz-1.json')
+        const bestPairing = Recommendation.calculateMovesToBestPairing(board)
+        expect(bestPairing).toBeTruthy()
+      })
+    })
+
     describe('fuzz pairing', () => {
-      for (let i = 0; i < 200; i++) {
+      for (let i = 0; i < 500; i++) {
         it(`fuzz #${i}`, () => {
           const peopleCount = randomInt(10)
           const outCount = randomInt(4)
@@ -345,6 +418,7 @@ describe('Recommendation', () => {
           }
           const board = generateBoard(config)
 
+          fs.writeFile(`/tmp/pairist-fuzz-pairing/board-${i}.json`, JSON.stringify(board), 'utf-8')
           const bestPairing = Recommendation.calculateMovesToBestPairing(board)
           if (lanesCount * 2 - 1 > peopleCount) {
             // too many lanes
@@ -635,14 +709,10 @@ describe('Recommendation', () => {
   })
 })
 
-const guid = () => {
-  const s4 = () => {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1)
-  }
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-    s4() + '-' + s4() + s4() + s4()
+let gid = 0
+
+const guid = (prefix) => {
+  return `${prefix}-${gid++}`
 }
 
 const generateBoard = ({
@@ -662,23 +732,23 @@ const generateBoard = ({
 
   let locations = [constants.LOCATION.UNASSIGNED]
   for (let i = 0; i < lanesCount; i++) {
-    const id = guid()
+    const id = guid('l')
     locations.push(id)
     board.current.lanes.push({ '.key': id })
   }
 
   let people = []
   for (let i = 0; i < peopleCount; i++) {
-    people.push(guid())
+    people.push(guid('p'))
   }
 
   for (let i = 0; i < outCount; i++) {
-    people.push(guid())
+    people.push(guid('p'))
   }
 
   let thing = []
   for (let i = 0; i < thingCount; i++) {
-    thing.push(guid())
+    thing.push(guid('r'))
   }
 
   const generateAssignment = (people, locations) => {

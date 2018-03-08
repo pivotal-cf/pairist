@@ -1,44 +1,41 @@
 import constants from './constants'
 import { pairs, pairings } from './combinatorics'
+import { cartesianProduct, combination } from 'js-combinatorics'
 import munkres from 'munkres-js'
 import _ from 'lodash'
 
 export const matchLanes = ({ pairing, lanes }) => {
-  let result = []
-  const sortedLanes = []
-  for (let key in lanes) {
-    sortedLanes.push([key, lanes[key]])
-  }
-  sortedLanes.sort((a, b) => a[1].length - b[1].length)
+  const keys = Object.keys(lanes)
+  while (keys.length < pairing.length) { keys.push('new-lane') }
 
-  sortedLanes.forEach(([key, lane]) => {
-    let entities = []
-    const p = pairing.find(p => {
-      if (lane.length > 0) {
-        if (p.some(q => lane.includes(q))) {
-          entities = p.filter(i => !lane.includes(i))
-          return true
+  const match = combination(
+    cartesianProduct(pairing, keys).filter(([pair, key]) =>
+      key === 'new-lane' ||
+      lanes[key].length === 0 ||
+      lanes[key].some(p => pair.includes(p))
+    ), pairing.length)
+    .find(match => {
+      const laneCounts = _.countBy(match.map(m => m[1]))
+      for (let key in laneCounts) {
+        if (key !== 'new-lane' && laneCounts[key] > 1) {
+          return false
         }
-        return false
       }
-      entities = p
-      return true
+      return _.uniqBy(match, e => e[0]).length === pairing.length
     })
-    pairing = pairing.filter(i => i !== p)
-    entities = entities.filter(e => e !== '<solo>')
-    if (entities.length > 0) {
-      result.push({ lane: key, entities })
+
+  if (!match) { return false }
+
+  return match.map(([pair, key]) => {
+    return {
+      lane: key,
+      entities: pair.filter(p =>
+        key === 'new-lane' ||
+        lanes[key].length === 0 ||
+        !lanes[key].includes(p),
+      ),
     }
-  })
-
-  pairing.forEach(p => (
-    result.push({
-      lane: 'new-lane',
-      entities: p.filter(Boolean),
-    })
-  ))
-
-  return result
+  }).filter(p => p.entities.length)
 }
 
 export const scoreMatrix = (left, right, history, maxScore) => {
@@ -93,10 +90,13 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
 
   const peopleKeys = people.map(key)
   if (peopleKeys.length % 2 === 1) { peopleKeys.push('<solo>') }
-  const lanes = _.mapValues(_.groupBy(
-    people.filter(e => laneKeys.includes(e.location)),
-    'location',
-  ), v => v.map(key))
+  const lanes = Object.assign(
+    ...laneKeys.map(key => ({ [key]: [] })),
+    _.mapValues(_.groupBy(
+      people.filter(e => laneKeys.includes(e.location)),
+      'location',
+    ), v => v.map(key)),
+  )
 
   if (peopleKeys.length === 0) { return [] }
 
@@ -139,23 +139,26 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
   })
 
   let highestScore = -maxScore
-  let bestPairing
+  let match
   for (let pairing of pairings(_.times(peopleKeys.length))) {
     const score = pairing.reduce((sum, pair) => sum + scores[pair[0]][pair[1]], 0)
     if (score > highestScore) {
-      bestPairing = pairing
-      highestScore = score
+      const p = pairing.map(pair =>
+        [
+          peopleKeys[pair[0]],
+          peopleKeys[pair[1]],
+        ].filter(e => e !== '<solo>')
+      )
+
+      const m = matchLanes({ pairing: p, lanes })
+      if (m) {
+        match = m
+        highestScore = score
+      }
     }
   }
 
-  const pairing = bestPairing.map(pair =>
-    [
-      peopleKeys[pair[0]],
-      peopleKeys[pair[1]],
-    ].filter(e => e !== '<solo>')
-  )
-
-  return matchLanes({ pairing, lanes })
+  return match
 }
 
 export const calculateMovesToBestAssignment = ({ left, right, current, history }) => {

@@ -73,10 +73,8 @@ export default {
     },
 
     resetLocation ({ getters, dispatch, state }, key) {
-      getters.all.forEach(e => {
-        if (e.location === key) {
-          dispatch('move', { key: e['.key'], location: constants.LOCATION.UNASSIGNED })
-        }
+      getters.all.filter(e => e.location === key).forEach(e => {
+        dispatch('move', { key: e['.key'], location: constants.LOCATION.UNASSIGNED })
       })
       dispatch('lanes/clearEmpty', null, { root: true })
     },
