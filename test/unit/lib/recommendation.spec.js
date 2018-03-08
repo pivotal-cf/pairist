@@ -859,7 +859,7 @@ describe('Recommendation', () => {
         expect(bestPairing).toBeTruthy()
       })
 
-      fit('fuzz 2', () => {
+      it('fuzz 2', () => {
         const board = require('./fixtures/board-from-fuzz-2.json')
         const bestPairing = Recommendation.calculateMovesToBestPairing(board)
         expect(bestPairing).toBeTruthy()

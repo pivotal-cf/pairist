@@ -11,25 +11,26 @@ export const matchLanes = ({ pairing, lanes }) => {
 
   const keys = Object.keys(lanes)
   while (keys.length < pairing.length) { keys.push('new-lane') }
-  console.log(pairing)
-
-  const match = combination(
-    cartesianProduct(pairing, keys).filter(([pair, key]) =>
-      key === 'new-lane' ||
+  const product = cartesianProduct(pairing, keys).filter(([pair, key]) =>
+    key === 'new-lane' ||
       lanes[key].length === 0 ||
       lanes[key].some(p => pair.includes(p))
-    ),
-    pairing.length,
   )
-    .find(match => {
-      const laneCounts = _.countBy(match.map(m => m[1]))
-      for (let key in laneCounts) {
-        if (key !== 'new-lane' && laneCounts[key] > 1) {
-          return false
-        }
+  if (product.length === 0) {
+    return false
+  }
+  const match = combination(
+    product,
+    pairing.length,
+  ).find(match => {
+    const laneCounts = _.countBy(match.map(m => m[1]))
+    for (let key in laneCounts) {
+      if (key !== 'new-lane' && laneCounts[key] > 1) {
+        return false
       }
-      return _.uniqBy(match, e => e[0]).length === pairing.length
-    })
+    }
+    return _.uniqBy(match, e => e[0]).length === pairing.length
+  })
 
   if (!match) { return false }
 
