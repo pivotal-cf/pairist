@@ -34,16 +34,17 @@ export const matchLanes = ({ pairing, lanes }) => {
 
   if (!match) { return false }
 
-  return match.map(([pair, key]) => {
+  const moves = match.map(([pair, key]) => {
     return {
       lane: key,
-      entities: pair.filter(p =>
-        key === 'new-lane' ||
+      entities: pair.filter(p => {
+        return key === 'new-lane' ||
         lanes[key].length === 0 ||
         !lanes[key].includes(p)
-      ),
+      }),
     }
   }).filter(p => p.entities.length)
+  return moves
 }
 
 export const scoreMatrix = (left, right, history, maxScore) => {
@@ -167,20 +168,35 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
     }
   }
 
-  const moveablePartition = _.groupBy(bestPairing, pair => pair.every(person => {
-    const hasSolo = solos.every(soloIdx => {
-      return peopleKeys[soloIdx] !== person
-    })
-    const stickingPeople = Object.values(
-      _.groupBy(
-        people.filter(p => p.location !== constants.LOCATION.UNASSIGNED), p => p.location)
-    ).map(ps => ps.map(p => p['.key']))
-    const isSticking = stickingPeople.some(pair => bestPairing.some(bp => _.isEqual(bp.sort(), pair.sort())))
-    return !hasSolo && !isSticking
-  }))
-  const immoveableResults = matchLanes({ pairing: moveablePartition[false] || [], lanes }) || []
-  let remainingLanes = _.filter(current.lanes, l => immoveableResults.every(sr => sr.lane !== l['.key']))
-  const trackPlan = calculateMovesToBestTrackAssignment({ pairing: moveablePartition[true] || [], current, lanes: remainingLanes, history })
+  const soloKeys = solos.map(s => peopleKeys[s])
+  const solosInLanesKeys = people.filter(p =>
+    laneKeys.includes(p.location) && soloKeys.includes(p['.key'])
+  ).map(p => p['.key'])
+  const stickingPeople = Object.values(
+    _.groupBy(
+      people.filter(p => p.location !== constants.LOCATION.UNASSIGNED), p => p.location)
+  ).map(ps => ps.map(p => p['.key']))
+  let unassignedLanes = _.clone(current.lanes)
+  const moveablePartition = _.groupBy(bestPairing, pair => {
+    const stickingPair = stickingPeople.find(stickingPair => _.isEqual(stickingPair.sort(), pair.sort()))
+    const previousSolo = pair.find(person => solosInLanesKeys.includes(person))
+    if (stickingPair || previousSolo) {
+      const laneToSkip = people.find(p => p['.key'] === _.concat(previousSolo || [], stickingPair)[0]).location
+      _.remove(unassignedLanes, l => l['.key'] === laneToSkip)
+    }
+
+    return !previousSolo && !stickingPair
+  })
+  const immoveablePairs = (moveablePartition[false] || []).filter(ps => ps.length !== 1)
+  const immoveableResults = immoveablePairs.filter(pair => pair.some(person => soloKeys.includes(person))).map(pair => {
+    const solo = _.groupBy(pair, p => soloKeys.includes(p))
+    const locationKey = people.find(p => solo[true].includes(p['.key'])).location
+    return {
+      lane: locationKey,
+      entities: solo[false],
+    }
+  }).filter(p => p.entities.length)
+  const trackPlan = calculateMovesToBestTrackAssignment({ pairing: moveablePartition[true] || [], current, lanes: unassignedLanes, history })
   let remainingMatchingLanes = _.omitBy(lanes, (es, l) => {
     return immoveableResults.some(sr => sr.lane === l) || trackPlan.moves.some(m => m.lane === l)
   })
@@ -192,24 +208,33 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
 export const calculateMovesToBestTrackAssignment = ({ pairing, current, lanes, history }) => {
   const left = 'person'
   const right = 'track'
-  const laneKeys = lanes.filter(l => !l.locked).map(key)
+  let laneKeys = lanes.filter(l => !l.locked).map(key)
   let optimizedHistory = []
   const leftEntities = current.entities.filter(e =>
     e.type === left
   )
-  const rightEntities = current.entities.filter(e => e.type === right && laneKeys.some(l => e.location === l))
+  let rightEntities = current.entities.filter(e => e.type === right && laneKeys.some(l => e.location === l))
 
   const leftKeys = _.flatten(pairing)
   let rightKeys = rightEntities.map(key)
+  laneKeys = laneKeys.filter(l => !rightEntities.map(r => r.location).includes(l))
 
   if (leftKeys.length === 0) { return { moves: [], unassignedPairs: pairing } }
+
+  for (let i = 0; rightKeys.length < leftKeys.length; i++) {
+    rightKeys = rightKeys.concat(['no-track-' + i])
+    let nextLocation = _.head(laneKeys) || 'new-lane'
+    laneKeys = _.drop(laneKeys, 1)
+    rightEntities = rightEntities.concat({ '.key': 'no-track-' + i, 'type': 'track', 'location': nextLocation })
+  }
 
   let maxScore = 0
 
   if (history && history.length > 0) {
     maxScore = parseInt(_.last(history)['.key'])
+    let historyAndCurrent = _.concat(history, { '.key': '' + (maxScore + 1), 'entities': _.concat(leftEntities, rightEntities) })
 
-    optimizedHistory = history.map(h => {
+    optimizedHistory = historyAndCurrent.map(h => {
       const groups = _.groupBy(h.entities.filter(e =>
         e.location !== constants.LOCATION.UNASSIGNED &&
         e.location !== constants.LOCATION.OUT
@@ -227,16 +252,44 @@ export const calculateMovesToBestTrackAssignment = ({ pairing, current, lanes, h
     })
   }
 
-  const scores = scoreMatrix(leftKeys, rightKeys, optimizedHistory, maxScore + 1)
+  const scoreCalculator = {}
+
+  leftKeys.forEach(l => {
+    scoreCalculator[l] = {}
+    rightKeys.forEach(r => {
+      scoreCalculator[l][r] = 0
+    })
+  })
+
+  optimizedHistory.forEach(h => {
+    h.lanes.forEach(lane => {
+      lane.left.forEach(l => {
+        lane.right.forEach(r => {
+          if (scoreCalculator[l] && scoreCalculator[l][r] !== undefined) {
+            scoreCalculator[l][r] += 1
+          }
+        })
+      })
+    })
+  })
+
+  const scores = leftKeys.map((l, i) => rightKeys.map((r, j) => {
+    return scoreCalculator[l][r]
+  }))
   let pairs = pairing.map(p => p.map(e => leftKeys.indexOf(e)))
-  let mergedScores = mergePairsScores(scores, pairs)
+  let mergedScores = []
+  pairs.forEach(pair => {
+    mergedScores.push(scores[pair[0]].map((score, i) => {
+      let other = score
+      if (pair[1]) { other = scores[pair[1]][i] }
+      if (score === 0 && other === 0) {
+        return maxScore
+      }
+      return score + other
+    }))
+  })
 
-  while (rightKeys.length < pairs.length) {
-    rightKeys = rightKeys.concat(['no-track'])
-    mergedScores = mergedScores.map(s => s.concat(s))
-  }
-
-  const assignment = munkres(munkres.make_cost_matrix(mergedScores))
+  const assignment = munkres(mergedScores)
     .map(a => [pairs[a[0]].map(is => leftKeys[is]), rightKeys[a[1]]])
 
   const results = []
