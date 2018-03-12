@@ -248,8 +248,8 @@ module.exports = {
     team.recommendPairs()
 
     team.lane('1').toHavePeople('renamed-1')
-    team.lane('2').toHavePeople('person-3', 'person-2')
-    team.lane('3').toHavePeople('person-4')
+    team.lane('2').toHavePeople('person-4')
+    team.lane('3').toHavePeople('person-2', 'person-3')
     team.role('role-1').toBeInLane('1')
     team.role('role-2').toBeInLane('2')
   },
@@ -261,7 +261,6 @@ module.exports = {
 
     team.role('role-2').toBeUnassigned()
     team.track('track-2').toBeUnassigned()
-    team.person('person-3').toBeUnassigned()
-    team.person('person-2').toBeUnassigned()
+    team.person('person-4').toBeUnassigned()
   },
 }

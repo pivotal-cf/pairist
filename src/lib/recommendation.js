@@ -204,14 +204,13 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
 export const calculateMovesToBestTrackAssignment = ({ pairing, current, lanes, history }) => {
   const left = 'person'
   const right = 'track'
-  let laneKeys = lanes.filter(l => !l.locked).map(key)
-  let optimizedHistory = []
+  const leftKeys = _.flatten(pairing)
   const leftEntities = current.entities.filter(e =>
     e.type === left
   )
+  let laneKeys = lanes.filter(l => !l.locked).map(key)
+  let optimizedHistory = []
   let rightEntities = current.entities.filter(e => e.type === right && laneKeys.some(l => e.location === l))
-
-  const leftKeys = _.flatten(pairing)
   let rightKeys = rightEntities.map(key)
   laneKeys = laneKeys.filter(l => !rightEntities.map(r => r.location).includes(l))
 
@@ -253,7 +252,7 @@ export const calculateMovesToBestTrackAssignment = ({ pairing, current, lanes, h
   leftKeys.forEach(l => {
     scoreCalculator[l] = {}
     rightKeys.forEach(r => {
-      scoreCalculator[l][r] = 0
+      scoreCalculator[l][r] = { maxDate: 0, count: 0 }
     })
   })
 
@@ -262,7 +261,8 @@ export const calculateMovesToBestTrackAssignment = ({ pairing, current, lanes, h
       lane.left.forEach(l => {
         lane.right.forEach(r => {
           if (scoreCalculator[l] && scoreCalculator[l][r] !== undefined) {
-            scoreCalculator[l][r] += 1
+            scoreCalculator[l][r]['maxDate'] = h.score
+            scoreCalculator[l][r]['count'] += 1
           }
         })
       })
@@ -275,13 +275,13 @@ export const calculateMovesToBestTrackAssignment = ({ pairing, current, lanes, h
   let pairs = pairing.map(p => p.map(e => leftKeys.indexOf(e)))
   let mergedScores = []
   pairs.forEach(pair => {
-    mergedScores.push(scores[pair[0]].map((score, i) => {
-      let other = score
+    mergedScores.push(scores[pair[0]].map((self, i) => {
+      let other = self
       if (pair[1]) { other = scores[pair[1]][i] }
-      if (score === 0 && other === 0) {
+      if (self.maxDate < maxScore && other.maxDate < maxScore) {
         return maxScore
       }
-      return score + other
+      return self.count + other.count
     }))
   })
 

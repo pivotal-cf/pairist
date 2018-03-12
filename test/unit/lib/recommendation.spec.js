@@ -141,12 +141,12 @@ describe('Recommendation', () => {
 
       expect(bestPairing).toEqual([
         {
-          lane: 'l2',
-          entities: ['p1', 'p5'],
+          lane: 'l1',
+          entities: ['p5'],
         },
         {
-          lane: 'l1',
-          entities: ['p3'],
+          lane: 'l2',
+          entities: ['p2', 'p3'],
         },
         {
           lane: 'new-lane',
@@ -259,7 +259,9 @@ describe('Recommendation', () => {
           },
         ])
       })
+    })
 
+    describe('calculateMovesToBestTrackAssignment', () => {
       it("rotates people onto tracks they haven't worked on much", () => {
         const bestPairing1 = Recommendation.calculateMovesToBestPairing({
           current: {
@@ -284,18 +286,17 @@ describe('Recommendation', () => {
               '.key': '' + previousScore(2),
               'entities': [
                 { '.key': 't1', 'type': 'track', 'location': 'l1' },
-                { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p3', 'type': 'person', 'location': 'l1' },
-                { '.key': 't2', 'type': 'track', 'location': 'l2' },
-                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l3' },
+                { '.key': 't2', 'type': 'track', 'location': 'l3' },
               ],
             },
             {
               '.key': '' + previousScore(1),
               'entities': [
-                { '.key': 't1', 'type': 'track', 'location': 'l1' },
                 { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-                { '.key': 't2', 'type': 'track', 'location': 'l2' },
-                { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l3' },
               ],
             },
           ],
@@ -303,12 +304,12 @@ describe('Recommendation', () => {
 
         expect(bestPairing1).toEqual([
           {
-            lane: 'l2',
-            entities: ['p1', 'p2'],
+            lane: 'l1',
+            entities: ['p1', 'p3'],
           },
           {
-            lane: 'l1',
-            entities: ['p3'],
+            lane: 'l2',
+            entities: ['p2'],
           },
         ])
       })
@@ -321,7 +322,6 @@ describe('Recommendation', () => {
               { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
               { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
               { '.key': 'p4', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-              { '.key': 'p5', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
               { '.key': 't1', 'type': 'track', 'location': 'l1' },
               { '.key': 't2', 'type': 'track', 'location': 'l2' },
             ],
@@ -332,16 +332,33 @@ describe('Recommendation', () => {
           },
           history: [
             {
-              '.key': '' + previousScore(2),
+              '.key': '' + previousScore(4),
               'entities': [],
+            },
+            {
+              '.key': '' + previousScore(3),
+              'entities': [
+                { '.key': 't1', 'type': 'track', 'location': 'l1' },
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+                { '.key': 't2', 'type': 'track', 'location': 'l2' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l2' }, { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+              ],
+            },
+            {
+              '.key': '' + previousScore(2),
+              'entities': [
+                { '.key': 't2', 'type': 'track', 'location': 'l2' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l2' }, { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p1', 'type': 'person', 'location': 'l2' }, { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+              ],
             },
             {
               '.key': '' + previousScore(1),
               'entities': [
                 { '.key': 't1', 'type': 'track', 'location': 'l1' },
-                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l1' },
                 { '.key': 't2', 'type': 'track', 'location': 'l2' },
-                { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p4', 'type': 'person', 'location': 'l2' },
               ],
             },
           ],
@@ -349,22 +366,16 @@ describe('Recommendation', () => {
 
         expect(bestPairing).toEqual([
           {
-            lane: 'l2',
-            entities: ['p1', 'p3'],
-          },
-          {
             lane: 'l1',
-            entities: ['p2', 'p4'],
+            entities: ['p1', 'p2'],
           },
           {
-            lane: 'new-lane',
-            entities: ['p5'],
+            lane: 'l2',
+            entities: ['p3', 'p4'],
           },
         ])
       })
-    })
 
-    describe('track rotation', () => {
       it("doesn't rotate people onto tracks that are already occupied by immovable people", () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing({
           current: {
@@ -435,6 +446,7 @@ describe('Recommendation', () => {
           },
         ])
       })
+
       it("doesn't make mobs when there are locked tracks", () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing({
           current: {
@@ -494,12 +506,18 @@ describe('Recommendation', () => {
           {
             entities: [
               'p2',
-              'p3',
+            ],
+            lane: 'l2',
+          },
+          {
+            entities: [
+              'p4',
             ],
             lane: 'new-lane',
           },
         ])
       })
+
       it('preserves context even when there are locked lanes', () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing({
           current: {
