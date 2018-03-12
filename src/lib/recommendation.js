@@ -197,12 +197,8 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
     }
   }).filter(p => p.entities.length)
   const trackPlan = calculateMovesToBestTrackAssignment({ pairing: moveablePartition[true] || [], current, lanes: unassignedLanes, history })
-  let remainingMatchingLanes = _.omitBy(lanes, (es, l) => {
-    return immoveableResults.some(sr => sr.lane === l) || trackPlan.moves.some(m => m.lane === l)
-  })
-  const remainingMoves = matchLanes({ pairing: trackPlan.unassignedPairs || [], lanes: remainingMatchingLanes }) || []
 
-  return immoveableResults.concat(trackPlan.moves.concat(remainingMoves))
+  return immoveableResults.concat(trackPlan)
 }
 
 export const calculateMovesToBestTrackAssignment = ({ pairing, current, lanes, history }) => {
@@ -219,7 +215,7 @@ export const calculateMovesToBestTrackAssignment = ({ pairing, current, lanes, h
   let rightKeys = rightEntities.map(key)
   laneKeys = laneKeys.filter(l => !rightEntities.map(r => r.location).includes(l))
 
-  if (leftKeys.length === 0) { return { moves: [], unassignedPairs: pairing } }
+  if (leftKeys.length === 0) { return [] }
 
   for (let i = 0; rightKeys.length < leftKeys.length; i++) {
     rightKeys = rightKeys.concat(['no-track-' + i])
@@ -308,7 +304,7 @@ export const calculateMovesToBestTrackAssignment = ({ pairing, current, lanes, h
     }
   })
 
-  return { moves: results, unassignedPairs: unassignedPairs }
+  return results
 }
 
 export const calculateMovesToBestAssignment = ({ left, right, current, history }) => {
