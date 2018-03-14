@@ -216,8 +216,10 @@ export const selectBestTrackAssignment = ({ matches, current, history }) => {
           return
         }
 
-        const inPeople = lane['person'].filter(p => people.find(pers => pers['.key'] === p))
-        const inTracks = lane['track'].filter(t => tracks.find(track => track['.key'] === t))
+        const personKeys = people.map(pers => pers['.key'])
+        const trackKeys = tracks.map(track => track['.key'])
+        const inPeople = lane['person'].filter(p => personKeys.includes(p['.key']))
+        const inTracks = lane['track'].filter(t => trackKeys.includes(t['.key']))
         inPeople.forEach(p => {
           inTracks.forEach((t) => {
             scoreCalculator[p['.key']][t['.key']] += 1
@@ -227,14 +229,17 @@ export const selectBestTrackAssignment = ({ matches, current, history }) => {
     })
   }
 
-  return _.maxBy(matches, (match) => {
+  return _.minBy(matches, (match) => {
     return _.sumBy(match, (assignment) => {
       const pair = assignment[0]
       const lane = assignment[1]
+      if (lane === 'new-lane') {
+        return 1000000
+      }
       if (lanesToTracks[lane] === undefined) {
         return 0
       }
-      return lanesToTracks[lane].reduce((sum, t) => sum + scoreCalculator[pair[0]][t] + scoreCalculator[pair[0]][t])
+      return lanesToTracks[lane].reduce((sum, t) => sum + scoreCalculator[pair[0]][t] + scoreCalculator[pair[0]][t], 0)
     })
   })
 }

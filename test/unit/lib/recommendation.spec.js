@@ -477,6 +477,16 @@ describe('Recommendation', () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing(board)
         expect(bestPairing).toBeTruthy()
       })
+
+      it('fuzz 5', () => {
+        const board = require('./fixtures/board-from-fuzz-5.json')
+        const bestPairing = Recommendation.calculateMovesToBestPairing(board)
+        expect(bestPairing).toBeTruthy()
+        const people = board.current.entities.filter(e => e.type === 'person')
+        const emptyLanes = board.current.lanes.filter(l =>
+          !l.locked && !people.some(p => p.location === l['.key'])).map(l => l['.key'])
+        expect(bestPairing.some(move => emptyLanes.includes(move.lane))).toBeTruthy()
+      })
     })
 
     describe('fuzz pairing', () => {
@@ -504,6 +514,13 @@ describe('Recommendation', () => {
           } else {
             assert.ok(bestPairing, JSON.stringify({ config, current: board.current }))
             expect(bestPairing).toBeTruthy()
+            const people = board.current.entities.filter(e => e.type === 'person')
+            const emptyLanes = board.current.lanes.filter(l =>
+              !l.locked && !people.some(p => p.location === l['.key'])).map(l => l['.key'])
+            if (emptyLanes.length > 0) {
+              expect(bestPairing.some(move => emptyLanes.includes(move.lane))).toBeTruthy()
+            }
+
             bestPairing.forEach(move => {
               expect(move.entities).toBeTruthy()
               if (move.entities.length > 1 && move.lane !== 'new-lane') {
@@ -518,7 +535,7 @@ describe('Recommendation', () => {
     })
   })
 
-  describe('calculateMovesToBestTrackAssignment', () => {
+  describe('track rotation', () => {
     it("rotates people onto tracks they haven't worked on much", () => {
       const bestPairing1 = Recommendation.calculateMovesToBestPairing({
         current: {
@@ -543,17 +560,16 @@ describe('Recommendation', () => {
             '.key': '' + previousScore(2),
             'entities': [
               { '.key': 't1', 'type': 'track', 'location': 'l1' },
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l3' },
-              { '.key': 't2', 'type': 'track', 'location': 'l3' },
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
             ],
           },
           {
             '.key': '' + previousScore(1),
             'entities': [
+              { '.key': 't1', 'type': 'track', 'location': 'l1' },
               { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l2' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l3' },
+              { '.key': 't2', 'type': 'track', 'location': 'l2' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
             ],
           },
         ],
