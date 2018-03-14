@@ -239,7 +239,12 @@ export const selectBestTrackAssignment = ({ matches, current, history }) => {
       if (lanesToTracks[lane] === undefined) {
         return 0
       }
-      return lanesToTracks[lane].reduce((sum, t) => sum + scoreCalculator[pair[0]][t] + scoreCalculator[pair[0]][t], 0)
+      const self = pair[0]
+      let other = self
+      if (pair[1] !== undefined) {
+        other = pair[1]
+      }
+      return lanesToTracks[lane].reduce((sum, t) => sum + scoreCalculator[self][t] + scoreCalculator[other][t], 0)
     })
   })
 }

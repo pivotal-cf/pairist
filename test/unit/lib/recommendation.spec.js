@@ -543,7 +543,9 @@ describe('Recommendation', () => {
             { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
             { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
             { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 'p4', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
             { '.key': 't1', 'type': 'track', 'location': 'l1' },
+            { '.key': 't3', 'type': 'track', 'location': 'l1' },
             { '.key': 't2', 'type': 'track', 'location': 'l2' },
           ],
           lanes: [
@@ -553,23 +555,18 @@ describe('Recommendation', () => {
         },
         history: [
           {
-            '.key': '' + previousScore(3),
+            '.key': '' + previousScore(4),
             'entities': [],
           },
           {
-            '.key': '' + previousScore(2),
-            'entities': [
-              { '.key': 't1', 'type': 'track', 'location': 'l1' },
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(1),
+            '.key': '' + previousScore(3),
             'entities': [
               { '.key': 't1', 'type': 'track', 'location': 'l1' },
               { '.key': 'p1', 'type': 'person', 'location': 'l1' },
               { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+              { '.key': 't3', 'type': 'track', 'location': 'l3' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l3' },
             ],
           },
         ],
@@ -578,7 +575,7 @@ describe('Recommendation', () => {
       expect(bestPairing1).toEqual([
         {
           lane: 'l1',
-          entities: ['p2'],
+          entities: ['p2', 'p4'],
         },
         {
           lane: 'l2',
