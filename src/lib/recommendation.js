@@ -5,9 +5,7 @@ import munkres from 'munkres-js'
 import _ from 'lodash'
 
 export const matchLanes = ({ pairing, lanes }) => {
-  if (pairing.length === 0) {
-    return []
-  }
+  if (pairing.length === 0) { return [] }
 
   const keys = Object.keys(lanes)
   while (keys.length < pairing.length) { keys.push('new-lane') }
@@ -211,15 +209,20 @@ export const selectBestTrackAssignment = ({ matches, current, history }) => {
 
       Object.values(groups).forEach(entities => {
         const lane = _.groupBy(entities, 'type')
-        if (lane['person'] !== undefined) {
-          if (lane['track'] !== undefined) {
-            lane['person'].filter(p => scoreCalculator[p['.key']] !== undefined).forEach(p => {
-              lane['track'].filter(t => scoreCalculator[p['.key']][t['.key']] !== undefined).forEach((t) => {
-                scoreCalculator[p['.key']][t['.key']] += 1
-              })
-            })
-          }
+        if (lane['person'] === undefined) {
+          return
         }
+        if (lane['track'] === undefined) {
+          return
+        }
+
+        const inPeople = lane['person'].filter(p => people.find(pers => pers['.key'] === p))
+        const inTracks = lane['track'].filter(t => tracks.find(track => track['.key'] === t))
+        inPeople.forEach(p => {
+          inTracks.forEach((t) => {
+            scoreCalculator[p['.key']][t['.key']] += 1
+          })
+        })
       })
     })
   }
