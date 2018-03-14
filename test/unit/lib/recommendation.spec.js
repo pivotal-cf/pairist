@@ -83,12 +83,12 @@ describe('Recommendation', () => {
 
       expect(bestPairing).toEqual([
         {
-          lane: 'l3',
-          entities: ['p1'],
-        },
-        {
           lane: 'l1',
           entities: ['p3'],
+        },
+        {
+          lane: 'l3',
+          entities: ['p1'],
         },
       ])
     })
@@ -141,16 +141,16 @@ describe('Recommendation', () => {
 
       expect(bestPairing).toEqual([
         {
-          lane: 'l2',
-          entities: ['p1', 'p5'],
-        },
-        {
           lane: 'l1',
           entities: ['p3'],
         },
         {
-          lane: 'new-lane',
+          lane: 'l2',
           entities: ['p4'],
+        },
+        {
+          lane: 'new-lane',
+          entities: ['p1', 'p5'],
         },
       ])
     })
@@ -250,12 +250,12 @@ describe('Recommendation', () => {
 
         expect(bestPairing).toEqual([
           {
-            lane: 'l3',
-            entities: ['p1'],
-          },
-          {
             lane: 'l1',
             entities: ['p3'],
+          },
+          {
+            lane: 'l3',
+            entities: ['p1'],
           },
         ])
       })
@@ -471,9 +471,15 @@ describe('Recommendation', () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing(board)
         expect(bestPairing).toBeTruthy()
       })
+
+      it('fuzz 4', () => {
+        const board = require('./fixtures/board-from-fuzz-4.json')
+        const bestPairing = Recommendation.calculateMovesToBestPairing(board)
+        expect(bestPairing).toBeTruthy()
+      })
     })
 
-    fdescribe('fuzz pairing', () => {
+    describe('fuzz pairing', () => {
       for (let i = 0; i < 500; i++) {
         it(`fuzz #${i}`, () => {
           const peopleCount = randomInt(10)
@@ -556,273 +562,11 @@ describe('Recommendation', () => {
       expect(bestPairing1).toEqual([
         {
           lane: 'l1',
+          entities: ['p2'],
+        },
+        {
+          lane: 'l2',
           entities: ['p1', 'p3'],
-        },
-        {
-          lane: 'l2',
-          entities: ['p2'],
-        },
-      ])
-    })
-
-    it("doesn't assign people to something they have no context for", () => {
-      const bestPairing = Recommendation.calculateMovesToBestPairing({
-        current: {
-          entities: [
-            { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-            { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-            { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-            { '.key': 'p4', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-            { '.key': 't1', 'type': 'track', 'location': 'l1' },
-            { '.key': 't2', 'type': 'track', 'location': 'l2' },
-          ],
-          lanes: [
-            { '.key': 'l1' },
-            { '.key': 'l2' },
-          ],
-        },
-        history: [
-          {
-            '.key': '' + previousScore(4),
-            'entities': [],
-          },
-          {
-            '.key': '' + previousScore(3),
-            'entities': [
-              { '.key': 't1', 'type': 'track', 'location': 'l1' },
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' }, { '.key': 'p4', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(2),
-            'entities': [
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l2' }, { '.key': 'p4', 'type': 'person', 'location': 'l2' },
-              { '.key': 'p1', 'type': 'person', 'location': 'l2' }, { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(1),
-            'entities': [
-              { '.key': 't1', 'type': 'track', 'location': 'l1' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p4', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-        ],
-      })
-
-      expect(bestPairing).toEqual([
-        {
-          lane: 'l1',
-          entities: ['p1', 'p2'],
-        },
-        {
-          lane: 'l2',
-          entities: ['p3', 'p4'],
-        },
-      ])
-    })
-
-    it("doesn't rotate people onto tracks that are already occupied by immovable people", () => {
-      const bestPairing = Recommendation.calculateMovesToBestPairing({
-        current: {
-          entities: [
-            { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-            { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-            { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            { '.key': 't1', 'type': 'track', 'location': 'l1' },
-            { '.key': 't2', 'type': 'track', 'location': 'l2' },
-          ],
-          lanes: [
-            { '.key': 'l1' },
-            { '.key': 'l2' },
-          ],
-        },
-        history: [
-          {
-            '.key': '' + previousScore(5),
-            'entities': [],
-          },
-          {
-            '.key': '' + previousScore(4),
-            'entities': [
-              { '.key': 't1', 'type': 'track', 'location': 'l1' },
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p3', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(3),
-            'entities': [
-              { '.key': 't1', 'type': 'track', 'location': 'l1' },
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(4),
-            'entities': [
-              { '.key': 't1', 'type': 'track', 'location': 'l1' },
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p3', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(1),
-            'entities': [
-              { '.key': 't1', 'type': 'track', 'location': 'l1' },
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-        ],
-      })
-
-      expect(bestPairing).toEqual([
-        {
-          lane: 'l2',
-          entities: ['p2'],
-        },
-        {
-          lane: 'l1',
-          entities: ['p1'],
-        },
-      ])
-    })
-
-    it("doesn't make mobs when there are locked tracks", () => {
-      const bestPairing = Recommendation.calculateMovesToBestPairing({
-        current: {
-          entities: [
-            { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-            { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-            { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            { '.key': 'p4', 'type': 'person', 'location': 'l2' },
-            { '.key': 't2', 'type': 'track', 'location': 'l2' },
-          ],
-          lanes: [
-            { '.key': 'l1', 'locked': true },
-            { '.key': 'l2' },
-          ],
-        },
-        history: [
-          {
-            '.key': '' + previousScore(5),
-            'entities': [],
-          },
-          {
-            '.key': '' + previousScore(4),
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p3', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(3),
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(2),
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p3', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(1),
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-        ],
-      })
-
-      expect(bestPairing).toEqual([
-        {
-          entities: ['p2', 'p3'],
-          lane: 'new-lane',
-        },
-      ])
-    })
-
-    it('preserves context even when there are locked lanes', () => {
-      const bestPairing = Recommendation.calculateMovesToBestPairing({
-        current: {
-          entities: [
-            { '.key': 'p4', 'type': 'person', 'location': 'l1' },
-            { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-            { '.key': 'p2', 'type': 'person', 'location': 'l2' },
-            { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            { '.key': 't1', 'type': 'track', 'location': 'l1' },
-            { '.key': 't2', 'type': 'track', 'location': 'l2' },
-          ],
-          lanes: [
-            { '.key': 'l1', 'locked': true },
-            { '.key': 'l2' },
-          ],
-        },
-        history: [
-          {
-            '.key': '' + previousScore(5),
-            'entities': [],
-          },
-          {
-            '.key': '' + previousScore(4),
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p3', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(3),
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(4),
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p3', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(1),
-            'entities': [
-              { '.key': 'p1', 'type': 'person', 'location': 'l1' }, { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-        ],
-      })
-
-      expect(bestPairing).toEqual([
-        {
-          entities: [
-            'p1',
-          ],
-          lane: 'new-lane',
         },
       ])
     })
@@ -954,112 +698,6 @@ describe('Recommendation', () => {
       })
 
       expect(bestPairing).toEqual([])
-    })
-
-    it('something', () => {
-      const bestPairing = Recommendation.calculateMovesToBestTrackAssignment({
-        current: {
-          entities: [
-            { '.key': 'p1', 'location': 'unassigned', 'type': 'person' },
-            { '.key': 'p2', 'location': 'out', 'type': 'person' },
-            { '.key': 'p3', 'location': 'l1', 'type': 'person' },
-            { '.key': 'p4', 'location': 'out', 'type': 'person' },
-            { '.key': 'p5', 'location': 'l3', 'type': 'person' },
-            { '.key': 'p6', 'location': 'l2', 'type': 'person' },
-            { '.key': 'p7', 'location': 'l2', 'type': 'person' },
-            { '.key': 'p8', 'location': 'l5', 'type': 'person' },
-            { '.key': 'p9', 'location': 'l4', 'type': 'person' },
-            { '.key': 't1', 'location': 'l2', 'type': 'track' },
-            { '.key': 't2', 'location': 'l3', 'type': 'track' },
-            { '.key': 'r1', 'location': 'l5', 'type': 'role' },
-            { '.key': 'r2', 'location': 'l1', 'type': 'role' },
-            { '.key': 't3', 'location': 'unassigned', 'type': 'track' },
-            { '.key': 't4', 'location': 'unassigned', 'type': 'track' },
-            { '.key': 't5', 'location': 'unassigned', 'type': 'track' },
-            { '.key': 't6', 'location': 'unassigned', 'type': 'track' },
-            { '.key': 'p10', 'location': 'l5', 'type': 'person' },
-            { '.key': 't6', 'location': 'l4', 'type': 'track' },
-            { '.key': 't7', 'location': 'unassigned', 'type': 'track' },
-            { '.key': 't8', 'location': 'l1', 'type': 'track' },
-            { '.key': 't9', 'location': 'l5', 'type': 'track' },
-            { '.key': 'p11', 'location': 'l1', 'type': 'person' },
-            { '.key': 't10', 'location': 'l5', 'type': 'track' },
-            { '.key': 't11', 'location': 'l1', 'type': 'track' },
-          ],
-          lanes: [
-            { '.key': 'l1', 'locked': false, 'sortOrder': 0 },
-            { '.key': 'l2', 'locked': false, 'sortOrder': 0 },
-            { '.key': 'l3', 'sortOrder': 0 },
-            { '.key': 'l4', 'locked': true, 'sortOrder': 0 },
-            { '.key': 'l5', 'sortOrder': 0 },
-          ],
-        },
-        history: [
-          {
-            '.key': previousScore(1),
-            'entities': [
-              { '.key': 'p1', 'location': 'out', 'type': 'person' },
-              { '.key': 'p2', 'location': 'out', 'type': 'person' },
-              { '.key': 'p3', 'location': 'l1', 'type': 'person' },
-              { '.key': 'p4', 'location': 'out', 'type': 'person' },
-              { '.key': 'p5', 'location': 'l3', 'type': 'person' },
-              { '.key': 'p6', 'location': 'l2', 'type': 'person' },
-              { '.key': 'p7', 'location': 'l2', 'type': 'person' },
-              { '.key': 'p8', 'location': 'l5', 'type': 'person' },
-              { '.key': 'p9', 'location': 'l4', 'type': 'person' },
-              { '.key': 't1', 'location': 'l2', 'type': 'track' },
-              { '.key': 't2', 'location': 'l3', 'type': 'track' },
-              { '.key': 'r1', 'location': 'l5', 'type': 'role' },
-              { '.key': 'r2', 'location': 'l1', 'type': 'role' },
-              { '.key': 't3', 'location': 'unassigned', 'type': 'track' },
-              { '.key': 't4', 'location': 'unassigned', 'type': 'track' },
-              { '.key': 't5', 'location': 'unassigned', 'type': 'track' },
-              { '.key': 't6', 'location': 'unassigned', 'type': 'track' },
-              { '.key': 'p10', 'location': 'l5', 'type': 'person' },
-              { '.key': 't6', 'location': 'l4', 'type': 'track' },
-              { '.key': 't7', 'location': 'unassigned', 'type': 'track' },
-              { '.key': 't8', 'location': 'l1', 'type': 'track' },
-              { '.key': 't9', 'location': 'l5', 'type': 'track' },
-              { '.key': 'p11', 'location': 'l1', 'type': 'person' },
-              { '.key': 't10', 'location': 'l5', 'type': 'track' },
-              { '.key': 't11', 'location': 'l1', 'type': 'track' },
-            ],
-            'lanes': [
-              { '.key': 'l1', 'locked': false, 'sortOrder': 0 },
-              { '.key': 'l2', 'locked': false, 'sortOrder': 0 },
-              { '.key': 'l3', 'sortOrder': 0 },
-              { '.key': 'l4', 'locked': true, 'sortOrder': 0 },
-              { '.key': 'l5', 'sortOrder': 0 },
-            ],
-          },
-        ],
-        lanes: [
-          { '.key': 'l1', 'locked': false, 'sortOrder': 0 },
-          { '.key': 'l2', 'locked': false, 'sortOrder': 0 },
-          { '.key': 'l4', 'locked': true, 'sortOrder': 0 },
-          { '.key': 'l5', 'sortOrder': 0 },
-        ],
-        pairing: [
-          ['p11', 'p8'],
-          ['p3', 'p6'],
-          ['p7', 'p1'],
-        ],
-      })
-
-      expect(bestPairing).toEqual([
-        {
-          entities: ['p11'],
-          lane: 'l5',
-        },
-        {
-          entities: ['p6'],
-          lane: 'l1',
-        },
-        {
-          entities: ['p1'],
-          lane: 'l2',
-        },
-      ])
     })
   })
 
