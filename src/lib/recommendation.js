@@ -162,11 +162,13 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
 
       const m = matchLanes({ pairing: p, lanes })
       if (m) {
-        bestPairing = p
+        bestPairing = m
         highestScore = score
       }
     }
   }
+
+  return bestPairing
 
   const soloKeys = solos.map(s => peopleKeys[s])
   const solosInLanesKeys = people.filter(p =>
@@ -226,12 +228,12 @@ export const calculateMovesToBestTrackAssignment = ({ pairing, current, lanes, h
   }
 
   if (history && history.length > 0) {
-    maxScore = parseInt(_.last(history)['.key'])
-    let historyAndCurrent = _.concat(history, { '.key': '' + (maxScore + 1), 'entities': _.concat(leftEntities, rightEntities) })
+    maxScore = parseInt(_.last(history)['.key']) + 1
+    let historyAndCurrent = _.concat(history, { '.key': '' + maxScore, 'entities': _.concat(leftEntities, rightEntities) })
 
     optimizedHistory = historyAndCurrent.map(h => {
       const lanes = []
-      const score = maxScore - parseInt(h['.key'])
+      const score = parseInt(h['.key'])
       const groups = _.groupBy(
         h.entities.filter(e =>
           e.location !== constants.LOCATION.UNASSIGNED && e.location !== constants.LOCATION.OUT
