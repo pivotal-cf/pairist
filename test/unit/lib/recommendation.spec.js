@@ -142,15 +142,15 @@ describe('Recommendation', () => {
       expect(bestPairing).toEqual([
         {
           lane: 'l1',
-          entities: ['p3'],
+          entities: ['p5'],
         },
         {
           lane: 'l2',
-          entities: ['p4'],
+          entities: ['p2', 'p3'],
         },
         {
           lane: 'new-lane',
-          entities: ['p1', 'p5'],
+          entities: ['p4'],
         },
       ])
     })

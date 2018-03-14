@@ -1,6 +1,6 @@
 import constants from './constants'
 import { pairs, pairings } from './combinatorics'
-import { cartesianProduct, combination } from 'js-combinatorics'
+import { permutation } from 'js-combinatorics'
 import munkres from 'munkres-js'
 import _ from 'lodash'
 
@@ -9,30 +9,15 @@ export const matchLanes = ({ pairing, lanes }) => {
 
   const keys = Object.keys(lanes)
   while (keys.length < pairing.length) { keys.push('new-lane') }
-  const product = cartesianProduct(pairing, keys).filter(([pair, key]) =>
-    key === 'new-lane' ||
-      lanes[key].length === 0 ||
-      lanes[key].some(p => pair.includes(p))
+  const product = permutation(pairing).map((pairing) => pairing.map((pair, i) => [pair, keys[i]])).filter(pairing =>
+    pairing.every(([pair, key]) =>
+      key === 'new-lane' ||
+          lanes[key].length === 0 ||
+          lanes[key].some(p => pair.includes(p))
+    )
   )
-  if (product.length < pairing.length) {
-    return false
-  }
-  const matches = combination(
-    product,
-    pairing.length,
-  ).filter(match => {
-    const laneCounts = _.countBy(match.map(m => m[1]))
-    for (let key in laneCounts) {
-      if (key !== 'new-lane' && laneCounts[key] > 1) {
-        return false
-      }
-    }
-    return _.uniqBy(match, e => e[0]).length === pairing.length
-  })
 
-  if (matches.length === 0) { return false }
-
-  return matches
+  return product
 }
 
 export const getMoves = ({ match, lanes }) => {
@@ -236,9 +221,6 @@ export const selectBestTrackAssignment = ({ matches, current, history }) => {
     return _.sumBy(match, (assignment) => {
       const pair = assignment[0]
       const lane = assignment[1]
-      if (lane === 'new-lane') {
-        return 1000000
-      }
       if (lanesToTracks[lane] === undefined) {
         return 0
       }
