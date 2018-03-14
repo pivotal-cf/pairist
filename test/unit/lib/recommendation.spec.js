@@ -535,6 +535,12 @@ describe('Recommendation', () => {
     })
   })
 
+  describe('getMoves', () => {
+    it('does not blow up if given an undefined pairing', () => {
+      expect(Recommendation.getMoves({ pairing: undefined, lanes: [] })).toEqual([])
+    })
+  })
+
   describe('track rotation', () => {
     it("rotates people onto tracks they haven't worked on much", () => {
       const bestPairing1 = Recommendation.calculateMovesToBestPairing({

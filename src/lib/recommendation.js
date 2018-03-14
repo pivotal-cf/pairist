@@ -36,6 +36,9 @@ export const matchLanes = ({ pairing, lanes }) => {
 }
 
 export const getMoves = ({ match, lanes }) => {
+  if (match === undefined) {
+    return []
+  }
   const moves = match.map(([pair, key]) => {
     return {
       lane: key,
