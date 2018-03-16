@@ -187,7 +187,8 @@ export const selectBestTrackAssignment = ({ matches, current, history }) => {
   })
 
   if (history && history.length > 0) {
-    history.forEach((h) => {
+    const maxConsidered = 10
+    _.take(history, maxConsidered).forEach((h, i) => {
       const groups = _.groupBy(
         h.entities.filter(e =>
           e.location !== constants.LOCATION.UNASSIGNED && e.location !== constants.LOCATION.OUT
@@ -210,7 +211,7 @@ export const selectBestTrackAssignment = ({ matches, current, history }) => {
         const inTracks = lane['track'].filter(t => trackKeys.includes(t['.key']))
         inPeople.forEach(p => {
           inTracks.forEach((t) => {
-            scoreCalculator[p['.key']][t['.key']] += 1
+            scoreCalculator[p['.key']][t['.key']] += Math.pow(2, maxConsidered - i)
           })
         })
       })

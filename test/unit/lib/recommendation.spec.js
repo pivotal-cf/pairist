@@ -487,6 +487,16 @@ describe('Recommendation', () => {
           !l.locked && !people.some(p => p.location === l['.key'])).map(l => l['.key'])
         expect(bestPairing.some(move => emptyLanes.includes(move.lane))).toBeTruthy()
       })
+
+      it('fuzz 6', () => {
+        const board = require('./fixtures/board-from-fuzz-6.json')
+        const bestPairing = Recommendation.calculateMovesToBestPairing(board)
+        expect(bestPairing).toBeTruthy()
+        const people = board.current.entities.filter(e => e.type === 'person')
+        const emptyLanes = board.current.lanes.filter(l =>
+          !l.locked && !people.some(p => p.location === l['.key'])).map(l => l['.key'])
+        expect(bestPairing.some(move => emptyLanes.includes(move.lane)) || bestPairing.length === 0).toBeTruthy()
+      })
     })
 
     describe('fuzz pairing', () => {
@@ -517,7 +527,7 @@ describe('Recommendation', () => {
             const people = board.current.entities.filter(e => e.type === 'person')
             const emptyLanes = board.current.lanes.filter(l =>
               !l.locked && !people.some(p => p.location === l['.key'])).map(l => l['.key'])
-            if (emptyLanes.length > 0) {
+            if (emptyLanes.length > 0 && bestPairing.length > 0) {
               expect(bestPairing.some(move => emptyLanes.includes(move.lane))).toBeTruthy()
             }
 
@@ -586,6 +596,58 @@ describe('Recommendation', () => {
         {
           lane: 'l2',
           entities: ['p1', 'p3'],
+        },
+      ])
+    })
+
+    it('weights recent context more heavily', () => {
+      const bestPairing1 = Recommendation.calculateMovesToBestPairing({
+        current: {
+          entities: [
+            { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 't1', 'type': 'track', 'location': 'l1' },
+            { '.key': 't2', 'type': 'track', 'location': 'l2' },
+          ],
+          lanes: [
+            { '.key': 'l1' },
+            { '.key': 'l2' },
+          ],
+        },
+        history: [
+          {
+            '.key': '' + previousScore(1),
+            'entities': [
+              { '.key': 't2', 'type': 'track', 'location': 'l2' },
+              { '.key': 'p1', 'type': 'person', 'location': 'l2' },
+            ],
+          },
+          {
+            '.key': '' + previousScore(2),
+            'entities': [
+              { '.key': 't1', 'type': 'track', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+            ],
+          },
+          {
+            '.key': '' + previousScore(3),
+            'entities': [
+              { '.key': 't1', 'type': 'track', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+            ],
+          },
+        ],
+      })
+
+      expect(bestPairing1).toEqual([
+        {
+          lane: 'l1',
+          entities: ['p1', 'p2'],
+        },
+        {
+          lane: 'l2',
+          entities: ['p3'],
         },
       ])
     })
