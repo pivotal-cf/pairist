@@ -497,6 +497,20 @@ describe('Recommendation', () => {
           !l.locked && !people.some(p => p.location === l['.key'])).map(l => l['.key'])
         expect(bestPairing.some(move => emptyLanes.includes(move.lane)) || bestPairing.length === 0).toBeTruthy()
       })
+
+      it('fuzz 7', () => {
+        const board = require('./fixtures/board-from-fuzz-7.json')
+        const bestPairing = Recommendation.calculateMovesToBestPairing(board)
+        expect(bestPairing).toBeTruthy()
+        expect(_.flatten(bestPairing.map(p => p.entities)).length).toBeGreaterThanOrEqual(6)
+      })
+
+      it('fuzz 8', () => {
+        const board = require('./fixtures/board-from-fuzz-8.json')
+        const bestPairing = Recommendation.calculateMovesToBestPairing(board)
+        expect(bestPairing).toBeTruthy()
+        expect(_.flatten(bestPairing.map(p => p.entities)).length).toBeGreaterThanOrEqual(3)
+      })
     })
 
     describe('fuzz pairing', () => {
@@ -524,10 +538,13 @@ describe('Recommendation', () => {
           } else {
             assert.ok(bestPairing, JSON.stringify({ config, current: board.current }))
             expect(bestPairing).toBeTruthy()
+            expect(_.flatten(bestPairing.map(p => p.entities)).length).toBeGreaterThanOrEqual(
+              board.current.entities.filter(e => e.type === 'person' && e.location === constants.LOCATION.UNASSIGNED).length
+            )
             const people = board.current.entities.filter(e => e.type === 'person')
             const emptyLanes = board.current.lanes.filter(l =>
               !l.locked && !people.some(p => p.location === l['.key'])).map(l => l['.key'])
-            if (emptyLanes.length > 0 && bestPairing.length > 0) {
+            if (emptyLanes.length > 0) {
               expect(bestPairing.some(move => emptyLanes.includes(move.lane))).toBeTruthy()
             }
 

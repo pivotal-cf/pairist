@@ -17,6 +17,10 @@ export const matchLanes = ({ pairing, lanes }) => {
     )
   )
 
+  if (product.length === 0) {
+    return false
+  }
+
   return product
 }
 
@@ -159,6 +163,7 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
   }
 
   const bestTrackAssignment = selectBestTrackAssignment({ matches: bestPairing, current: current, history: history })
+
   return getMoves({ match: bestTrackAssignment, lanes })
 }
 
