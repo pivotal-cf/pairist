@@ -59,10 +59,10 @@ describe('Lane', () => {
       propsData: { lane },
     })
 
-    expect(wrapper.find('.lock-button').classes()).not.toContain('is-locked')
-    expect(wrapper.find('.lock-button').classes()).toContain('accent')
+    expect(wrapper.find('.lock-button button').classes()).not.toContain('is-locked')
+    expect(wrapper.find('.lock-button button').classes()).toContain('accent')
 
-    wrapper.find('.lock-button').trigger('click')
+    wrapper.find('.lock-button button').trigger('click')
     expect(actions.setLocked).toHaveBeenCalled()
     expect(actions.setLocked).toHaveBeenLastCalledWith(expect.anything(), {
       key: 'a-key',
@@ -72,10 +72,10 @@ describe('Lane', () => {
     lane.locked = true
     await flushPromises()
 
-    expect(wrapper.find('.lock-button').classes()).toContain('is-locked')
-    expect(wrapper.find('.lock-button').classes()).toContain('pink')
+    expect(wrapper.find('.lock-button button').classes()).toContain('is-locked')
+    expect(wrapper.find('.lock-button button').classes()).toContain('pink')
 
-    wrapper.find('.lock-button').trigger('click')
+    wrapper.find('.lock-button button').trigger('click')
     expect(actions.setLocked).toHaveBeenCalled()
     expect(actions.setLocked).toHaveBeenLastCalledWith(expect.anything(), {
       key: 'a-key',
@@ -115,7 +115,7 @@ describe('Lane', () => {
       propsData: { lane },
     })
 
-    wrapper.find('.sweep-button').trigger('click')
+    wrapper.find('.sweep-button button').trigger('click')
     expect(entityActions.resetLocation).toHaveBeenCalled()
     expect(entityActions.resetLocation).toHaveBeenLastCalledWith(expect.anything(), 'a-key', undefined)
   })

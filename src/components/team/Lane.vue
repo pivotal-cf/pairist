@@ -33,9 +33,10 @@
             chip-class="track"
           />
         </v-flex>
-        <v-tooltip class="lock-button" right>
+        <v-tooltip
+          v-if="canWrite && lane['.key'] !== 'new-lane'"
+          class="lock-button" right>
           <v-btn
-            v-if="canWrite && lane['.key'] !== 'new-lane'"
             slot="activator"
             :class="{'is-locked': lane.locked}"
             :color="lane.locked? 'pink' : 'accent'"
@@ -48,9 +49,10 @@
           <span v-if="lane.locked">Unlock lane</span>
           <span v-else>Lock lane</span>
         </v-tooltip>
-        <v-tooltip class="sweep-button" right>
+        <v-tooltip
+          v-if="canWrite && lane['.key'] !== 'new-lane'"
+          class="sweep-button" right>
           <v-btn
-            v-if="canWrite && lane['.key'] !== 'new-lane'"
             slot="activator"
             dark fab small
             @click="sweepLane({ key: lane['.key']})"
