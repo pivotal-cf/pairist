@@ -127,7 +127,7 @@ export default {
 
     @media (min-width: 960px)
       opacity: 0
-      top: 80px
+      top: 50%
       right: -30px
 
   &:hover .lock-button
@@ -141,7 +141,7 @@ export default {
 
     @media (min-width: 960px)
       opacity: 0
-      top: 33px
+      top: 10%
       right: -30px
 
     &.is-locked
