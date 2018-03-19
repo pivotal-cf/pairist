@@ -33,14 +33,17 @@
             chip-class="track"
           />
         </v-flex>
-        <v-btn
-          v-if="canWrite && lane['.key'] !== 'new-lane'"
-          class="sweep-button"
-          dark fab small
-          @click="sweepLane({ key: lane['.key']})"
-        >
-          <v-icon>mdi-broom</v-icon>
-        </v-btn>
+        <v-tooltip class="sweep-button" right>
+          <v-btn
+            v-if="canWrite && lane['.key'] !== 'new-lane'"
+            slot="activator"
+            dark fab small
+            @click="sweepLane({ key: lane['.key']})"
+          >
+            <v-icon>mdi-broom</v-icon>
+          </v-btn>
+          <span>Empty lane</span>
+        </v-tooltip>
         <v-btn
           v-if="canWrite && lane['.key'] !== 'new-lane'"
           :class="{'is-locked': lane.locked}"
