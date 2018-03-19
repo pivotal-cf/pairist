@@ -33,6 +33,21 @@
             chip-class="track"
           />
         </v-flex>
+        <v-tooltip class="lock-button" right>
+          <v-btn
+            v-if="canWrite && lane['.key'] !== 'new-lane'"
+            slot="activator"
+            :class="{'is-locked': lane.locked}"
+            :color="lane.locked? 'pink' : 'accent'"
+            dark fab small
+            @click="setLocked({ key: lane['.key'], locked: !lane.locked })"
+          >
+            <v-icon v-if="lane.locked">mdi-lock</v-icon>
+            <v-icon v-else>mdi-lock-open</v-icon>
+          </v-btn>
+          <span v-if="lane.locked">Unlock lane</span>
+          <span v-else>Lock lane</span>
+        </v-tooltip>
         <v-tooltip class="sweep-button" right>
           <v-btn
             v-if="canWrite && lane['.key'] !== 'new-lane'"
@@ -44,17 +59,6 @@
           </v-btn>
           <span>Empty lane</span>
         </v-tooltip>
-        <v-btn
-          v-if="canWrite && lane['.key'] !== 'new-lane'"
-          :class="{'is-locked': lane.locked}"
-          :color="lane.locked? 'pink' : 'accent'"
-          dark fab small
-          class="lock-button"
-          @click="setLocked({ key: lane['.key'], locked: !lane.locked })"
-        >
-          <v-icon v-if="lane.locked">mdi-lock</v-icon>
-          <v-icon v-else>mdi-lock-open</v-icon>
-        </v-btn>
       </v-layout>
     </v-list-tile>
     <v-divider v-if="divider" />
