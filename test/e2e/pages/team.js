@@ -157,7 +157,7 @@ module.exports = {
         .pause(300)
         .click(this.el('@lane', lane) + "//i[contains(@class, 'mdi-lock-open')]//ancestor::button")
         .useCss()
-        .waitForElementVisible('.lock-button.is-locked', 2000)
+        .waitForElementVisible('.lock-button .is-locked', 2000)
         .pause(300)
     },
 
