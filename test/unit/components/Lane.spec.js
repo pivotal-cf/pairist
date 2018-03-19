@@ -11,11 +11,19 @@ const localVue = createLocalVue()
 localVue.use(Vuex)
 localVue.use(Vuetify)
 
+const addElemWithDataAppToBody = () => {
+  const app = document.createElement('div');
+  app.setAttribute('data-app', true);
+  document.body.append(app);
+}
+
 describe('Lane', () => {
   let actions
   let entityActions
   let store
   let getters
+
+  addElemWithDataAppToBody()
 
   beforeEach(() => {
     actions = {
