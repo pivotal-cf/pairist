@@ -132,8 +132,14 @@ export default {
       top: 50%
       right: -30px
 
-  &:hover .lock-button
-    opacity: 1
+  &:hover .lock-button button
+      opacity: 1
+
+  .lock-button button
+    @media (min-width: 960px)
+      opacity: 0
+    &.is-locked
+      opacity: 1
 
   .lock-button
     transition: opacity .1s linear
@@ -142,10 +148,7 @@ export default {
     right: 10px
 
     @media (min-width: 960px)
-      opacity: 0
       top: 10%
       right: -30px
 
-    &.is-locked
-      opacity: 1
 </style>
