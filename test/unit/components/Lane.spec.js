@@ -12,9 +12,9 @@ localVue.use(Vuex)
 localVue.use(Vuetify)
 
 const addElemWithDataAppToBody = () => {
-  const app = document.createElement('div');
-  app.setAttribute('data-app', true);
-  document.body.append(app);
+  const app = document.createElement('div')
+  app.setAttribute('data-app', true)
+  document.body.append(app)
 }
 
 describe('Lane', () => {
