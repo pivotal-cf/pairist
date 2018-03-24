@@ -5,9 +5,121 @@ import * as Recommendation from '@/lib/recommendation'
 import constants from '@/lib/constants'
 import fs from 'fs'
 import mkdirp from 'mkdirp'
+import { combination } from 'js-combinatorics'
+
 mkdirp.sync('/tmp/pairist-fuzz-pairing/')
 
 describe('Recommendation', () => {
+  describe('allPossibleAssignments', () => {
+    it('returns possible moves when nobody is assigned', () => {
+      const allPossibleAssignments = Recommendation.allPossibleAssignments({
+        current: {
+          entities: [
+            { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          ],
+          lanes: [],
+        },
+      })
+
+      expect(allPossibleAssignments).toEqual([[
+        [['p1'], 'new-lane'],
+      ]])
+    })
+    it('returns possible moves when nobody is assigned but there is a lane', () => {
+      const allPossibleAssignments = Recommendation.allPossibleAssignments({
+        current: {
+          entities: [
+            { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          ],
+          lanes: [
+            { '.key': 'l1' },
+          ],
+        },
+      })
+
+      expect(allPossibleAssignments).toEqual([[
+        [['p1'], 'l1'],
+      ]])
+    })
+    it('ignores locked lanes', () => {
+      const allPossibleAssignments = Recommendation.allPossibleAssignments({
+        current: {
+          entities: [
+            { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+            { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          ],
+          lanes: [
+            { '.key': 'l1', 'locked': true },
+          ],
+        },
+      })
+
+      expect(allPossibleAssignments).toEqual([[
+        [['p2'], 'new-lane'],
+      ]])
+    })
+
+    it('generates all context-preserving rotations', () => {
+      const allPossibleAssignments = Recommendation.allPossibleAssignments({
+        current: {
+          entities: [
+            { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+            { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+            { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+            { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+            { '.key': 'p5', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          ],
+          lanes: [
+            { '.key': 'l1' },
+            { '.key': 'l2' },
+          ],
+        },
+      })
+
+      allPossibleAssignments.forEach(as => {
+        expect(as.map(a => a[1]).sort()).toEqual(['l1', 'l2', 'new-lane'])
+        expect(_.flatten(as.map(a => a[0])).sort()).toEqual(['p1', 'p2', 'p3', 'p4', 'p5'])
+        const l1 = as.find(a => a[1] === 'l1')
+        expect(['p1', 'p2'].some(p => l1[0].includes(p))).toEqual(true)
+        const l2 = as.find(a => a[1] === 'l2')
+        expect(['p3', 'p4'].some(p => l2[0].includes(p))).toEqual(true)
+      })
+      combination(['p1', 'p2', 'p3', 'p4', 'p5'], 2).forEach(pair => {
+        if (_.isEqual(pair, ['p1', 'p2'])) {
+          expect(allPossibleAssignments.map(as => as[2])).toContainEqual([pair, 'l1'])
+        } else if (_.isEqual(pair, ['p3', 'p4'])) {
+          expect(allPossibleAssignments.map(as => as[1])).toContainEqual([pair, 'l2'])
+        } else if (pair.includes('p1') || pair.includes('p2')) {
+          expect(allPossibleAssignments.map(as => [as[2][0].sort(), as[2][1]])).toContainEqual([pair, 'l1'])
+          expect(allPossibleAssignments.map(as => [as[0][0].sort(), as[0][1]])).toContainEqual([pair, 'new-lane'])
+        } else if (pair.includes('p3') || pair.includes('p4')) {
+          expect(allPossibleAssignments.map(as => [as[1][0].sort(), as[1][1]])).toContainEqual([pair, 'l2'])
+          expect(allPossibleAssignments.map(as => [as[0][0].sort(), as[0][1]])).toContainEqual([pair, 'new-lane'])
+        } else {
+          expect(allPossibleAssignments.map(as => [as[2][0].sort(), as[2][1]])).toContainEqual([pair, 'l1'])
+          expect(allPossibleAssignments.map(as => [as[1][0].sort(), as[1][1]])).toContainEqual([pair, 'l2'])
+          expect(allPossibleAssignments.map(as => [as[0][0].sort(), as[0][1]])).toContainEqual([pair, 'new-lane'])
+        }
+      })
+    })
+    // it('swaps people, allowing unassigned people to go anywhere', () => {
+    //   const allPossibleAssignments = Recommendation.allPossibleAssignments({
+    //     current: {
+    //       entities: [
+    //         { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+    //         { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+    //         { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+    //         { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+    //       ],
+    //       lanes: [
+    //         { '.key': 'l1' },
+    //         { '.key': 'l2' },
+    //       ],
+    //     },
+    //   })
+    // })
+  })
+
   describe('calculateMovesToBestPairing', () => {
     it('does not blow up if history is not set', () => {
       const bestPairing = Recommendation.calculateMovesToBestPairing({
@@ -83,12 +195,12 @@ describe('Recommendation', () => {
 
       expect(bestPairing).toEqual([
         {
-          lane: 'l1',
+          lane: 'l3',
           entities: ['p3'],
         },
         {
-          lane: 'l3',
-          entities: ['p1'],
+          lane: 'l2',
+          entities: ['p2'],
         },
       ])
     })
@@ -141,16 +253,12 @@ describe('Recommendation', () => {
 
       expect(bestPairing).toEqual([
         {
-          lane: 'l1',
-          entities: ['p5'],
-        },
-        {
           lane: 'l2',
-          entities: ['p2', 'p3'],
+          entities: ['p3', 'p5'],
         },
         {
           lane: 'new-lane',
-          entities: ['p4'],
+          entities: ['p4', 'p2'],
         },
       ])
     })
@@ -193,11 +301,11 @@ describe('Recommendation', () => {
         expect(bestPairing).toEqual([
           {
             lane: 'new-lane',
-            entities: ['p1'],
+            entities: ['p2', 'p3'],
           },
           {
             lane: 'new-lane',
-            entities: ['p2', 'p3'],
+            entities: ['p1'],
           },
         ])
       })
@@ -250,12 +358,12 @@ describe('Recommendation', () => {
 
         expect(bestPairing).toEqual([
           {
-            lane: 'l1',
+            lane: 'l3',
             entities: ['p3'],
           },
           {
-            lane: 'l3',
-            entities: ['p1'],
+            lane: 'l2',
+            entities: ['p2'],
           },
         ])
       })
@@ -373,12 +481,12 @@ describe('Recommendation', () => {
 
         expect(bestPairing).toEqual([
           {
-            lane: 'l2',
-            entities: ['p2'],
-          },
-          {
             lane: 'new-lane',
             entities: ['p1'],
+          },
+          {
+            lane: 'l2',
+            entities: ['p2'],
           },
         ])
       })
@@ -438,16 +546,16 @@ describe('Recommendation', () => {
 
         expect(bestPairing).toEqual([
           {
-            lane: 'l1',
-            entities: ['p5'],
+            lane: 'l3',
+            entities: ['p4'],
           },
           {
             lane: 'l2',
             entities: ['p6'],
           },
           {
-            lane: 'l3',
-            entities: ['p4'],
+            lane: 'l1',
+            entities: ['p5'],
           },
         ])
       })
@@ -510,6 +618,24 @@ describe('Recommendation', () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing(board)
         expect(bestPairing).toBeTruthy()
         expect(_.flatten(bestPairing.map(p => p.entities)).length).toBeGreaterThanOrEqual(3)
+      })
+
+      it('fuzz 9', () => {
+        const board = require('./fixtures/board-from-fuzz-9.json')
+        const bestPairing = Recommendation.calculateMovesToBestPairing(board)
+        expect(bestPairing).toBeTruthy()
+        expect(_.flatten(bestPairing.map(p => p.entities)).length).toBeGreaterThanOrEqual(
+          board.current.entities.filter(e => e.type === 'person' && e.location === constants.LOCATION.UNASSIGNED).length
+        )
+      })
+
+      it('fuzz 10', () => {
+        const board = require('./fixtures/board-from-fuzz-10.json')
+        const bestPairing = Recommendation.calculateMovesToBestPairing(board)
+        expect(bestPairing).toBeTruthy()
+        expect(_.flatten(bestPairing.map(p => p.entities)).length).toBeGreaterThanOrEqual(
+          board.current.entities.filter(e => e.type === 'person' && e.location === constants.LOCATION.UNASSIGNED).length
+        )
       })
     })
 
@@ -597,7 +723,7 @@ describe('Recommendation', () => {
               { '.key': 't1', 'type': 'track', 'location': 'l1' },
               { '.key': 'p1', 'type': 'person', 'location': 'l1' },
               { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l2' },
               { '.key': 't3', 'type': 'track', 'location': 'l3' },
               { '.key': 'p3', 'type': 'person', 'location': 'l3' },
             ],
@@ -608,11 +734,11 @@ describe('Recommendation', () => {
       expect(bestPairing1).toEqual([
         {
           lane: 'l1',
-          entities: ['p2', 'p4'],
+          entities: ['p1', 'p2'],
         },
         {
           lane: 'l2',
-          entities: ['p1', 'p3'],
+          entities: ['p3', 'p4'],
         },
       ])
     })
@@ -727,15 +853,15 @@ describe('Recommendation', () => {
       expect(bestPairing).toEqual([
         {
           entities: [
-            'p4',
-          ],
-          lane: 'l1',
-        },
-        {
-          entities: [
             'p3',
           ],
           lane: 'l2',
+        },
+        {
+          entities: [
+            'p4',
+          ],
+          lane: 'l1',
         },
       ])
     })

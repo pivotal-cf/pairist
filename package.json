@@ -38,6 +38,7 @@
   "dependencies": {
     "@firebase/app-types": "^0.1.1",
     "babel-polyfill": "^6.26.0",
+    "big-integer": "^1.6.27",
     "firebase": "^4.9.0",
     "firebase-admin": "^5.8.2",
     "firebase-functions": "^0.8.1",
