@@ -154,7 +154,7 @@ export const allPossibleAssignments = ({ current }) => {
     }
     const currentAssignment = _.head(remainingAssignments)
     const results = []
-    currentAssignment[1].forEach((person) => {
+    currentAssignment[1].forEach((person, i) => {
       const tailAssignments = innerFindAssignments({
         remainingAssignments: _.tail(remainingAssignments),
         unassigned: _.concat(unassigned, _.difference(currentAssignment[1], [person])),
@@ -162,24 +162,13 @@ export const allPossibleAssignments = ({ current }) => {
       })
       tailAssignments.forEach(assignment => {
         assignment.unassigned.forEach(unassignedPerson => {
+          if (i > 0 && currentAssignment[1].includes(unassignedPerson)) {
+            return
+          }
           results.push({
             results: _.concat(assignment.results, [[[person, unassignedPerson], currentAssignment[0]]]),
             unassigned: _.difference(assignment.unassigned, [unassignedPerson]),
           })
-        })
-      })
-      combination(currentAssignment[1], currentAssignment[1].length > 1 ? 2 : 1).forEach((stickingPair) => {
-        const tailAssignments = innerFindAssignments({
-          remainingAssignments: _.tail(remainingAssignments),
-          unassigned: _.concat(unassigned, _.difference(currentAssignment[1], stickingPair)),
-          remainingLaneCount: remainingLaneCount - 1,
-        })
-        tailAssignments.forEach(assignment => {
-          const newResult = {
-            results: _.concat(assignment.results, [[stickingPair, currentAssignment[0]]]),
-            unassigned: assignment.unassigned,
-          }
-          results.push(newResult)
         })
       })
     })

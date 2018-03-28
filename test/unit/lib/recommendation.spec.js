@@ -25,6 +25,7 @@ describe('Recommendation', () => {
         [['p1'], 'new-lane'],
       ]])
     })
+
     it('returns possible moves when nobody is assigned but there is a lane', () => {
       const allPossibleAssignments = Recommendation.allPossibleAssignments({
         current: {
@@ -41,6 +42,7 @@ describe('Recommendation', () => {
         [['p1'], 'l1'],
       ]])
     })
+
     it('ignores locked lanes', () => {
       const allPossibleAssignments = Recommendation.allPossibleAssignments({
         current: {
@@ -84,40 +86,51 @@ describe('Recommendation', () => {
         const l2 = as.find(a => a[1] === 'l2')
         expect(['p3', 'p4'].some(p => l2[0].includes(p))).toEqual(true)
       })
+
+      const entries = allPossibleAssignments.map(as => as.map(a => JSON.stringify([a[0].sort(), a[1]])).reduce((s, acc) => s + acc, ''))
+      expect(_.uniq(entries).length).toEqual(allPossibleAssignments.length)
       combination(['p1', 'p2', 'p3', 'p4', 'p5'], 2).forEach(pair => {
         if (_.isEqual(pair, ['p1', 'p2'])) {
-          expect(allPossibleAssignments.map(as => as[2])).toContainEqual([pair, 'l1'])
+          expect(allPossibleAssignments.map(as => {
+            const idx = as.findIndex(a => a[1] === 'l1')
+            return as[idx]
+          })).toContainEqual([pair, 'l1'])
         } else if (_.isEqual(pair, ['p3', 'p4'])) {
           expect(allPossibleAssignments.map(as => as[1])).toContainEqual([pair, 'l2'])
         } else if (pair.includes('p1') || pair.includes('p2')) {
-          expect(allPossibleAssignments.map(as => [as[2][0].sort(), as[2][1]])).toContainEqual([pair, 'l1'])
-          expect(allPossibleAssignments.map(as => [as[0][0].sort(), as[0][1]])).toContainEqual([pair, 'new-lane'])
+          expect(allPossibleAssignments.map(as => {
+            const idx = as.findIndex(a => a[1] === 'l1')
+            return [as[idx][0].sort(), as[idx][1]]
+          })).toContainEqual([pair, 'l1'])
+          expect(allPossibleAssignments.map(as => {
+            const idx = as.findIndex(a => a[1] === 'new-lane')
+            return [as[idx][0].sort(), as[idx][1]]
+          })).toContainEqual([pair, 'new-lane'])
         } else if (pair.includes('p3') || pair.includes('p4')) {
-          expect(allPossibleAssignments.map(as => [as[1][0].sort(), as[1][1]])).toContainEqual([pair, 'l2'])
-          expect(allPossibleAssignments.map(as => [as[0][0].sort(), as[0][1]])).toContainEqual([pair, 'new-lane'])
+          expect(allPossibleAssignments.map(as => {
+            const idx = as.findIndex(a => a[1] === 'l2')
+            return [as[idx][0].sort(), as[idx][1]]
+          })).toContainEqual([pair, 'l2'])
+          expect(allPossibleAssignments.map(as => {
+            const idx = as.findIndex(a => a[1] === 'new-lane')
+            return [as[idx][0].sort(), as[idx][1]]
+          })).toContainEqual([pair, 'new-lane'])
         } else {
-          expect(allPossibleAssignments.map(as => [as[2][0].sort(), as[2][1]])).toContainEqual([pair, 'l1'])
-          expect(allPossibleAssignments.map(as => [as[1][0].sort(), as[1][1]])).toContainEqual([pair, 'l2'])
-          expect(allPossibleAssignments.map(as => [as[0][0].sort(), as[0][1]])).toContainEqual([pair, 'new-lane'])
+          expect(allPossibleAssignments.map(as => {
+            const idx = as.findIndex(a => a[1] === 'l1')
+            return [as[idx][0].sort(), as[idx][1]]
+          })).toContainEqual([pair, 'l1'])
+          expect(allPossibleAssignments.map(as => {
+            const idx = as.findIndex(a => a[1] === 'l2')
+            return [as[idx][0].sort(), as[idx][1]]
+          })).toContainEqual([pair, 'l2'])
+          expect(allPossibleAssignments.map(as => {
+            const idx = as.findIndex(a => a[1] === 'new-lane')
+            return [as[idx][0].sort(), as[0][1]]
+          })).toContainEqual([pair, 'new-lane'])
         }
       })
     })
-    // it('swaps people, allowing unassigned people to go anywhere', () => {
-    //   const allPossibleAssignments = Recommendation.allPossibleAssignments({
-    //     current: {
-    //       entities: [
-    //         { '.key': 'p1', 'type': 'person', 'location': 'l1' },
-    //         { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-    //         { '.key': 'p3', 'type': 'person', 'location': 'l2' },
-    //         { '.key': 'p4', 'type': 'person', 'location': 'l2' },
-    //       ],
-    //       lanes: [
-    //         { '.key': 'l1' },
-    //         { '.key': 'l2' },
-    //       ],
-    //     },
-    //   })
-    // })
   })
 
   describe('calculateMovesToBestPairing', () => {
