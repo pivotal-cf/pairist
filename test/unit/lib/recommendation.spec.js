@@ -88,7 +88,7 @@ describe('Recommendation', () => {
       })
 
       const entries = allPossibleAssignments.map(as => as.map(a => JSON.stringify([a[0].sort(), a[1]])).reduce((s, acc) => s + acc, ''))
-      expect(_.uniq(entries).length).toEqual(allPossibleAssignments.length)
+      expect(_.uniq(entries).sort()).toEqual(entries.sort())
       combination(['p1', 'p2', 'p3', 'p4', 'p5'], 2).forEach(pair => {
         if (_.isEqual(pair, ['p1', 'p2'])) {
           expect(allPossibleAssignments.map(as => {

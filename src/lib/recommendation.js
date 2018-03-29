@@ -104,10 +104,10 @@ export const allPossibleAssignments = ({ current }) => {
 
   const emptyLanes = _.difference(laneKeys, people.map(p => p.location))
 
-  const innerFindAssignments = ({ remainingAssignments, unassigned, remainingLaneCount }) => {
+  const innerFindAssignments = ({ remainingAssignments, wrapUp, unassigned, remainingLaneCount }) => {
     if (remainingAssignments.length === 0) {
       if (remainingLaneCount === 0) {
-        return [{ results: [], unassigned: unassigned }]
+        return wrapUp({ tailAssignments: [{ results: [], unassigned: unassigned }] })
       }
 
       const unassignedPeople = combination(unassigned, remainingLaneCount * 2)
@@ -145,38 +145,54 @@ export const allPossibleAssignments = ({ current }) => {
         while (lanes.length < pairing.length) {
           lanes = _.concat(lanes, 'new-lane')
         }
-        results.push({
-          results: lanes.map((l, i) => [pairing[i], l]),
-          unassigned: _.difference(unassigned, _.flatten(pairing)),
+        wrapUp({
+          tailAssignments: [{
+            results: lanes.map((l, i) => [pairing[i], l]),
+            unassigned: _.difference(unassigned, _.flatten(pairing)),
+          }],
+        }).forEach(r => {
+          results.push(r)
         })
       })
       return results
     }
     const currentAssignment = _.head(remainingAssignments)
     const results = []
-    currentAssignment[1].forEach((person, i) => {
-      const tailAssignments = innerFindAssignments({
+    const currentLaneSettings = currentAssignment[1].map(person => [person, _.difference(currentAssignment[1], [person])])
+    currentLaneSettings.forEach((setting, i) => {
+      const person = setting[0]
+      const newUnassigned = setting[1]
+      innerFindAssignments({
         remainingAssignments: _.tail(remainingAssignments),
-        unassigned: _.concat(unassigned, _.difference(currentAssignment[1], [person])),
+        unassigned: _.concat(unassigned, newUnassigned),
         remainingLaneCount: remainingLaneCount - 1,
-      })
-      tailAssignments.forEach(assignment => {
-        assignment.unassigned.forEach(unassignedPerson => {
-          if (i > 0 && currentAssignment[1].includes(unassignedPerson)) {
-            return
-          }
-          results.push({
-            results: _.concat(assignment.results, [[[person, unassignedPerson], currentAssignment[0]]]),
-            unassigned: _.difference(assignment.unassigned, [unassignedPerson]),
+        wrapUp: ({ tailAssignments }) => {
+          const results = []
+          tailAssignments.forEach(assignment => {
+            assignment.unassigned.forEach(unassignedPerson => {
+              if (i > 0 && currentAssignment[1].includes(unassignedPerson)) {
+                return
+              }
+              wrapUp({ tailAssignments: [{
+                results: _.concat(assignment.results, [[[person, unassignedPerson], currentAssignment[0]]]),
+                unassigned: _.difference(assignment.unassigned, [unassignedPerson]),
+              }] }).forEach(r => { results.push(r) })
+            })
           })
-        })
-      })
+          return results
+        },
+      }).forEach(r => { results.push(r) })
     })
     return results
   }
 
-  let results = innerFindAssignments({ remainingAssignments: assignments, unassigned, remainingLaneCount: totalLanes })
-  return results.map(r => r.results.map(as => [_.pull(as[0], '<solo>'), as[1]]))
+  let results = innerFindAssignments({
+    remainingAssignments: assignments,
+    unassigned,
+    remainingLaneCount: totalLanes,
+    wrapUp: ({ tailAssignments }) => tailAssignments.map(r => r.results.map(as => [_.pull(as[0], '<solo>'), as[1]])),
+  })
+  return results
 }
 
 export const calculateMovesToBestPairing = ({ current, history }) => {
