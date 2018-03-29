@@ -157,11 +157,17 @@ export const allPossibleAssignments = ({ current }) => {
       return results
     }
     const currentAssignment = _.head(remainingAssignments)
-    const results = []
-    const currentLaneSettings = currentAssignment[1].map(person => [person, _.difference(currentAssignment[1], [person])])
-    currentLaneSettings.forEach((setting, i) => {
+    const currentLaneSettings = currentAssignment[1].map((person, i) => [person, _.difference(currentAssignment[1], [person]), i])
+    const processLaneSettings = (interimResults, currentLaneSettings) => {
+      if (currentLaneSettings.length === 0) {
+        return interimResults
+      }
+
+      const setting = _.head(currentLaneSettings)
       const person = setting[0]
       const newUnassigned = setting[1]
+      const i = setting[2]
+
       innerFindAssignments({
         remainingAssignments: _.tail(remainingAssignments),
         unassigned: _.concat(unassigned, newUnassigned),
@@ -181,9 +187,11 @@ export const allPossibleAssignments = ({ current }) => {
           })
           return results
         },
-      }).forEach(r => { results.push(r) })
-    })
-    return results
+      }).forEach(r => { interimResults.push(r) })
+      return processLaneSettings(interimResults, _.tail(currentLaneSettings))
+    }
+
+    return processLaneSettings([], currentLaneSettings)
   }
 
   let results = innerFindAssignments({
