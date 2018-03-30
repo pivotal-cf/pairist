@@ -105,11 +105,6 @@ export const allPossibleAssignments = ({ current }) => {
   const emptyLanes = _.difference(laneKeys, people.map(p => p.location))
 
   const innerFindAssignments = ({ initialAssignments, wrapUp, unassigned, remainingLaneCount }) => {
-    // innerFindAssignments({
-    //   remainingAssignments: _.tail(remainingAssignments),
-    //   unassigned: _.concat(unassigned, newUnassigned),
-    //   remainingLaneCount: remainingLaneCount - 1,
-    //   wrapUp: wrapUpThisLevel,
     const firstItem = {
       remainingAssignments: initialAssignments,
       unassigned: unassigned,
@@ -161,7 +156,7 @@ export const allPossibleAssignments = ({ current }) => {
           uniqNewPairings.forEach(pairing => {
             let lanes = emptyLanes
             while (lanes.length < pairing.length) {
-              lanes = _.concat(lanes, 'new-lane')
+              lanes.push('new-lane')
             }
             wrapUp({
               tailAssignments: [{
