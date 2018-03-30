@@ -104,94 +104,115 @@ export const allPossibleAssignments = ({ current }) => {
 
   const emptyLanes = _.difference(laneKeys, people.map(p => p.location))
 
-  const innerFindAssignments = ({ remainingAssignments, wrapUp, unassigned, remainingLaneCount }) => {
-    if (remainingAssignments.length === 0) {
-      if (remainingLaneCount === 0) {
-        return wrapUp({ tailAssignments: [{ results: [], unassigned: unassigned }] })
-      }
-
-      const unassignedPeople = combination(unassigned, remainingLaneCount * 2)
-      const uniqNewPairings = []
-      unassignedPeople.forEach(unassignedGroup => {
-        const combinationsOfPeople = combination(unassignedGroup, 2).map(c => c)
-        const combinationTracker = combinationsOfPeople.reduce((combos, pair) => {
-          if (combos[pair[0]] === undefined) {
-            combos[pair[0]] = {}
-          }
-          combos[pair[0]][pair[1]] = false
-          return combos
-        }, {})
-        combinationsOfPeople.forEach(c => {
-          if (combinationTracker[c[0]][c[1]] === true) {
-            return
-          }
-
-          const thisSet = []
-          thisSet.push(c)
-          combinationTracker[c[0]][c[1]] = true
-          while (thisSet.length < remainingLaneCount) {
-            const idx = combinationsOfPeople.findIndex(c => c.every(p => thisSet.every(pair => !pair.includes(p))))
-            const next = combinationsOfPeople[idx]
-            thisSet.push(next)
-            combinationTracker[next[0]][next[1]] = true
-          }
-          uniqNewPairings.push(thisSet)
-        })
-      })
-
-      const results = []
-      uniqNewPairings.forEach(pairing => {
-        let lanes = emptyLanes
-        while (lanes.length < pairing.length) {
-          lanes = _.concat(lanes, 'new-lane')
-        }
-        wrapUp({
-          tailAssignments: [{
-            results: lanes.map((l, i) => [pairing[i], l]),
-            unassigned: _.difference(unassigned, _.flatten(pairing)),
-          }],
-        }).forEach(r => {
-          results.push(r)
-        })
-      })
-      return results
+  const innerFindAssignments = ({ initialAssignments, wrapUp, unassigned, remainingLaneCount }) => {
+    // innerFindAssignments({
+    //   remainingAssignments: _.tail(remainingAssignments),
+    //   unassigned: _.concat(unassigned, newUnassigned),
+    //   remainingLaneCount: remainingLaneCount - 1,
+    //   wrapUp: wrapUpThisLevel,
+    const firstItem = {
+      remainingAssignments: initialAssignments,
+      unassigned: unassigned,
+      wrapUp,
+      remainingLaneCount: remainingLaneCount,
     }
-    const currentAssignment = _.head(remainingAssignments)
-    const currentLaneSettings = currentAssignment[1].map((person, i) => [person, _.difference(currentAssignment[1], [person]), i])
+    const stack = [firstItem]
     const results = []
-    while (currentLaneSettings.length > 0) {
-      const setting = currentLaneSettings.shift()
-      const person = setting[0]
-      const newUnassigned = setting[1]
-      const i = setting[2]
 
-      innerFindAssignments({
-        remainingAssignments: _.tail(remainingAssignments),
-        unassigned: _.concat(unassigned, newUnassigned),
-        remainingLaneCount: remainingLaneCount - 1,
-        wrapUp: ({ tailAssignments }) => {
-          const results = []
-          tailAssignments.forEach(assignment => {
-            assignment.unassigned.forEach(unassignedPerson => {
-              if (i > 0 && currentAssignment[1].includes(unassignedPerson)) {
+    while (stack.length > 0) {
+      const nextItem = stack.shift()
+      const remainingAssignments = nextItem.remainingAssignments
+      const unassigned = nextItem.unassigned
+      const wrapUp = nextItem.wrapUp
+      const remainingLaneCount = nextItem.remainingLaneCount
+      if (remainingAssignments.length === 0) {
+        if (remainingLaneCount === 0) {
+          wrapUp({ tailAssignments: [{ results: [], unassigned: unassigned }] }).forEach(r => { results.push(r) })
+        } else {
+          const unassignedPeople = combination(unassigned, remainingLaneCount * 2)
+          const uniqNewPairings = []
+          unassignedPeople.forEach(unassignedGroup => {
+            const combinationsOfPeople = combination(unassignedGroup, 2).map(c => c)
+            const combinationTracker = combinationsOfPeople.reduce((combos, pair) => {
+              if (combos[pair[0]] === undefined) {
+                combos[pair[0]] = {}
+              }
+              combos[pair[0]][pair[1]] = false
+              return combos
+            }, {})
+            combinationsOfPeople.forEach(c => {
+              if (combinationTracker[c[0]][c[1]] === true) {
                 return
               }
-              wrapUp({ tailAssignments: [{
-                results: _.concat(assignment.results, [[[person, unassignedPerson], currentAssignment[0]]]),
-                unassigned: _.difference(assignment.unassigned, [unassignedPerson]),
-              }] }).forEach(r => { results.push(r) })
+
+              const thisSet = []
+              thisSet.push(c)
+              combinationTracker[c[0]][c[1]] = true
+              while (thisSet.length < remainingLaneCount) {
+                const idx = combinationsOfPeople.findIndex(c => c.every(p => thisSet.every(pair => !pair.includes(p))))
+                const next = combinationsOfPeople[idx]
+                thisSet.push(next)
+                combinationTracker[next[0]][next[1]] = true
+              }
+              uniqNewPairings.push(thisSet)
             })
           })
-          return results
-        },
-      }).forEach(r => { results.push(r) })
+
+          uniqNewPairings.forEach(pairing => {
+            let lanes = emptyLanes
+            while (lanes.length < pairing.length) {
+              lanes = _.concat(lanes, 'new-lane')
+            }
+            wrapUp({
+              tailAssignments: [{
+                results: lanes.map((l, i) => [pairing[i], l]),
+                unassigned: _.difference(unassigned, _.flatten(pairing)),
+              }],
+            }).forEach(r => {
+              results.push(r)
+            })
+          })
+        }
+      } else {
+        const currentAssignment = _.head(remainingAssignments)
+        const currentLaneSettings = currentAssignment[1].map((person, i) => [person, _.difference(currentAssignment[1], [person]), i])
+        while (currentLaneSettings.length > 0) {
+          const setting = currentLaneSettings.shift()
+          const person = setting[0]
+          const newUnassigned = setting[1]
+          const i = setting[2]
+
+          const wrapUpThisLevel = ({ tailAssignments }) => {
+            const results = []
+            tailAssignments.forEach(assignment => {
+              assignment.unassigned.forEach(unassignedPerson => {
+                if (i > 0 && currentAssignment[1].includes(unassignedPerson)) {
+                  return
+                }
+                wrapUp({ tailAssignments: [{
+                  results: _.concat(assignment.results, [[[person, unassignedPerson], currentAssignment[0]]]),
+                  unassigned: _.difference(assignment.unassigned, [unassignedPerson]),
+                }] }).forEach(r => { results.push(r) })
+              })
+            })
+            return results
+          }
+
+          stack.push({
+            remainingAssignments: _.tail(remainingAssignments),
+            unassigned: _.concat(unassigned, newUnassigned),
+            remainingLaneCount: remainingLaneCount - 1,
+            wrapUp: wrapUpThisLevel,
+          })
+        }
+      }
     }
 
     return results
   }
 
   let results = innerFindAssignments({
-    remainingAssignments: assignments,
+    initialAssignments: assignments,
     unassigned,
     remainingLaneCount: totalLanes,
     wrapUp: ({ tailAssignments }) => tailAssignments.map(r => r.results.map(as => [_.pull(as[0], '<solo>'), as[1]])),
