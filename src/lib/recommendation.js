@@ -185,7 +185,7 @@ export const allPossibleAssignments = function * ({ current }) {
                 }
 
                 yield * wrapUp({ tailAssignments: [{
-                  results: _.concat(assignment.results, [[[person, unassignedPerson], currentAssignment[0]]]),
+                  results: assignment.results.concat([[[person, unassignedPerson], currentAssignment[0]]]),
                   unassigned: _.difference(assignment.unassigned, [unassignedPerson]),
                 }] })
               }
