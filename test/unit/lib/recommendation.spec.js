@@ -12,14 +12,14 @@ mkdirp.sync('/tmp/pairist-fuzz-pairing/')
 describe('Recommendation', () => {
   describe('allPossibleAssignments', () => {
     it('returns possible moves when nobody is assigned', () => {
-      const allPossibleAssignments = Recommendation.allPossibleAssignments({
+      const allPossibleAssignments = Array.from(Recommendation.allPossibleAssignments({
         current: {
           entities: [
             { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
           ],
           lanes: [],
         },
-      })
+      }))
 
       expect(allPossibleAssignments).toEqual([[
         [['p1'], 'new-lane'],
@@ -27,7 +27,7 @@ describe('Recommendation', () => {
     })
 
     it('returns possible moves when nobody is assigned but there is a lane', () => {
-      const allPossibleAssignments = Recommendation.allPossibleAssignments({
+      const allPossibleAssignments = Array.from(Recommendation.allPossibleAssignments({
         current: {
           entities: [
             { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
@@ -36,7 +36,7 @@ describe('Recommendation', () => {
             { '.key': 'l1' },
           ],
         },
-      })
+      }))
 
       expect(allPossibleAssignments).toEqual([[
         [['p1'], 'l1'],
@@ -44,7 +44,7 @@ describe('Recommendation', () => {
     })
 
     it('ignores locked lanes', () => {
-      const allPossibleAssignments = Recommendation.allPossibleAssignments({
+      const allPossibleAssignments = Array.from(Recommendation.allPossibleAssignments({
         current: {
           entities: [
             { '.key': 'p1', 'type': 'person', 'location': 'l1' },
@@ -54,7 +54,7 @@ describe('Recommendation', () => {
             { '.key': 'l1', 'locked': true },
           ],
         },
-      })
+      }))
 
       expect(allPossibleAssignments).toEqual([[
         [['p2'], 'new-lane'],
@@ -62,7 +62,7 @@ describe('Recommendation', () => {
     })
 
     it('generates all context-preserving rotations', () => {
-      const allPossibleAssignments = Recommendation.allPossibleAssignments({
+      const allPossibleAssignments = Array.from(Recommendation.allPossibleAssignments({
         current: {
           entities: [
             { '.key': 'p1', 'type': 'person', 'location': 'l1' },
@@ -76,7 +76,7 @@ describe('Recommendation', () => {
             { '.key': 'l2' },
           ],
         },
-      })
+      }))
 
       allPossibleAssignments.forEach(as => {
         expect(as.map(a => a[1]).sort()).toEqual(['l1', 'l2', 'new-lane'])
@@ -267,11 +267,15 @@ describe('Recommendation', () => {
       expect(bestPairing).toEqual([
         {
           lane: 'l2',
-          entities: ['p3', 'p5'],
+          entities: ['p4'],
         },
         {
           lane: 'new-lane',
-          entities: ['p4', 'p2'],
+          entities: ['p3', 'p2'],
+        },
+        {
+          lane: 'l1',
+          entities: ['p5'],
         },
       ])
     })
@@ -747,11 +751,11 @@ describe('Recommendation', () => {
       expect(bestPairing1).toEqual([
         {
           lane: 'l1',
-          entities: ['p1', 'p2'],
+          entities: ['p2', 'p3'],
         },
         {
           lane: 'l2',
-          entities: ['p3', 'p4'],
+          entities: ['p1', 'p4'],
         },
       ])
     })
