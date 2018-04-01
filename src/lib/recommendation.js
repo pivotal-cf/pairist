@@ -123,37 +123,43 @@ export const allPossibleAssignments = function * ({ current }) {
         if (remainingLaneCount === 0) {
           yield * wrapUp({ tailAssignments: [{ results: [], unassigned: unassigned }] })
         } else {
-          const unassignedPeople = combination(unassigned, remainingLaneCount * 2)
-          const uniqNewPairings = []
-          unassignedPeople.forEach(unassignedGroup => {
-            const combinationsOfPeople = combination(unassignedGroup, 2).map(c => c)
-            const combinationTracker = combinationsOfPeople.reduce((combos, pair) => {
-              if (combos[pair[0]] === undefined) {
-                combos[pair[0]] = {}
-              }
-              combos[pair[0]][pair[1]] = false
-              return combos
-            }, {})
-            combinationsOfPeople.forEach(c => {
-              if (combinationTracker[c[0]][c[1]] === true) {
-                return
-              }
+          const generateUniqPairings = function * ({ unassigned, remainingLaneCount }) {
+            const unassignedPeople = combination(unassigned, remainingLaneCount * 2)
+            let unassignedGroup = unassignedPeople.next()
+            while (unassignedGroup !== undefined) {
+              const combinationsOfPeople = combination(unassignedGroup, 2).map(c => c)
+              const combinationTracker = combinationsOfPeople.reduce((combos, pair) => {
+                if (combos[pair[0]] === undefined) {
+                  combos[pair[0]] = {}
+                }
+                combos[pair[0]][pair[1]] = false
+                return combos
+              }, {})
+              for (const c of combinationsOfPeople) {
+                if (combinationTracker[c[0]][c[1]] === true) {
+                  return
+                }
 
-              const thisSet = []
-              thisSet.push(c)
-              combinationTracker[c[0]][c[1]] = true
-              while (thisSet.length < remainingLaneCount) {
-                const idx = combinationsOfPeople.findIndex(c => c.every(p => thisSet.every(pair => !pair.includes(p))))
-                const next = combinationsOfPeople[idx]
-                thisSet.push(next)
-                combinationTracker[next[0]][next[1]] = true
-              }
-              uniqNewPairings.push(thisSet)
-            })
-          })
+                const thisSet = []
+                thisSet.push(c)
+                combinationTracker[c[0]][c[1]] = true
+                while (thisSet.length < remainingLaneCount) {
+                  const idx = combinationsOfPeople.findIndex(c => c.every(p => thisSet.every(pair => !pair.includes(p))))
+                  const next = combinationsOfPeople[idx]
+                  thisSet.push(next)
+                  combinationTracker[next[0]][next[1]] = true
+                }
 
-          while (uniqNewPairings.length > 0) {
-            const pairing = uniqNewPairings.pop()
+                yield thisSet
+              }
+              unassignedGroup = unassignedPeople.next()
+            }
+          }
+
+          const uniqNewPairings = generateUniqPairings({ unassigned, remainingLaneCount })
+          let nextPairing = uniqNewPairings.next()
+          while (!nextPairing.done) {
+            const pairing = nextPairing.value
             let lanes = emptyLanes
             while (lanes.length < pairing.length) {
               lanes.push('new-lane')
@@ -164,6 +170,7 @@ export const allPossibleAssignments = function * ({ current }) {
                 unassigned: _.difference(unassigned, _.flatten(pairing)),
               }],
             })
+            nextPairing = uniqNewPairings.next()
           }
         }
       } else {
@@ -210,7 +217,7 @@ export const allPossibleAssignments = function * ({ current }) {
     wrapUp: function * ({ tailAssignments }) {
       while (tailAssignments.length > 0) {
         const nextAssignment = tailAssignments.pop()
-        yield nextAssignment.results.map(as => [_.pull(as[0], '<solo>'), as[1]])
+        yield nextAssignment.results.map(as => [_.without(as[0], '<solo>'), as[1]])
       }
     },
   })
