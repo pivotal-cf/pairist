@@ -298,11 +298,12 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
   let assignment = bestPairing
   while (!nextAssignment.done) {
     assignment = nextAssignment.value
-    const pairing = assignment.map(a => a[0])
 
-    const pairScore = scorePairing({ pairing, peopleKeys, scores }).multiply(
-      trackScoreAssignments({ current, trackScoreLedger, assignments: assignment })
-    )
+    const pairScore = assignment.reduce((sum, a) => {
+      const pair = a[0]
+      const lane = a[1]
+      return sum.add(scoreAssignment({ pair, lane, current, trackScoreLedger, peopleKeys, scores }))
+    }, bigInt(0))
 
     if (pairScore > highestScore) {
       bestPairing = assignment
@@ -332,17 +333,6 @@ const getTracksToLanes = ({ tracks }) => {
     return acc
   }, {})
   return _.invertBy(tracksToLanes)
-}
-
-export const selectBestTrackAssignment = ({ matches, current, history }) => {
-  const trackScoreLedger = calculateTrackScores({ current, history })
-  return _.reduce(matches, (bestAssignment, assignments) => {
-    const assignmentScore = trackScoreAssignments({ current, trackScoreLedger, assignments })
-    if (assignmentScore > bestAssignment[0]) {
-      return [assignmentScore, assignments]
-    }
-    return bestAssignment
-  }, [-1, []])
 }
 
 const calculateTrackScores = ({ current, history }) => {
@@ -401,6 +391,37 @@ const calculateTrackScores = ({ current, history }) => {
   }
 
   return scoreCalculator
+}
+
+const scoreAssignment = ({ pair, lane, current, trackScoreLedger, peopleKeys, scores }) => {
+  const laneKeys = current.lanes.filter(l => !l.locked).map(key)
+  const tracks = current.entities.filter(e =>
+    e.type === 'track' &&
+      (e.location === constants.LOCATION.UNASSIGNED || laneKeys.includes(e.location))
+  )
+  const lanesToTracks = getTracksToLanes({ tracks })
+  let trackScore = bigInt(1)
+
+  if (lanesToTracks[lane] !== undefined) {
+    const self = pair[0]
+    let other = self
+    if (pair[1] !== undefined) {
+      other = pair[1]
+    }
+    trackScore = lanesToTracks[lane].reduce((sum, t) => {
+      return sum.add(trackScoreLedger[self][t]).add(trackScoreLedger[other][t])
+    }, bigInt(1))
+  }
+
+  const pairingIndices = pair.map(p => peopleKeys.indexOf(p))
+  const firstPerson = pairingIndices[0]
+  let secondPerson = firstPerson
+  if (pairingIndices[1] !== undefined) {
+    secondPerson = pairingIndices[1]
+  }
+  const pairScore = scores[firstPerson][secondPerson]
+
+  return trackScore.multiply(pairScore)
 }
 
 const trackScoreAssignments = ({ current, trackScoreLedger, assignments }) => {
