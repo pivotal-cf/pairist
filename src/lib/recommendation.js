@@ -104,13 +104,41 @@ export const allPossibleAssignments = function * ({ current }) {
 
   const emptyLanes = _.difference(laneKeys, people.map(p => p.location))
 
-  const processLaneSettings = function * ({ currentLaneSettings, currentAssignment, remainingAssignments, wrapUp, unassigned, remainingLaneCount }) {
-    while (currentLaneSettings.length > 0) {
-      const setting = currentLaneSettings.shift()
-      const person = setting[0]
-      const newUnassigned = setting[1]
-      const i = setting[2]
+  const generateUniqPairings = function * ({ unassigned, remainingLaneCount }) {
+    const unassignedPeople = combination(unassigned, remainingLaneCount * 2)
+    let unassignedGroup = unassignedPeople.next()
+    while (unassignedGroup !== undefined) {
+      const combinationsOfPeople = combination(unassignedGroup, 2).map(c => c)
+      const combinationTracker = combinationsOfPeople.reduce((combos, pair) => {
+        if (combos[pair[0]] === undefined) {
+          combos[pair[0]] = {}
+        }
+        combos[pair[0]][pair[1]] = false
+        return combos
+      }, {})
+      for (const c of combinationsOfPeople) {
+        if (combinationTracker[c[0]][c[1]] === true) {
+          return
+        }
 
+        const thisSet = []
+        thisSet.push(c)
+        combinationTracker[c[0]][c[1]] = true
+        while (thisSet.length < remainingLaneCount) {
+          const idx = combinationsOfPeople.findIndex(c => c.every(p => thisSet.every(pair => !pair.includes(p))))
+          const next = combinationsOfPeople[idx]
+          thisSet.push(next)
+          combinationTracker[next[0]][next[1]] = true
+        }
+
+        yield thisSet
+      }
+      unassignedGroup = unassignedPeople.next()
+    }
+  }
+
+  const generateLaneSynthesizers = function * ({ currentLaneChoices, currentAssignment, remainingAssignments, wrapUp, unassigned, remainingLaneCount }) {
+    const processSetting = function * ([person, newUnassigned, i]) {
       const wrapUpThisLevel = function * ({ tailAssignments }) {
         while (tailAssignments.length > 0) {
           const assignment = tailAssignments.pop()
@@ -120,10 +148,12 @@ export const allPossibleAssignments = function * ({ current }) {
               return
             }
 
-            yield * wrapUp({ tailAssignments: [{
-              results: assignment.results.concat([[[person, unassignedPerson], currentAssignment[0]]]),
-              unassigned: _.difference(assignment.unassigned, [unassignedPerson]),
-            }] })
+            yield * wrapUp({
+              tailAssignments: [{
+                results: assignment.results.concat([[[person, unassignedPerson], currentAssignment[0]]]),
+                unassigned: _.difference(assignment.unassigned, [unassignedPerson]),
+              }],
+            })
           }
         }
       }
@@ -135,52 +165,18 @@ export const allPossibleAssignments = function * ({ current }) {
         wrapUp: wrapUpThisLevel,
       }
     }
+
+    while (currentLaneChoices.length > 0) {
+      yield * processSetting(currentLaneChoices.shift())
+    }
   }
 
   const wrapperUpper = function * (nextGenerator) {
-    for (let nextItem of nextGenerator) {
-      const remainingAssignments = nextItem.remainingAssignments
-      const unassigned = nextItem.unassigned
-      const wrapUp = nextItem.wrapUp
-      const remainingLaneCount = nextItem.remainingLaneCount
-
+    const wrapItem = function * ({ remainingAssignments, unassigned, wrapUp, remainingLaneCount }) {
       if (remainingAssignments.length === 0) {
         if (remainingLaneCount === 0) {
           yield * wrapUp({ tailAssignments: [{ results: [], unassigned: unassigned }] })
         } else {
-          const generateUniqPairings = function * ({ unassigned, remainingLaneCount }) {
-            const unassignedPeople = combination(unassigned, remainingLaneCount * 2)
-            let unassignedGroup = unassignedPeople.next()
-            while (unassignedGroup !== undefined) {
-              const combinationsOfPeople = combination(unassignedGroup, 2).map(c => c)
-              const combinationTracker = combinationsOfPeople.reduce((combos, pair) => {
-                if (combos[pair[0]] === undefined) {
-                  combos[pair[0]] = {}
-                }
-                combos[pair[0]][pair[1]] = false
-                return combos
-              }, {})
-              for (const c of combinationsOfPeople) {
-                if (combinationTracker[c[0]][c[1]] === true) {
-                  return
-                }
-
-                const thisSet = []
-                thisSet.push(c)
-                combinationTracker[c[0]][c[1]] = true
-                while (thisSet.length < remainingLaneCount) {
-                  const idx = combinationsOfPeople.findIndex(c => c.every(p => thisSet.every(pair => !pair.includes(p))))
-                  const next = combinationsOfPeople[idx]
-                  thisSet.push(next)
-                  combinationTracker[next[0]][next[1]] = true
-                }
-
-                yield thisSet
-              }
-              unassignedGroup = unassignedPeople.next()
-            }
-          }
-
           const uniqNewPairings = generateUniqPairings({ unassigned, remainingLaneCount })
           let nextPairing = uniqNewPairings.next()
           while (!nextPairing.done) {
@@ -200,21 +196,21 @@ export const allPossibleAssignments = function * ({ current }) {
         }
       }
     }
+
+    for (let nextItem of nextGenerator) {
+      yield * wrapItem(nextItem)
+    }
   }
 
-  const settingProcessor = function * (nextItem) {
-    const remainingAssignments = nextItem.remainingAssignments
-    const unassigned = nextItem.unassigned
-    const wrapUp = nextItem.wrapUp
-    const remainingLaneCount = nextItem.remainingLaneCount
+  const generateSubAssignments = function * ({ remainingAssignments, unassigned, wrapUp, remainingLaneCount }) {
     if (remainingAssignments.length > 0) {
       const currentAssignment = _.head(remainingAssignments)
-      const currentLaneSettings = currentAssignment[1].map((person, i) => [person, _.difference(currentAssignment[1], [person]), i])
+      const currentLaneChoices = currentAssignment[1].map((person, i) => [person, _.difference(currentAssignment[1], [person]), i])
 
-      for (let nextSituation of processLaneSettings({ currentLaneSettings, currentAssignment, remainingAssignments, wrapUp, unassigned, remainingLaneCount })) {
-        yield nextSituation
-        if (nextSituation.remainingAssignments.length > 0) {
-          yield * settingProcessor(nextSituation)
+      for (let synthesizer of generateLaneSynthesizers({ currentLaneChoices, currentAssignment, remainingAssignments, wrapUp, unassigned, remainingLaneCount })) {
+        yield synthesizer
+        if (synthesizer.remainingAssignments.length > 0) {
+          yield * generateSubAssignments(synthesizer)
         }
       }
     }
@@ -228,7 +224,7 @@ export const allPossibleAssignments = function * ({ current }) {
       remainingLaneCount: remainingLaneCount,
     }
 
-    let settingGenerator = settingProcessor(firstItem)
+    let settingGenerator = generateSubAssignments(firstItem)
     let next = settingGenerator.next()
     do {
       let nextItem = next.value
