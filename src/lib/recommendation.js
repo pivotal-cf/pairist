@@ -210,16 +210,7 @@ export const allPossibleAssignments = function * ({ current }) {
       }
     }
 
-    const stack = function * (firstItem) {
-      let nextItem = firstItem
-      while (nextItem !== undefined) {
-        nextItem = yield nextItem
-      }
-    }
-
-    const settingProcessor = function * (thisStack) {
-      let stackNext = thisStack.next()
-      let nextItem = stackNext.value
+    const settingProcessor = function * (nextItem) {
       const remainingAssignments = nextItem.remainingAssignments
       const unassigned = nextItem.unassigned
       const wrapUp = nextItem.wrapUp
@@ -229,15 +220,15 @@ export const allPossibleAssignments = function * ({ current }) {
         const currentLaneSettings = currentAssignment[1].map((person, i) => [person, _.difference(currentAssignment[1], [person]), i])
 
         for (let nextSituation of processLaneSettings({ currentLaneSettings, currentAssignment, remainingAssignments, wrapUp, unassigned, remainingLaneCount })) {
-          yield thisStack.next(nextSituation).value
+          yield nextSituation
           if (nextSituation.remainingAssignments.length > 0) {
-            yield * settingProcessor(stack(nextSituation))
+            yield * settingProcessor(nextSituation)
           }
         }
       }
     }
 
-    let settingGenerator = settingProcessor(stack(firstItem))
+    let settingGenerator = settingProcessor(firstItem)
     let next = settingGenerator.next()
     do {
       let nextItem = next.value
