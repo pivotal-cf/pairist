@@ -208,12 +208,12 @@ describe('Recommendation', () => {
 
       expect(bestPairing).toEqual([
         {
-          lane: 'l2',
-          entities: ['p2'],
+          lane: 'l3',
+          entities: ['p3'],
         },
         {
-          lane: 'l1',
-          entities: ['p4'],
+          lane: 'l2',
+          entities: ['p2'],
         },
       ])
     })
@@ -272,7 +272,7 @@ describe('Recommendation', () => {
         {
           lane: 'new-lane',
           entities: ['p4'],
-        }
+        },
       ])
     })
 
@@ -371,12 +371,12 @@ describe('Recommendation', () => {
 
         expect(bestPairing).toEqual([
           {
-            lane: 'l2',
-            entities: ['p2'],
+            lane: 'l3',
+            entities: ['p3'],
           },
           {
-            lane: 'l1',
-            entities: ['p4'],
+            lane: 'l2',
+            entities: ['p2'],
           },
         ])
       })
@@ -564,11 +564,11 @@ describe('Recommendation', () => {
           },
           {
             lane: 'l2',
-            entities: ['p5'],
+            entities: ['p6'],
           },
           {
             lane: 'l1',
-            entities: ['p6'],
+            entities: ['p5'],
           },
         ])
       })
@@ -872,7 +872,7 @@ describe('Recommendation', () => {
         },
         {
           entities: [
-            'p4',
+            'p2',
           ],
           lane: 'l1',
         },
