@@ -333,7 +333,7 @@ describe('Recommendation', () => {
                 'type': 'person',
                 'location': constants.LOCATION.UNASSIGNED,
                 'affinities': {
-                  'none': ['remote'],
+                  none: ['remote'],
                 },
               },
               {

@@ -70,6 +70,27 @@ export const scoreMatrix = (left, right, history, maxScore) => {
   }))
 }
 
+const applyAffinities = ({ peopleKeys, people, rawScores }) => {
+  let scores = _.clone(rawScores)
+  for (let person of people) {
+    if (person.affinities !== undefined) {
+      if (person.affinities.none !== undefined) {
+        const peopleToAvoid = people.filter(p =>
+          _.some(person.affinities.none,
+            affinity => p.tags !== undefined && p.tags.includes(affinity))
+        )
+        peopleToAvoid.forEach(personToAvoid => {
+          const leftIndex = peopleKeys.indexOf(key(person))
+          const rightIndex = peopleKeys.indexOf(key(personToAvoid))
+          scores[leftIndex][rightIndex] = bigInt(0)
+          scores[rightIndex][leftIndex] = bigInt(0)
+        })
+      }
+    }
+  }
+  return rawScores
+}
+
 export const mergePairsScores = (scores, pairs) => {
   const merged = []
   pairs.forEach(pair => {
@@ -300,27 +321,6 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
     })
   } else {
     optimizedHistory = []
-  }
-
-  const applyAffinities = ({ peopleKeys, people, rawScores }) => {
-    let scores = _.clone(rawScores)
-    for (let person of people) {
-      if (person.affinities !== undefined) {
-        if (person.affinities.none !== undefined) {
-          const peopleToAvoid = people.filter(p =>
-            _.some(person.affinities.none,
-              affinity => p.tags !== undefined && p.tags.includes(affinity))
-          )
-          peopleToAvoid.forEach(personToAvoid => {
-            const leftIndex = peopleKeys.indexOf(key(person))
-            const rightIndex = peopleKeys.indexOf(key(personToAvoid))
-            scores[leftIndex][rightIndex] = bigInt(0)
-            scores[rightIndex][leftIndex] = bigInt(0)
-          })
-        }
-      }
-    }
-    return rawScores
   }
 
   const rawScores = scoreMatrix(peopleKeys, peopleKeys, optimizedHistory, maxScore + 1)
