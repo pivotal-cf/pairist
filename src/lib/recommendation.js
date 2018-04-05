@@ -302,7 +302,30 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
     optimizedHistory = []
   }
 
-  const scores = scoreMatrix(peopleKeys, peopleKeys, optimizedHistory, maxScore + 1)
+  const applyAffinities = ({ peopleKeys, people, rawScores }) => {
+    let scores = _.clone(rawScores)
+    for (let person of people) {
+      if (person.affinities !== undefined) {
+        if (person.affinities.none !== undefined) {
+          const peopleToAvoid = people.filter(p =>
+            _.some(person.affinities.none,
+              affinity => p.tags !== undefined && p.tags.includes(affinity))
+          )
+          peopleToAvoid.forEach(personToAvoid => {
+            const leftIndex = peopleKeys.indexOf(key(person))
+            const rightIndex = peopleKeys.indexOf(key(personToAvoid))
+            scores[leftIndex][rightIndex] = bigInt(0)
+            scores[rightIndex][leftIndex] = bigInt(0)
+          })
+        }
+      }
+    }
+    return rawScores
+  }
+
+  const rawScores = scoreMatrix(peopleKeys, peopleKeys, optimizedHistory, maxScore + 1)
+  const scores = applyAffinities({ peopleKeys, people, rawScores })
+
   // set pairing solos to lowest possible score
   const solos = _.flatten(Object.values(lanes).filter(l => l.length === 1))
     .map(p => peopleKeys.indexOf(p))

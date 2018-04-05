@@ -323,6 +323,64 @@ describe('Recommendation', () => {
         ])
       })
 
+      it('avoids pairing people who have an affinity such that they should not be paired', () => {
+        const bestPairing = Recommendation.calculateMovesToBestPairing({
+          current: {
+            entities: [
+              { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+              {
+                '.key': 'p2',
+                'type': 'person',
+                'location': constants.LOCATION.UNASSIGNED,
+                'affinities': {
+                  'none': ['remote'],
+                },
+              },
+              {
+                '.key': 'p3',
+                'type': 'person',
+                'location': constants.LOCATION.UNASSIGNED,
+                'tags': ['remote'],
+              },
+            ],
+            lanes: [],
+          },
+          history: [
+            {
+              '.key': '' + previousScore(3),
+              'entities': [],
+            },
+            {
+              '.key': '' + previousScore(2),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l1' },
+              ],
+            },
+            {
+              '.key': '' + previousScore(1),
+              'entities': [
+                { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+                { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+              ],
+            },
+          ],
+        })
+
+        expect(bestPairing).toEqual([
+          {
+            lane: 'new-lane',
+            entities: ['p1', 'p3'],
+          },
+          {
+            lane: 'new-lane',
+            entities: ['p2'],
+          },
+        ])
+      })
+
       it('assigns people with context to the right lanes', () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing({
           current: {
