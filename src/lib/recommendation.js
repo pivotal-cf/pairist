@@ -363,7 +363,7 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
       return sum.add(scoreAssignment({ pair, lane, lanesToTracks, trackScoreLedger, pairKeyIndices, scores }))
     }, bigInt(0))
 
-    if (pairScore > highestScore) {
+    if (pairScore > highestScore || (pairScore.equals(highestScore) && Math.random() > 0.5)) {
       bestPairing = assignment
       highestScore = pairScore
     }
