@@ -789,6 +789,54 @@ describe('Recommendation', () => {
       ])
     })
 
+    it('rotates people with no context onto tracks', () => {
+      const bestPairing1 = Recommendation.calculateMovesToBestPairing({
+        current: {
+          entities: [
+            { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 't1', 'type': 'track', 'location': 'l1' },
+          ],
+          lanes: [
+            { '.key': 'l1' },
+          ],
+        },
+        history: [
+          {
+            '.key': '' + previousScore(4),
+            'entities': [],
+          },
+          {
+            '.key': '' + previousScore(3),
+            'entities': [
+              { '.key': 't1', 'type': 'track', 'location': 'l1' },
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+            ],
+          },
+          {
+            '.key': '' + previousScore(2),
+            'entities': [
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l1' },
+            ],
+          },
+        ],
+      })
+
+      expect(normalizePairing(bestPairing1)).toEqual([
+        {
+          lane: 'l1',
+          entities: ['p1', 'p3'],
+        },
+        {
+          lane: 'new-lane',
+          entities: ['p2'],
+        },
+      ])
+    })
+
     it('weights recent context more heavily', () => {
       const bestPairing1 = Recommendation.calculateMovesToBestPairing({
         current: {
