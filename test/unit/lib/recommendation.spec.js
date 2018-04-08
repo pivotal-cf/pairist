@@ -61,6 +61,39 @@ describe('Recommendation', () => {
       ]])
     })
 
+    it('generates all possible assignments of unassigned people to lanes', () => {
+      const allPossibleAssignments = Array.from(Recommendation.allPossibleAssignments({
+        current: {
+          entities: [
+            { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          ],
+          lanes: [
+            { '.key': 'l1' },
+            { '.key': 'l2' },
+          ],
+        },
+      }))
+
+      expect(allPossibleAssignments.map(as => as.find(a => a[1] === 'l2')).map(a => JSON.stringify(a[0].sort())).sort()).toEqual([
+        '["p1","p2"]',
+        '["p1","p3"]',
+        '["p1"]',
+        '["p2","p3"]',
+        '["p2"]',
+        '["p3"]',
+      ])
+      expect(allPossibleAssignments.map(as => as.find(a => a[1] === 'l1')).map(a => JSON.stringify(a[0].sort())).sort()).toEqual([
+        '["p1","p2"]',
+        '["p1","p3"]',
+        '["p1"]',
+        '["p2","p3"]',
+        '["p2"]',
+        '["p3"]',
+      ])
+    })
+
     it('generates all context-preserving rotations', () => {
       const allPossibleAssignments = Array.from(Recommendation.allPossibleAssignments({
         current: {
@@ -206,7 +239,7 @@ describe('Recommendation', () => {
         ],
       })
 
-      expect(bestPairing).toEqual([
+      expect(normalizePairing(bestPairing)).toEqual([
         {
           lane: 'l2',
           entities: ['p3', 'p5'],
@@ -253,14 +286,14 @@ describe('Recommendation', () => {
           ],
         })
 
-        expect(bestPairing).toEqual([
-          {
-            lane: 'new-lane',
-            entities: ['p2', 'p3'],
-          },
+        expect(normalizePairing(bestPairing)).toEqual([
           {
             lane: 'new-lane',
             entities: ['p1'],
+          },
+          {
+            lane: 'new-lane',
+            entities: ['p2', 'p3'],
           },
         ])
       })
@@ -281,10 +314,10 @@ describe('Recommendation', () => {
           }))
         }
 
-        expect(_.uniq(bestPairings.map(JSON.stringify)).sort()).toEqual([
-          '[{"lane":"new-lane","entities":["p1","p2"]},{"lane":"new-lane","entities":["p3"]}]',
-          '[{"lane":"new-lane","entities":["p1","p3"]},{"lane":"new-lane","entities":["p2"]}]',
-          '[{"lane":"new-lane","entities":["p2","p3"]},{"lane":"new-lane","entities":["p1"]}]',
+        expect(_.uniq(bestPairings.map(ps => normalizePairing(ps)).map(JSON.stringify)).sort()).toEqual([
+          '[{"lane":"new-lane","entities":["p1"]},{"lane":"new-lane","entities":["p2","p3"]}]',
+          '[{"lane":"new-lane","entities":["p2"]},{"lane":"new-lane","entities":["p1","p3"]}]',
+          '[{"lane":"new-lane","entities":["p3"]},{"lane":"new-lane","entities":["p1","p2"]}]',
         ])
       })
 
@@ -334,14 +367,14 @@ describe('Recommendation', () => {
           ],
         })
 
-        expect(bestPairing).toEqual([
-          {
-            lane: 'new-lane',
-            entities: ['p1', 'p3'],
-          },
+        expect(normalizePairing(bestPairing)).toEqual([
           {
             lane: 'new-lane',
             entities: ['p2'],
+          },
+          {
+            lane: 'new-lane',
+            entities: ['p1', 'p3'],
           },
         ])
       })
@@ -378,7 +411,7 @@ describe('Recommendation', () => {
           ],
         })
 
-        expect(bestPairing).toEqual([
+        expect(normalizePairing(bestPairing)).toEqual([
           {
             lane: 'new-lane',
             entities: ['p1', 'p2'],
@@ -522,18 +555,18 @@ describe('Recommendation', () => {
           ],
         })
 
-        expect(bestPairing).toEqual([
+        expect(normalizePairing(bestPairing)).toEqual([
           {
-            lane: 'l3',
-            entities: ['p4'],
+            lane: 'l1',
+            entities: ['p5'],
           },
           {
             lane: 'l2',
             entities: ['p6'],
           },
           {
-            lane: 'l1',
-            entities: ['p5'],
+            lane: 'l3',
+            entities: ['p4'],
           },
         ])
       })
@@ -716,14 +749,14 @@ describe('Recommendation', () => {
         ],
       })
 
-      expect(bestPairing1).toEqual([
+      expect(normalizePairing(bestPairing1)).toEqual([
         {
           lane: 'l1',
-          entities: ['p2', 'p3'],
+          entities: ['p2', 'p4'],
         },
         {
           lane: 'l2',
-          entities: ['p1', 'p4'],
+          entities: ['p1', 'p3'],
         },
       ])
     })
@@ -768,7 +801,7 @@ describe('Recommendation', () => {
         ],
       })
 
-      expect(bestPairing1).toEqual([
+      expect(normalizePairing(bestPairing1)).toEqual([
         {
           lane: 'l1',
           entities: ['p1', 'p2'],
@@ -835,20 +868,7 @@ describe('Recommendation', () => {
         ],
       })
 
-      expect(bestPairing).toEqual([
-        {
-          entities: [
-            'p3',
-          ],
-          lane: 'l2',
-        },
-        {
-          entities: [
-            'p2',
-          ],
-          lane: 'l1',
-        },
-      ])
+      expect(bestPairing.find(p => p.entities.includes('p3')).lane).toEqual('l2')
     })
 
     it('returns an empty array when already optimal', () => {
@@ -1295,3 +1315,12 @@ const generateBoard = ({
 
 const previousScore = timeAgo => 1000000 - timeAgo
 const randomInt = (max) => Math.floor(Math.random() * Math.floor(max))
+
+const normalizePairing = (pairing) => {
+  return pairing.map(p => {
+    return {
+      lane: p.lane,
+      entities: p.entities.sort(),
+    }
+  }).sort((a, b) => a.lane < b.lane ? -1 : 1)
+}

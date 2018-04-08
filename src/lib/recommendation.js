@@ -107,11 +107,11 @@ const key = e => e['.key']
 
 export const allPossibleAssignments = function * ({ current }) {
   const laneKeys = current.lanes.filter(l => !l.locked).map(key)
-  const people = current.entities.filter(e =>
+  const people = _.shuffle(current.entities.filter(e =>
     e.type === 'person' &&
     (e.location === constants.LOCATION.UNASSIGNED || laneKeys.includes(e.location))
-  )
-  const assignments = _.map(_.mapValues(_.groupBy(people, 'location'), v => v.map(key)), (l, p) => [p, l])
+  ))
+  const assignments = _.map(_.mapValues(_.groupBy(people, 'location'), v => v.map(key)), (l, p) => [p, l]).sort((a, b) => a[0] < b[0] ? -1 : 1)
   let unassigned = _.remove(assignments, as => as[0] === 'unassigned')[0]
   if (unassigned === undefined) {
     unassigned = []
@@ -202,16 +202,21 @@ export const allPossibleAssignments = function * ({ current }) {
           let nextPairing = uniqNewPairings.next()
           while (!nextPairing.done) {
             const pairing = nextPairing.value
-            let lanes = emptyLanes
-            while (lanes.length < pairing.length) {
-              lanes.push('new-lane')
+            let lanePermutations = [emptyLanes]
+            if (emptyLanes.length > 0) {
+              lanePermutations = permutation(emptyLanes).toArray()
             }
-            yield * wrapUp({
-              tailAssignments: [{
-                results: lanes.map((l, i) => [pairing[i], l]),
-                unassigned: _.difference(unassigned, _.flatten(pairing)),
-              }],
-            })
+            for (let lanes of lanePermutations) {
+              while (lanes.length < pairing.length) {
+                lanes.push('new-lane')
+              }
+              yield * wrapUp({
+                tailAssignments: [{
+                  results: lanes.map((l, i) => [pairing[i], l]),
+                  unassigned: _.difference(unassigned, _.flatten(pairing)),
+                }],
+              })
+            }
             nextPairing = uniqNewPairings.next()
           }
         }
@@ -363,7 +368,7 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
       return sum.add(scoreAssignment({ pair, lane, lanesToTracks, trackScoreLedger, pairKeyIndices, scores }))
     }, bigInt(0))
 
-    if (pairScore > highestScore || (pairScore.equals(highestScore) && Math.random() > 0.5)) {
+    if (pairScore > highestScore) {
       bestPairing = assignment
       highestScore = pairScore
     }
