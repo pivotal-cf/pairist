@@ -94,6 +94,34 @@ describe('Recommendation', () => {
       ])
     })
 
+    it('generates options in unstable order', () => {
+      const firstAllocations = []
+      while (firstAllocations.length < 20) {
+        const nextRecommendation = Recommendation.allPossibleAssignments({
+          current: {
+            entities: [
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l2' },
+              { '.key': 'p4', 'type': 'person', 'location': 'l2' },
+            ],
+            lanes: [
+              { '.key': 'l1' },
+              { '.key': 'l2' },
+            ],
+          },
+        })
+
+        firstAllocations.push(nextRecommendation.next().value)
+      }
+      expect(_.uniq(firstAllocations.map(JSON.stringify)).sort()).toEqual([
+        '[[["p3","p1"],"l2"],[["p2","p4"],"l1"]]',
+        '[[["p3","p2"],"l2"],[["p1","p4"],"l1"]]',
+        '[[["p4","p1"],"l2"],[["p2","p3"],"l1"]]',
+        '[[["p4","p2"],"l2"],[["p1","p3"],"l1"]]',
+      ])
+    })
+
     it('generates all context-preserving rotations', () => {
       const allPossibleAssignments = Array.from(Recommendation.allPossibleAssignments({
         current: {
