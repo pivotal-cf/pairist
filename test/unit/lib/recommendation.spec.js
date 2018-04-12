@@ -96,7 +96,7 @@ describe('Recommendation', () => {
 
     it('generates options in unstable order', () => {
       const firstAllocations = []
-      while (firstAllocations.length < 20) {
+      while (firstAllocations.length < 40) {
         const nextRecommendation = Recommendation.allPossibleAssignments({
           current: {
             entities: [
@@ -115,6 +115,10 @@ describe('Recommendation', () => {
         firstAllocations.push(nextRecommendation.next().value)
       }
       expect(_.uniq(firstAllocations.map(JSON.stringify)).sort()).toEqual([
+        '[[["p1","p3"],"l1"],[["p4","p2"],"l2"]]',
+        '[[["p1","p4"],"l1"],[["p3","p2"],"l2"]]',
+        '[[["p2","p3"],"l1"],[["p4","p1"],"l2"]]',
+        '[[["p2","p4"],"l1"],[["p3","p1"],"l2"]]',
         '[[["p3","p1"],"l2"],[["p2","p4"],"l1"]]',
         '[[["p3","p2"],"l2"],[["p1","p4"],"l1"]]',
         '[[["p4","p1"],"l2"],[["p2","p3"],"l1"]]',
@@ -157,7 +161,10 @@ describe('Recommendation', () => {
             return as[idx]
           })).toContainEqual([pair, 'l1'])
         } else if (_.isEqual(pair, ['p3', 'p4'])) {
-          expect(allPossibleAssignments.map(as => as[1])).toContainEqual([pair, 'l2'])
+          expect(allPossibleAssignments.map(as => {
+            const idx = as.findIndex(a => a[1] === 'l2')
+            return as[idx]
+          })).toContainEqual([pair, 'l2'])
         } else if (pair.includes('p1') || pair.includes('p2')) {
           expect(allPossibleAssignments.map(as => {
             const idx = as.findIndex(a => a[1] === 'l1')

@@ -111,7 +111,7 @@ export const allPossibleAssignments = function * ({ current }) {
     e.type === 'person' &&
     (e.location === constants.LOCATION.UNASSIGNED || laneKeys.includes(e.location))
   ))
-  const assignments = _.map(_.mapValues(_.groupBy(people, 'location'), v => v.map(key)), (l, p) => [p, l]).sort((a, b) => a[0] < b[0] ? -1 : 1)
+  const assignments = _.map(_.mapValues(_.groupBy(people, 'location'), v => v.map(key)), (l, p) => [p, l])
   let unassigned = _.remove(assignments, as => as[0] === 'unassigned')[0]
   if (unassigned === undefined) {
     unassigned = []
