@@ -663,7 +663,7 @@ describe('Recommendation', () => {
         const board = require('./fixtures/board-from-fuzz-8.json')
         const bestPairing = Recommendation.calculateMovesToBestPairing(board)
         expect(bestPairing).toBeTruthy()
-        expect(_.flatten(bestPairing.map(p => p.entities)).length).toBeGreaterThanOrEqual(3)
+        expect(_.flatten(bestPairing.map(p => p.entities)).length).toBeGreaterThanOrEqual(2)
       })
 
       it('fuzz 9', () => {
@@ -844,58 +844,6 @@ describe('Recommendation', () => {
       ])
     })
 
-    it('weights recent context more heavily', () => {
-      const bestPairing1 = Recommendation.calculateMovesToBestPairing({
-        current: {
-          entities: [
-            { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-            { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-            { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-            { '.key': 't1', 'type': 'track', 'location': 'l1' },
-            { '.key': 't2', 'type': 'track', 'location': 'l2' },
-          ],
-          lanes: [
-            { '.key': 'l1' },
-            { '.key': 'l2' },
-          ],
-        },
-        history: [
-          {
-            '.key': '' + previousScore(1),
-            'entities': [
-              { '.key': 't2', 'type': 'track', 'location': 'l2' },
-              { '.key': 'p1', 'type': 'person', 'location': 'l2' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(2),
-            'entities': [
-              { '.key': 't1', 'type': 'track', 'location': 'l1' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-            ],
-          },
-          {
-            '.key': '' + previousScore(3),
-            'entities': [
-              { '.key': 't1', 'type': 'track', 'location': 'l1' },
-              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
-            ],
-          },
-        ],
-      })
-
-      expect(normalizePairing(bestPairing1)).toEqual([
-        {
-          lane: 'l1',
-          entities: ['p1', 'p2'],
-        },
-        {
-          lane: 'l2',
-          entities: ['p3'],
-        },
-      ])
-    })
-
     it('recommends individuals who are unassigned', () => {
       const bestPairing = Recommendation.calculateMovesToBestPairing({
         current: {
@@ -951,7 +899,7 @@ describe('Recommendation', () => {
         ],
       })
 
-      expect(bestPairing.find(p => p.entities.includes('p3')).lane).toEqual('l2')
+      expect(bestPairing.find(p => p.entities.includes('p3')).lane).toEqual('l1')
     })
 
     it('returns an empty array when already optimal', () => {
@@ -1010,6 +958,105 @@ describe('Recommendation', () => {
       })
 
       expect(bestPairing).toEqual([])
+    })
+
+    it('balances context evenly over time', () => {
+      let current = {
+        entities: [
+          { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          { '.key': 'p4', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          { '.key': 'p5', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          { '.key': 't1', 'type': 'track', 'location': 'l1' },
+          { '.key': 't2', 'type': 'track', 'location': 'l2' },
+          { '.key': 't3', 'type': 'track', 'location': 'l3' },
+        ],
+        lanes: [
+          { '.key': 'l1' },
+          { '.key': 'l2' },
+          { '.key': 'l3' },
+        ],
+      }
+
+      const applyAssignment = (current, pairing) => {
+        return pairing.reduce((current, asst) => {
+          asst.entities.forEach(movingEntity => {
+            const idx = current.entities.findIndex(currentEntity => currentEntity['.key'] === movingEntity)
+            current.entities[idx].location = asst.lane
+          })
+
+          return current
+        }, current)
+      }
+
+      const history = []
+      let nextCurrent = applyAssignment(current, Recommendation.calculateMovesToBestPairing({
+        current: current,
+        history: [],
+      }))
+      history.push({
+        '.key': 0,
+        'entities': nextCurrent.entities,
+      })
+
+      for (let i = 0; i < 100; i++) {
+        nextCurrent = applyAssignment(nextCurrent, Recommendation.calculateMovesToBestPairing({
+          current: nextCurrent,
+          history: history,
+        }))
+        history.push(
+          {
+            '.key': i,
+            'entities': _.cloneDeep(nextCurrent.entities),
+          }
+        )
+      }
+
+      let aggregate = {}
+      let pairAggregate = {}
+      history.forEach(h => {
+        _.values(_.groupBy('location', h.entities.filter(e => e.type === 'person'))).forEach(pairing => {
+          const pair = pairing.map(p => p['.key'])
+
+          if (pairAggregate[pair[0]] === undefined) {
+            pairAggregate[pair[0]] = {}
+          }
+          if (pairAggregate[pair[0]][pair[1]] === undefined) {
+            pairAggregate[pair[0]][pair[1]] = 0
+          }
+          if (pairAggregate[pair[1]] === undefined) {
+            pairAggregate[pair[1]] = {}
+          }
+          if (pairAggregate[pair[1]][pair[0]] === undefined) {
+            pairAggregate[pair[1]][pair[0]] = 0
+          }
+          pairAggregate[pair[0]][pair[1]] += 1
+          pairAggregate[pair[1]][pair[0]] += 1
+        })
+        h.entities.forEach(ent => {
+          if (ent['type'] !== 'person') {
+            return
+          }
+          if (aggregate[ent['.key']] === undefined) {
+            aggregate[ent['.key']] = {}
+          }
+          if (aggregate[ent['.key']][ent.location] === undefined) {
+            aggregate[ent['.key']][ent.location] = 0
+          }
+          aggregate[ent['.key']][ent.location] += 1
+        })
+      })
+
+      let pairCounts = _.flatten(_.values(pairAggregate).map(l => _.values(l)))
+      let meanPairCount = _.mean(pairCounts)
+      let pairStdDev = Math.sqrt(_.mean(pairCounts.map(c => Math.pow(c - meanPairCount, 2))))
+      expect(pairStdDev).toBeLessThan(4)
+
+      let trackCounts = _.flatten(_.values(aggregate).map(l => _.values(l)))
+      let meanTrackCount = _.mean(trackCounts)
+      let trackStdDev = Math.sqrt(_.mean(trackCounts.map(c => Math.pow(c - meanTrackCount, 2))))
+      expect(trackStdDev).toBeLessThan(8)
     })
   })
 

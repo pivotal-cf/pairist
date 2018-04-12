@@ -398,7 +398,7 @@ const scoreAssignment = ({ pair, lane, lanesToTracks, trackScoreLedger, pairKeyI
     }, bigInt(1))
   }
 
-  return trackScore.multiply(pairScore)
+  return pairScore * trackScore
 }
 
 const getTracksToLanes = ({ tracks }) => {
@@ -420,21 +420,23 @@ const calculateTrackScores = ({ current, history }) => {
     (e.location === constants.LOCATION.UNASSIGNED || laneKeys.includes(e.location))
   )
 
-  const scoreCalculator = {}
-  const maxConsidered = 10
+  let maxConsidered = 1
+  if (history && history.length > 0) {
+    maxConsidered = history.length
+  }
   let maxScore = bigInt(1)
   for (let i = 1; i <= maxConsidered; i++) {
-    maxScore = maxScore.add(bigInt(2).pow(i))
+    maxScore = maxScore.add(i)
   }
+  const scoreCalculator = {}
   people.forEach(l => {
     scoreCalculator[l['.key']] = {}
     tracks.forEach(r => {
       scoreCalculator[l['.key']][r['.key']] = maxScore
     })
   })
-
   if (history && history.length > 0) {
-    _.take(history, maxConsidered).forEach((h, i) => {
+    history.forEach((h, i) => {
       const groups = _.groupBy(
         h.entities.filter(e =>
           e.location !== constants.LOCATION.UNASSIGNED && e.location !== constants.LOCATION.OUT
@@ -457,7 +459,7 @@ const calculateTrackScores = ({ current, history }) => {
         const inTracks = lane['track'].filter(t => trackKeys.includes(t['.key']))
         inPeople.forEach(p => {
           inTracks.forEach((t) => {
-            scoreCalculator[p['.key']][t['.key']] = scoreCalculator[p['.key']][t['.key']].subtract(bigInt(2).pow(maxConsidered - i))
+            scoreCalculator[p['.key']][t['.key']] = scoreCalculator[p['.key']][t['.key']].subtract(i)
           })
         })
       })
