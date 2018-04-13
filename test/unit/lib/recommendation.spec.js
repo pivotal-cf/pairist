@@ -968,6 +968,9 @@ describe('Recommendation', () => {
           { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
           { '.key': 'p4', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
           { '.key': 'p5', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          { '.key': 'p6', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          { '.key': 'p7', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+          { '.key': 'p8', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
           { '.key': 't1', 'type': 'track', 'location': 'l1' },
           { '.key': 't2', 'type': 'track', 'location': 'l2' },
           { '.key': 't3', 'type': 'track', 'location': 'l3' },
@@ -976,6 +979,7 @@ describe('Recommendation', () => {
           { '.key': 'l1' },
           { '.key': 'l2' },
           { '.key': 'l3' },
+          { '.key': 'l4' },
         ],
       }
 
@@ -1056,7 +1060,7 @@ describe('Recommendation', () => {
       let trackCounts = _.flatten(_.values(aggregate).map(l => _.values(l)))
       let meanTrackCount = _.mean(trackCounts)
       let trackStdDev = Math.sqrt(_.mean(trackCounts.map(c => Math.pow(c - meanTrackCount, 2))))
-      expect(trackStdDev).toBeLessThan(4)
+      expect(trackStdDev).toBeLessThan(6)
     })
   })
 
