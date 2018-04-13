@@ -398,7 +398,7 @@ const scoreAssignment = ({ pair, lane, lanesToTracks, trackScoreLedger, pairKeyI
     }, bigInt(1))
   }
 
-  return pairScore * trackScore
+  return pairScore.multiply(trackScore)
 }
 
 const getTracksToLanes = ({ tracks }) => {
@@ -459,7 +459,7 @@ const calculateTrackScores = ({ current, history }) => {
         const inTracks = lane['track'].filter(t => trackKeys.includes(t['.key']))
         inPeople.forEach(p => {
           inTracks.forEach((t) => {
-            scoreCalculator[p['.key']][t['.key']] = scoreCalculator[p['.key']][t['.key']].subtract(i)
+            scoreCalculator[p['.key']][t['.key']] = scoreCalculator[p['.key']][t['.key']].subtract(i * 2)
           })
         })
       })

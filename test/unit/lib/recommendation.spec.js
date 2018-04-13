@@ -1056,7 +1056,7 @@ describe('Recommendation', () => {
       let trackCounts = _.flatten(_.values(aggregate).map(l => _.values(l)))
       let meanTrackCount = _.mean(trackCounts)
       let trackStdDev = Math.sqrt(_.mean(trackCounts.map(c => Math.pow(c - meanTrackCount, 2))))
-      expect(trackStdDev).toBeLessThan(8)
+      expect(trackStdDev).toBeLessThan(4)
     })
   })
 
