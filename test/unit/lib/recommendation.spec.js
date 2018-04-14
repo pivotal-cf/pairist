@@ -335,7 +335,7 @@ describe('Recommendation', () => {
 
       it('when scores are tied, it does not always pair the same people', () => {
         const bestPairings = []
-        while (bestPairings.length < 10) {
+        while (bestPairings.length < 20) {
           bestPairings.push(Recommendation.calculateMovesToBestPairing({
             current: {
               entities: [
@@ -708,6 +708,11 @@ describe('Recommendation', () => {
             // too many lanes
             assert.equal(bestPairing, undefined, JSON.stringify({ config, current: board.current }))
           } else {
+            if (trackCount > 0 && peopleCount > 0) {
+              const results = measureAllocations({ current: _.cloneDeep(board.current), history: _.cloneDeep(board.history) })
+              expect(results.pairStdDev).toBeLessThan(4)
+              expect(results.trackStdDev).toBeLessThan(6)
+            }
             assert.ok(bestPairing, JSON.stringify({ config, current: board.current }))
             expect(bestPairing).toBeTruthy()
             expect(_.flatten(bestPairing.map(p => p.entities)).length).toBeGreaterThanOrEqual(
@@ -970,7 +975,6 @@ describe('Recommendation', () => {
           { '.key': 'p5', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
           { '.key': 'p6', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
           { '.key': 'p7', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-          { '.key': 'p8', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
           { '.key': 't1', 'type': 'track', 'location': 'l1' },
           { '.key': 't2', 'type': 'track', 'location': 'l2' },
           { '.key': 't3', 'type': 'track', 'location': 'l3' },
@@ -1364,7 +1368,7 @@ const generateBoard = ({
 
   for (let i = 0; i < historyCount; i++) {
     board.history.push({
-      '.key': '' + 1000000 + i,
+      '.key': '' + (1000000 + i),
       'entities': generateAssignment(people, locations),
     })
   }
@@ -1377,7 +1381,13 @@ const randomInt = (max) => Math.floor(Math.random() * Math.floor(max))
 
 const measureAllocations = ({ current, history }) => {
   const applyAssignment = (current, pairing) => {
+    let newLaneCounter = 0
     return pairing.reduce((current, asst) => {
+      if (asst.lane === 'new-lane') {
+        current.lanes.push({ '.key': 'alloc-l-' + newLaneCounter })
+        asst.lane = 'alloc-l-' + newLaneCounter
+        newLaneCounter += 1
+      }
       asst.entities.forEach(movingEntity => {
         const idx = current.entities.findIndex(currentEntity => currentEntity['.key'] === movingEntity)
         current.entities[idx].location = asst.lane
@@ -1388,31 +1398,36 @@ const measureAllocations = ({ current, history }) => {
   }
   let nextCurrent = applyAssignment(current, Recommendation.calculateMovesToBestPairing({
     current: current,
-    history: [],
+    history: history,
   }))
   const measuredHistory = []
+  let maxHistory = 0
+  if (history.length > 0) {
+    maxHistory = parseInt(_.last(history)['.key'])
+  }
   history.push({
-    '.key': 0,
-    'entities': nextCurrent.entities,
+    '.key': '' + (maxHistory + 1),
+    'entities': _.cloneDeep(nextCurrent.entities),
   })
-  measuredHistory.push(nextCurrent.entities)
+  measuredHistory.push(_.cloneDeep(nextCurrent.entities))
 
-  for (let i = 0; i < 100; i++) {
-    nextCurrent = applyAssignment(nextCurrent, Recommendation.calculateMovesToBestPairing({
+  for (let i = 2; i < 5; i++) {
+    const nextAssignment = Recommendation.calculateMovesToBestPairing({
       current: nextCurrent,
       history: history,
-    }))
+    })
+    nextCurrent = applyAssignment(nextCurrent, nextAssignment)
     history.push({
-      '.key': i,
+      '.key': '' + (maxHistory + i),
       'entities': _.cloneDeep(nextCurrent.entities),
     })
-    measuredHistory.push(nextCurrent.entities)
+    measuredHistory.push(_.cloneDeep(nextCurrent.entities))
   }
 
   let aggregate = {}
   let pairAggregate = {}
   measuredHistory.forEach(h => {
-    _.values(_.groupBy('location', h.filter(e => e.type === 'person'))).forEach(pairing => {
+    _.values(_.groupBy('location', h.filter(e => e.type === 'person' && e.location !== 'out'))).forEach(pairing => {
       const pair = pairing.map(p => p['.key'])
 
       if (pairAggregate[pair[0]] === undefined) {
@@ -1431,7 +1446,7 @@ const measureAllocations = ({ current, history }) => {
       pairAggregate[pair[1]][pair[0]] += 1
     })
     h.forEach(ent => {
-      if (ent['type'] !== 'person') {
+      if (ent['type'] !== 'person' || ent.location === 'out') {
         return
       }
       if (aggregate[ent['.key']] === undefined) {

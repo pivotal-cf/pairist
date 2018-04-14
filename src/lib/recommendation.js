@@ -311,7 +311,7 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
         e.location !== constants.LOCATION.OUT
       ), 'location')
       const lanes = []
-      const score = bigInt(maxScore - parseInt(h['.key']))
+      const score = bigInt(maxScore).subtract(parseInt(h['.key']))
 
       Object.values(groups).forEach(people => {
         people = people.map(key)
