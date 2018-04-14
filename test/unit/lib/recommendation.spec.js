@@ -983,84 +983,9 @@ describe('Recommendation', () => {
         ],
       }
 
-      const applyAssignment = (current, pairing) => {
-        return pairing.reduce((current, asst) => {
-          asst.entities.forEach(movingEntity => {
-            const idx = current.entities.findIndex(currentEntity => currentEntity['.key'] === movingEntity)
-            current.entities[idx].location = asst.lane
-          })
-
-          return current
-        }, current)
-      }
-
-      const history = []
-      let nextCurrent = applyAssignment(current, Recommendation.calculateMovesToBestPairing({
-        current: current,
-        history: [],
-      }))
-      history.push({
-        '.key': 0,
-        'entities': nextCurrent.entities,
-      })
-
-      for (let i = 0; i < 100; i++) {
-        nextCurrent = applyAssignment(nextCurrent, Recommendation.calculateMovesToBestPairing({
-          current: nextCurrent,
-          history: history,
-        }))
-        history.push(
-          {
-            '.key': i,
-            'entities': _.cloneDeep(nextCurrent.entities),
-          }
-        )
-      }
-
-      let aggregate = {}
-      let pairAggregate = {}
-      history.forEach(h => {
-        _.values(_.groupBy('location', h.entities.filter(e => e.type === 'person'))).forEach(pairing => {
-          const pair = pairing.map(p => p['.key'])
-
-          if (pairAggregate[pair[0]] === undefined) {
-            pairAggregate[pair[0]] = {}
-          }
-          if (pairAggregate[pair[0]][pair[1]] === undefined) {
-            pairAggregate[pair[0]][pair[1]] = 0
-          }
-          if (pairAggregate[pair[1]] === undefined) {
-            pairAggregate[pair[1]] = {}
-          }
-          if (pairAggregate[pair[1]][pair[0]] === undefined) {
-            pairAggregate[pair[1]][pair[0]] = 0
-          }
-          pairAggregate[pair[0]][pair[1]] += 1
-          pairAggregate[pair[1]][pair[0]] += 1
-        })
-        h.entities.forEach(ent => {
-          if (ent['type'] !== 'person') {
-            return
-          }
-          if (aggregate[ent['.key']] === undefined) {
-            aggregate[ent['.key']] = {}
-          }
-          if (aggregate[ent['.key']][ent.location] === undefined) {
-            aggregate[ent['.key']][ent.location] = 0
-          }
-          aggregate[ent['.key']][ent.location] += 1
-        })
-      })
-
-      let pairCounts = _.flatten(_.values(pairAggregate).map(l => _.values(l)))
-      let meanPairCount = _.mean(pairCounts)
-      let pairStdDev = Math.sqrt(_.mean(pairCounts.map(c => Math.pow(c - meanPairCount, 2))))
-      expect(pairStdDev).toBeLessThan(4)
-
-      let trackCounts = _.flatten(_.values(aggregate).map(l => _.values(l)))
-      let meanTrackCount = _.mean(trackCounts)
-      let trackStdDev = Math.sqrt(_.mean(trackCounts.map(c => Math.pow(c - meanTrackCount, 2))))
-      expect(trackStdDev).toBeLessThan(6)
+      const results = measureAllocations({ current, history: [] })
+      expect(results.pairStdDev).toBeLessThan(4)
+      expect(results.trackStdDev).toBeLessThan(6)
     })
   })
 
@@ -1449,6 +1374,85 @@ const generateBoard = ({
 
 const previousScore = timeAgo => 1000000 - timeAgo
 const randomInt = (max) => Math.floor(Math.random() * Math.floor(max))
+
+const measureAllocations = ({ current, history }) => {
+  const applyAssignment = (current, pairing) => {
+    return pairing.reduce((current, asst) => {
+      asst.entities.forEach(movingEntity => {
+        const idx = current.entities.findIndex(currentEntity => currentEntity['.key'] === movingEntity)
+        current.entities[idx].location = asst.lane
+      })
+
+      return current
+    }, current)
+  }
+  let nextCurrent = applyAssignment(current, Recommendation.calculateMovesToBestPairing({
+    current: current,
+    history: [],
+  }))
+  const measuredHistory = []
+  history.push({
+    '.key': 0,
+    'entities': nextCurrent.entities,
+  })
+  measuredHistory.push(nextCurrent.entities)
+
+  for (let i = 0; i < 100; i++) {
+    nextCurrent = applyAssignment(nextCurrent, Recommendation.calculateMovesToBestPairing({
+      current: nextCurrent,
+      history: history,
+    }))
+    history.push({
+      '.key': i,
+      'entities': _.cloneDeep(nextCurrent.entities),
+    })
+    measuredHistory.push(nextCurrent.entities)
+  }
+
+  let aggregate = {}
+  let pairAggregate = {}
+  measuredHistory.forEach(h => {
+    _.values(_.groupBy('location', h.filter(e => e.type === 'person'))).forEach(pairing => {
+      const pair = pairing.map(p => p['.key'])
+
+      if (pairAggregate[pair[0]] === undefined) {
+        pairAggregate[pair[0]] = {}
+      }
+      if (pairAggregate[pair[0]][pair[1]] === undefined) {
+        pairAggregate[pair[0]][pair[1]] = 0
+      }
+      if (pairAggregate[pair[1]] === undefined) {
+        pairAggregate[pair[1]] = {}
+      }
+      if (pairAggregate[pair[1]][pair[0]] === undefined) {
+        pairAggregate[pair[1]][pair[0]] = 0
+      }
+      pairAggregate[pair[0]][pair[1]] += 1
+      pairAggregate[pair[1]][pair[0]] += 1
+    })
+    h.forEach(ent => {
+      if (ent['type'] !== 'person') {
+        return
+      }
+      if (aggregate[ent['.key']] === undefined) {
+        aggregate[ent['.key']] = {}
+      }
+      if (aggregate[ent['.key']][ent.location] === undefined) {
+        aggregate[ent['.key']][ent.location] = 0
+      }
+      aggregate[ent['.key']][ent.location] += 1
+    })
+  })
+  let pairCounts = _.flatten(_.values(pairAggregate).map(l => _.values(l)))
+  let meanPairCount = _.mean(pairCounts)
+  let pairStdDev = Math.sqrt(_.mean(pairCounts.map(c => Math.pow(c - meanPairCount, 2))))
+
+  let trackCounts = _.flatten(_.values(aggregate).map(l => _.values(l)))
+  let meanTrackCount = _.mean(trackCounts)
+  let trackStdDev = Math.sqrt(_.mean(trackCounts.map(c => Math.pow(c - meanTrackCount, 2))))
+
+  return { pairAggregate, trackAggregate: aggregate, pairStdDev, trackStdDev }
+}
 
 const normalizePairing = (pairing) => {
   return pairing.map(p => {
