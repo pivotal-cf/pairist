@@ -746,7 +746,7 @@ describe('Recommendation', () => {
   })
 
   describe('track rotation', () => {
-    it("rotates people onto tracks they haven't worked on much", () => {
+    it('ignores tracks if balance is turned off', () => {
       const bestPairing1 = Recommendation.calculateMovesToBestPairing({
         current: {
           entities: [
@@ -757,6 +757,61 @@ describe('Recommendation', () => {
             { '.key': 't1', 'type': 'track', 'location': 'l1' },
             { '.key': 't3', 'type': 'track', 'location': 'l1' },
             { '.key': 't2', 'type': 'track', 'location': 'l2' },
+          ],
+          lanes: [
+            { '.key': 'l1' },
+            { '.key': 'l2' },
+          ],
+        },
+        history: [
+          {
+            '.key': '' + previousScore(4),
+            'entities': [],
+          },
+          {
+            '.key': '' + previousScore(3),
+            'entities': [
+              { '.key': 't1', 'type': 'track', 'location': 'l1' },
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 't2', 'type': 'track', 'location': 'l2' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l2' },
+              { '.key': 't3', 'type': 'track', 'location': 'l3' },
+              { '.key': 'p3', 'type': 'person', 'location': 'l3' },
+            ],
+          },
+          {
+            '.key': '' + previousScore(2),
+            'entities': [
+              { '.key': 'p1', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+            ],
+          },
+          {
+            '.key': '' + previousScore(3),
+            'entities': [
+              { '.key': 'p2', 'type': 'person', 'location': 'l1' },
+              { '.key': 'p4', 'type': 'person', 'location': 'l1' },
+            ],
+          },
+        ],
+      })
+
+      const recommendedPairs = normalizePairing(bestPairing1).map(p => JSON.stringify(p.entities))
+      expect(recommendedPairs).toContain("[\"p1\",\"p4\"]")
+      expect(recommendedPairs).toContain("[\"p2\",\"p3\"]")
+    })
+
+    it("rotates people onto tracks they haven't worked on much", () => {
+      const bestPairing1 = Recommendation.calculateMovesToBestPairing({
+        current: {
+          entities: [
+            { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 'p4', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
+            { '.key': 't1', 'type': 'track', 'location': 'l1', 'balance': true },
+            { '.key': 't3', 'type': 'track', 'location': 'l1', 'balance': true },
+            { '.key': 't2', 'type': 'track', 'location': 'l2', 'balance': true },
           ],
           lanes: [
             { '.key': 'l1' },
@@ -808,7 +863,7 @@ describe('Recommendation', () => {
             { '.key': 'p1', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
             { '.key': 'p2', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
             { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-            { '.key': 't1', 'type': 'track', 'location': 'l1' },
+            { '.key': 't1', 'type': 'track', 'location': 'l1', 'balance': true },
           ],
           lanes: [
             { '.key': 'l1' },
@@ -857,7 +912,7 @@ describe('Recommendation', () => {
             { '.key': 'p2', 'type': 'person', 'location': 'l2' },
             { '.key': 'p4', 'type': 'person', 'location': 'l2' },
             { '.key': 'p3', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-            { '.key': 't2', 'type': 'track', 'location': 'l2' },
+            { '.key': 't2', 'type': 'track', 'location': 'l2', 'balance': true },
           ],
           lanes: [
             { '.key': 'l1' },
@@ -914,7 +969,7 @@ describe('Recommendation', () => {
             { '.key': 'p1', 'type': 'person', 'location': 'l1' },
             { '.key': 'p3', 'type': 'person', 'location': 'l1' },
             { '.key': 'p2', 'type': 'person', 'location': 'l2' },
-            { '.key': 't2', 'type': 'track', 'location': 'l2' },
+            { '.key': 't2', 'type': 'track', 'location': 'l2', 'balance': true },
           ],
           lanes: [
             { '.key': 'l1' },
@@ -975,9 +1030,9 @@ describe('Recommendation', () => {
           { '.key': 'p5', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
           { '.key': 'p6', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
           { '.key': 'p7', 'type': 'person', 'location': constants.LOCATION.UNASSIGNED },
-          { '.key': 't1', 'type': 'track', 'location': 'l1' },
-          { '.key': 't2', 'type': 'track', 'location': 'l2' },
-          { '.key': 't3', 'type': 'track', 'location': 'l3' },
+          { '.key': 't1', 'type': 'track', 'location': 'l1', 'balance': true },
+          { '.key': 't2', 'type': 'track', 'location': 'l2', 'balance': true },
+          { '.key': 't3', 'type': 'track', 'location': 'l3', 'balance': true },
         ],
         lanes: [
           { '.key': 'l1' },
@@ -1317,7 +1372,7 @@ const generateBoard = ({
 
   let track = []
   for (let i = 0; i < trackCount; i++) {
-    track.push(guid('t'))
+    track.push(_.extend(guid('t'), { balance: true }))
   }
 
   const generateAssignment = (people, locations) => {

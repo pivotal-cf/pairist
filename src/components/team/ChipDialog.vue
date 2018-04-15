@@ -51,6 +51,12 @@
                 </template>
               </v-select>
             </v-flex>
+            <v-flex v-if="editingEntity.type=='track'" xs12 sm6>
+              <v-checkbox
+                v-model="editingEntity.balance"
+                label="Balance context"
+              />
+            </v-flex>
           </v-layout>
         </v-container>
       </v-card-text>

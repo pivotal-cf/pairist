@@ -454,7 +454,7 @@ const calculateTrackScores = ({ current, history }) => {
         }
 
         const personKeys = people.map(pers => pers['.key'])
-        const trackKeys = tracks.map(track => track['.key'])
+        const trackKeys = tracks.filter(t => t.balance === true).map(track => track['.key'])
         const inPeople = lane['person'].filter(p => personKeys.includes(p['.key']))
         const inTracks = lane['track'].filter(t => trackKeys.includes(t['.key']))
         inPeople.forEach(p => {
