@@ -797,8 +797,8 @@ describe('Recommendation', () => {
       })
 
       const recommendedPairs = normalizePairing(bestPairing1).map(p => JSON.stringify(p.entities))
-      expect(recommendedPairs).toContain("[\"p1\",\"p4\"]")
-      expect(recommendedPairs).toContain("[\"p2\",\"p3\"]")
+      expect(recommendedPairs).toContain('["p1","p4"]')
+      expect(recommendedPairs).toContain('["p2","p3"]')
     })
 
     it("rotates people onto tracks they haven't worked on much", () => {

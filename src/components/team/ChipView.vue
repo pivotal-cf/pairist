@@ -65,4 +65,7 @@ export default {
   .avatar
     height: 32px !important
     width: 32px !important
+
+.chip.balance span::after
+  content: "*"
 </style>

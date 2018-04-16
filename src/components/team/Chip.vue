@@ -1,7 +1,7 @@
 <template>
   <transition name="highlight">
     <ChipView
-      :class="[chipClass, 'chip']"
+      :class="[chipClass, 'chip', { balance: entity.balance }]"
       :entity="entity"
       :data-key="entity['.key']"
     >
