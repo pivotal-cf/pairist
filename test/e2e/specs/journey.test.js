@@ -242,8 +242,9 @@ module.exports = {
   'DAY 4: locks and recommend' (client) {
     let team = client.page.team()
 
+    team.person('person-2').moveToLane('2')
+
     team.lockLane('1')
-    team.person('person-2').moveToUnassigned()
 
     team.recommendPairs()
 

@@ -58,7 +58,7 @@ export const scoreMatrix = (left, right, history, maxScore) => {
       lane.left.forEach(l => {
         lane.right.forEach(r => {
           if (scores[l] && scores[l][r] !== undefined) {
-            scores[l][r] = l !== r ? h.score : bigInt(-1)
+            scores[l][r] = l !== r ? h.score : bigInt(1)
           }
         })
       })
@@ -291,11 +291,6 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
       'location',
     ), v => v.map(key)),
   )
-  const tracks = current.entities.filter(e =>
-    e.type === 'track' &&
-      (e.location === constants.LOCATION.UNASSIGNED || laneKeys.includes(e.location))
-  )
-  const lanesToTracks = getTracksToLanes({ tracks })
 
   if (peopleKeys.length === 0) { return [] }
 
@@ -338,7 +333,6 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
     scores[p[0]][p[1]] = bigInt(-1)
     scores[p[1]][p[0]] = bigInt(-1)
   })
-  const trackScoreLedger = calculateTrackScores({ current, history })
   const pairKeyIndices = peopleKeys.map((key, i) => [key, i])
     .reduce((keysIndices, [key, i]) => {
       keysIndices[key] = i
@@ -355,7 +349,7 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
   let highestScore = bestPairing.reduce((sum, a) => {
     const pair = a[0]
     const lane = a[1]
-    return sum.add(scoreAssignment({ pair, lane, lanesToTracks, trackScoreLedger, pairKeyIndices, scores }))
+    return sum.add(scoreAssignment({ pair, lane, pairKeyIndices, scores }))
   }, bigInt(0))
 
   let assignment = bestPairing
@@ -365,7 +359,7 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
     const pairScore = assignment.reduce((sum, a) => {
       const pair = a[0]
       const lane = a[1]
-      return sum.add(scoreAssignment({ pair, lane, lanesToTracks, trackScoreLedger, pairKeyIndices, scores }))
+      return sum.add(scoreAssignment({ pair, lane, pairKeyIndices, scores }))
     }, bigInt(0))
 
     if (pairScore > highestScore) {
@@ -378,95 +372,15 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
   return getMoves({ match: bestPairing, lanes })
 }
 
-const scoreAssignment = ({ pair, lane, lanesToTracks, trackScoreLedger, pairKeyIndices, scores }) => {
+const scoreAssignment = ({ pair, lane, pairKeyIndices, scores }) => {
   const firstPerson = pairKeyIndices[pair[0]]
   let secondPerson = firstPerson
   if (pair[1] !== undefined) {
     secondPerson = pairKeyIndices[pair[1]]
   }
-  let trackScore = bigInt(1)
   const pairScore = scores[firstPerson][secondPerson]
 
-  if (lanesToTracks[lane] !== undefined) {
-    const self = pair[0]
-    let other = self
-    if (pair[1] !== undefined) {
-      other = pair[1]
-    }
-    trackScore = lanesToTracks[lane].reduce((sum, t) => {
-      return sum.add(trackScoreLedger[self][t]).add(trackScoreLedger[other][t])
-    }, bigInt(1))
-  }
-
-  return pairScore.multiply(trackScore)
-}
-
-const getTracksToLanes = ({ tracks }) => {
-  const tracksToLanes = tracks.reduce((acc, track) => {
-    acc[key(track)] = track.location
-    return acc
-  }, {})
-  return _.invertBy(tracksToLanes)
-}
-
-const calculateTrackScores = ({ current, history }) => {
-  const laneKeys = current.lanes.filter(l => !l.locked).map(key)
-  const people = current.entities.filter(e =>
-    e.type === 'person' &&
-    (e.location === constants.LOCATION.UNASSIGNED || laneKeys.includes(e.location))
-  )
-  const tracks = current.entities.filter(e =>
-    e.type === 'track' &&
-    (e.location === constants.LOCATION.UNASSIGNED || laneKeys.includes(e.location))
-  )
-
-  let maxConsidered = 1
-  if (history && history.length > 0) {
-    maxConsidered = history.length
-  }
-  let maxScore = bigInt(1)
-  for (let i = 1; i <= maxConsidered; i++) {
-    maxScore = maxScore.add(i)
-  }
-  const scoreCalculator = {}
-  people.forEach(l => {
-    scoreCalculator[l['.key']] = {}
-    tracks.forEach(r => {
-      scoreCalculator[l['.key']][r['.key']] = maxScore
-    })
-  })
-  if (history && history.length > 0) {
-    history.forEach((h, i) => {
-      const groups = _.groupBy(
-        h.entities.filter(e =>
-          e.location !== constants.LOCATION.UNASSIGNED && e.location !== constants.LOCATION.OUT
-        ),
-        'location',
-      )
-
-      Object.values(groups).forEach(entities => {
-        const lane = _.groupBy(entities, 'type')
-        if (lane['person'] === undefined) {
-          return
-        }
-        if (lane['track'] === undefined) {
-          return
-        }
-
-        const personKeys = people.map(pers => pers['.key'])
-        const trackKeys = tracks.filter(t => t.balance === true).map(track => track['.key'])
-        const inPeople = lane['person'].filter(p => personKeys.includes(p['.key']))
-        const inTracks = lane['track'].filter(t => trackKeys.includes(t['.key']))
-        inPeople.forEach(p => {
-          inTracks.forEach((t) => {
-            scoreCalculator[p['.key']][t['.key']] = scoreCalculator[p['.key']][t['.key']].subtract(i * 2)
-          })
-        })
-      })
-    })
-  }
-
-  return scoreCalculator
+  return pairScore
 }
 
 export const calculateMovesToBestAssignment = ({ left, right, current, history }) => {
