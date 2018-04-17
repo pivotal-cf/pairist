@@ -1069,7 +1069,7 @@ const generateBoard = ({
 
   let track = []
   for (let i = 0; i < trackCount; i++) {
-    track.push(_.extend(guid('t'), { balance: true }))
+    track.push(guid('t'))
   }
 
   const generateAssignment = (people, locations) => {
