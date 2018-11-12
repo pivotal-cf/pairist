@@ -231,7 +231,7 @@ module.exports = {
 
     client.url(`${devServer}your-team`)
     team.expectMessage('You do not have access to this team.', 'error')
-    team.waitForElementPresent('@title', 2000)
+    team.waitForElementPresent('@title', 4000)
 
     team.assert.containsText('@title', 'MY-TEAM')
     client.assert.urlContains('my-team')

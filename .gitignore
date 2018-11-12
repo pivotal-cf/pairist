@@ -9,6 +9,7 @@ yarn-error.log*
 selenium-debug.log
 /src/functions/lib
 /backups/
+.firebase
 
 # Editor directories and files
 .idea
