@@ -27,7 +27,7 @@
       class="warning"
       @click="$router.push('/')"
     >
-      You are not logged in. Viewint in read-only mode.
+      You are not logged in. Viewing in read-only mode.
     </v-btn>
 
     <v-spacer class="ml-3">
