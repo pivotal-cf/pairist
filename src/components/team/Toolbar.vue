@@ -21,6 +21,15 @@
       </v-tooltip>
     </v-flex>
 
+    <v-btn
+      v-if="!user"
+      flat
+      class="warning"
+      @click="$router.push('/')"
+    >
+      You are not logged in. Viewint in read-only mode.
+    </v-btn>
+
     <v-spacer class="ml-3">
       <v-progress-linear v-if="loading" indeterminate class="d-inline-flex" color="accent"/>
     </v-spacer>
@@ -62,17 +71,14 @@
           </v-list-tile>
         </v-list>
       </v-menu>
-
-      <v-tooltip v-else bottom content-class="accent">
-        <v-btn
-          slot="activator"
-          flat
-          @click="$router.push('/')"
-        >
-          <v-icon dark>mdi-login</v-icon>
-        </v-btn>
-        <span>Login</span>
-      </v-tooltip>
+      <v-btn
+        v-else
+        flat
+        @click="$router.push('/')"
+      >
+        <v-icon dark>mdi-login</v-icon>
+        Login
+      </v-btn>
     </v-toolbar-items>
   </v-toolbar>
 </template>
