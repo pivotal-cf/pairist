@@ -1,5 +1,5 @@
 module.exports = {
-  page_objects_path: ['test/e2e/pages'],
+  page_objects_path: ['tests/e2e/pages'],
   test_settings: {
     default: {
       screenshots: {

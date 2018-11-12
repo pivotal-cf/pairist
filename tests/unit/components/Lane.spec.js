@@ -1,4 +1,4 @@
-import { shallow, createLocalVue } from '@vue/test-utils'
+import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
 import flushPromises from 'flush-promises'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
@@ -56,12 +56,12 @@ describe('Lane', () => {
   })
 
   it('renders with no exceptions', () => {
-    shallow(Lane, { localVue, store, propsData: { lane: {} } })
+    shallowMount(Lane, { localVue, store, propsData: { lane: {} } })
   })
 
   it('can be locked and unlocked', async () => {
     const lane = { '.key': 'a-key', 'locked': false }
-    const wrapper = shallow(Lane, {
+    const wrapper = mount(Lane, {
       store,
       localVue,
       propsData: { lane },
@@ -78,6 +78,7 @@ describe('Lane', () => {
     }, undefined)
 
     lane.locked = true
+    wrapper.setProps({ lane: { ...lane } })
     await flushPromises()
 
     expect(wrapper.find('.lock-button button').classes()).toContain('is-locked')
@@ -95,7 +96,7 @@ describe('Lane', () => {
     getters.canWrite.mockReturnValue(false)
 
     const lane = { '.key': 'a-key', 'locked': false }
-    const wrapper = shallow(Lane, {
+    const wrapper = shallowMount(Lane, {
       store,
       localVue,
       propsData: { lane },
@@ -106,7 +107,7 @@ describe('Lane', () => {
 
   it('shows a new lane without a lock button if new-lane is passed', async () => {
     const lane = { '.key': 'new-lane' }
-    const wrapper = shallow(Lane, {
+    const wrapper = shallowMount(Lane, {
       store,
       localVue,
       propsData: { lane },
@@ -117,7 +118,7 @@ describe('Lane', () => {
 
   it('can be closed', async () => {
     const lane = { '.key': 'a-key' }
-    const wrapper = shallow(Lane, {
+    const wrapper = mount(Lane, {
       store,
       localVue,
       propsData: { lane },
@@ -132,7 +133,7 @@ describe('Lane', () => {
     getters.canWrite.mockReturnValue(false)
 
     const lane = { '.key': 'a-key' }
-    const wrapper = shallow(Lane, {
+    const wrapper = shallowMount(Lane, {
       store,
       localVue,
       propsData: { lane },
@@ -143,7 +144,7 @@ describe('Lane', () => {
 
   it('shows a new lane without a close button if new-lane is passed', async () => {
     const lane = { '.key': 'new-lane' }
-    const wrapper = shallow(Lane, {
+    const wrapper = mount(Lane, {
       store,
       localVue,
       propsData: { lane },
@@ -151,8 +152,9 @@ describe('Lane', () => {
 
     expect(wrapper.find('.sweep-button').exists()).toBeFalsy()
   })
+
   it('shows a divider if applicable', () => {
-    const wrapper = shallow(Lane, {
+    const wrapper = mount(Lane, {
       store,
       localVue,
       propsData: { lane: {}, divider: true },
@@ -162,20 +164,20 @@ describe('Lane', () => {
   })
 
   it("hides the divider when it's not desired", () => {
-    const wrapper = shallow(Lane, {
+    const wrapper = mount(Lane, {
       store,
       localVue,
       propsData: { lane: {}, divider: false },
     })
 
-    expect(wrapper.find('v-divider').exists()).toBe(false)
+    expect(wrapper.find('hr.divider').exists()).toBe(false)
   })
 
   it('renders people', () => {
     const lane = {
       people: [{ '.key': 'p1' }, { '.key': 'p2' }],
     }
-    const wrapper = shallow(Lane, {
+    const wrapper = shallowMount(Lane, {
       store,
       localVue,
       propsData: { lane },
@@ -191,7 +193,7 @@ describe('Lane', () => {
     const lane = {
       roles: [{ '.key': 'r1' }, { '.key': 'r2' }],
     }
-    const wrapper = shallow(Lane, {
+    const wrapper = shallowMount(Lane, {
       store,
       localVue,
       propsData: { lane },
@@ -207,7 +209,7 @@ describe('Lane', () => {
     const lane = {
       tracks: [{ '.key': 't1' }, { '.key': 't2' }],
     }
-    const wrapper = shallow(Lane, {
+    const wrapper = shallowMount(Lane, {
       store,
       localVue,
       propsData: { lane },

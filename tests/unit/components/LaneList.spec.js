@@ -1,4 +1,4 @@
-import { shallow, createLocalVue } from '@vue/test-utils'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
 import Lane from '@/components/team/Lane'
@@ -29,11 +29,11 @@ describe('LaneList', () => {
   })
 
   it('renders with no exceptions', () => {
-    shallow(LaneList, { store, localVue })
+    shallowMount(LaneList, { store, localVue })
   })
 
   it('renders new-lane as last lane with no divider', () => {
-    const wrapper = shallow(LaneList, { store, localVue })
+    const wrapper = shallowMount(LaneList, { store, localVue })
 
     const lane = wrapper.find(Lane)
     expect(lane.exists()).toBe(true)

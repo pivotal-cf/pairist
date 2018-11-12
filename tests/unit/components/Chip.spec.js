@@ -1,4 +1,4 @@
-import { shallow, createLocalVue } from '@vue/test-utils'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
 import Chip from '@/components/team/Chip'
@@ -28,7 +28,7 @@ describe('Chip', () => {
   })
 
   it('renders with no exceptions', () => {
-    shallow(Chip, { store,
+    shallowMount(Chip, { store,
       localVue,
       propsData: {
         entity: { '.key': 'p1', 'name': 'Bart' },

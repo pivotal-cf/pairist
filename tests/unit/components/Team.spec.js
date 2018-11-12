@@ -1,4 +1,4 @@
-import { shallow, createLocalVue } from '@vue/test-utils'
+import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
 
@@ -58,16 +58,16 @@ describe('Team', () => {
   })
 
   it('renders with no exceptions', () => {
-    shallow(Team, shallowArgs)
+    shallowMount(Team, shallowArgs)
   })
 
   it('renders a Notification', () => {
-    const wrapper = shallow(Team, shallowArgs)
+    const wrapper = shallowMount(Team, shallowArgs)
     expect(wrapper.find(Notification).exists()).toBeTruthy()
   })
 
   it('renders a DraggingController if can write', () => {
-    const wrapper = shallow(Team, shallowArgs)
+    const wrapper = shallowMount(Team, shallowArgs)
     expect(wrapper.find(DraggingController).exists()).toBeTruthy()
     expect(wrapper.find(DraggingController).vm.draggables)
       .toEqual(['person', 'track', 'role'])
@@ -75,7 +75,7 @@ describe('Team', () => {
 
   it('skips DraggingController if cannot write', () => {
     getters.canWrite.mockReturnValue(false)
-    const wrapper = shallow(Team, shallowArgs)
+    const wrapper = shallowMount(Team, shallowArgs)
     expect(wrapper.find(DraggingController).exists()).toBeFalsy()
   })
 })
