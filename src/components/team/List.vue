@@ -1,6 +1,9 @@
 <template>
   <div class="list">
     <v-subheader>
+      <v-btn icon ripple class="outer-handle mx-0">
+        <v-icon color="grey lighten-1">mdi-drag-variant</v-icon>
+      </v-btn>
       <editable
         v-if="canWrite"
         :content="list.title"
@@ -19,12 +22,13 @@
       </v-btn>
     </v-subheader>
 
-    <template v-for="(item, key) in list.items">
-      <ListItem :item="Object.assign({ '.key': key }, item)" :key="key"
-                :loading="isLoading(key)" @update="updateItem"
-                @remove="removeItem" />
-      <v-divider :key="item['.key']"/>
-    </template>
+    <draggable v-model="items" :options="{ handle: '.inner-handle' }">
+      <template v-for="item in items">
+        <ListItem :item="item" :key="item['.key']"
+                  :loading="isLoading(item['.key'])" @update="updateItem"
+                  @remove="removeItem" />
+      </template>
+    </draggable>
 
     <v-list-tile v-if="canWrite" class="new-item">
       <v-list-tile-action>
@@ -63,6 +67,7 @@
 import ListItem from '@/components/team/ListItem'
 import editable from '@/components/editable'
 import _ from 'lodash/fp'
+import draggable from 'vuedraggable'
 
 import { mapGetters } from 'vuex'
 
@@ -70,6 +75,7 @@ export default {
   components: {
     editable,
     ListItem,
+    draggable,
   },
 
   props: {
@@ -89,6 +95,19 @@ export default {
 
   computed: {
     ...mapGetters(['canWrite']),
+
+    items: {
+      get () {
+        if (!this.list.items) { return [] }
+
+        return Object.keys(this.list.items).map((key) =>
+          Object.assign({ '.key': key }, this.list.items[key])
+        ).sort((a, b) => a.order - b.order)
+      },
+      set (value) {
+        this.$store.dispatch('lists/reorder', { list: this.list, items: value })
+      },
+    },
 
     isLoading () {
       return (key) => _.includes(key, this.loading)
@@ -151,10 +170,13 @@ export default {
 
 <style lang="stylus">
 .lists .list
-  .list__tile
+  .v-subheader
+    padding: 0
+
+  .v-list__tile
     min-height: 2.5rem
     height: auto
 
-    .list__tile__content
+    .v-list__tile__content
       overflow-wrap: break-word
 </style>

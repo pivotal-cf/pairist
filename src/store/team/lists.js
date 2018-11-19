@@ -20,7 +20,7 @@ export default {
 
   actions: {
     setRef: firebaseAction(({ bindFirebaseRef, commit }, ref) => {
-      bindFirebaseRef('lists', ref)
+      bindFirebaseRef('lists', ref.orderByChild('order'))
       commit('setRef', ref.ref)
     }),
 
@@ -35,6 +35,12 @@ export default {
           title: item.title,
         })
       }
+    },
+
+    reorderLists ({ state }, lists) {
+      lists.forEach((list, order) => {
+        state.ref.child(list['.key']).update({ order })
+      })
     },
 
     removeItem ({ state }, { list, key }) {
@@ -53,6 +59,12 @@ export default {
           items: [],
         })
       }
+    },
+
+    reorder ({ state }, { list, items }) {
+      items.forEach((item, order) => {
+        state.ref.child(list['.key']).child('items').child(item['.key']).update({ order })
+      })
     },
 
     remove ({ state }, key) {

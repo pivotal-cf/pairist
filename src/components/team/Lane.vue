@@ -7,61 +7,59 @@
     class="lane"
   >
     <v-list-tile ripple background>
-      <v-layout row wrap>
-        <v-flex order-xs2 xs12 order-lg1 lg6>
-          <Person
-            v-for="person in lane.people"
-            :person="person"
-            :key="person['.key']"
-          />
-        </v-flex>
-        <v-flex text-xs-left
-                text-lg-right
-                order-xs1
-                xs12 order-lg2
-                lg6>
-          <Chip
-            v-for="role in lane.roles"
-            :key="role['.key']"
-            :entity="role"
-            chip-class="role"
-          />
-          <Chip
-            v-for="track in lane.tracks"
-            :key="track['.key']"
-            :entity="track"
-            chip-class="track"
-          />
-        </v-flex>
-        <v-tooltip
-          v-if="canWrite && lane['.key'] !== 'new-lane'"
-          class="lock-button" right>
-          <v-btn
-            slot="activator"
-            :class="{'is-locked': lane.locked}"
-            :color="lane.locked? 'pink' : 'accent'"
-            dark fab small
-            @click="setLocked({ key: lane['.key'], locked: !lane.locked })"
-          >
-            <v-icon v-if="lane.locked">mdi-lock</v-icon>
-            <v-icon v-else>mdi-lock-open</v-icon>
-          </v-btn>
-          <span v-if="lane.locked">Unlock lane</span>
-          <span v-else>Lock lane</span>
-        </v-tooltip>
-        <v-tooltip
-          v-if="canWrite && lane['.key'] !== 'new-lane'"
-          class="sweep-button" right>
-          <v-btn
-            slot="activator"
-            dark fab small
-            @click="sweepLane({ key: lane['.key']})"
-          >
-            <v-icon>mdi-broom</v-icon>
-          </v-btn>
-          <span>Empty lane</span>
-        </v-tooltip>
-      </v-layout>
+      <v-flex order-xs2 xs12 order-lg1 lg6>
+        <Person
+          v-for="person in lane.people"
+          :person="person"
+          :key="person['.key']"
+        />
+      </v-flex>
+      <v-flex text-xs-left
+              text-lg-right
+              order-xs1
+              xs12 order-lg2
+              lg6>
+        <Chip
+          v-for="role in lane.roles"
+          :key="role['.key']"
+          :entity="role"
+          chip-class="role"
+        />
+        <Chip
+          v-for="track in lane.tracks"
+          :key="track['.key']"
+          :entity="track"
+          chip-class="track"
+        />
+      </v-flex>
+      <v-tooltip
+        v-if="canWrite && lane['.key'] !== 'new-lane'"
+        class="lock-button" right>
+        <v-btn
+          slot="activator"
+          :class="{'is-locked': lane.locked}"
+          :color="lane.locked? 'pink' : 'accent'"
+          dark fab small
+          @click="setLocked({ key: lane['.key'], locked: !lane.locked })"
+        >
+          <v-icon v-if="lane.locked">mdi-lock</v-icon>
+          <v-icon v-else>mdi-lock-open</v-icon>
+        </v-btn>
+        <span v-if="lane.locked">Unlock lane</span>
+        <span v-else>Lock lane</span>
+      </v-tooltip>
+      <v-tooltip
+        v-if="canWrite && lane['.key'] !== 'new-lane'"
+        class="sweep-button" right>
+        <v-btn
+          slot="activator"
+          dark fab small
+          @click="sweepLane({ key: lane['.key']})"
+        >
+          <v-icon>mdi-broom</v-icon>
+        </v-btn>
+        <span>Empty lane</span>
+      </v-tooltip>
     </v-list-tile>
     <v-divider v-if="divider" />
   </div>
@@ -106,16 +104,16 @@ export default {
 </script>
 
 <style lang="stylus">
-.lane li
+.lane
   @media (min-width: 960px)
     min-height: 121px !important
 
-  .list__tile
+  .v-list__tile
     height: auto
     padding: 0 5px 5px 10px
     line-height: 0
 
-    .list__tile__content
+    .v-list__tile__content
       overflow: visible !important
 
   &:hover .sweep-button

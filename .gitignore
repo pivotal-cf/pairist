@@ -10,6 +10,7 @@ selenium-debug.log
 /src/functions/lib
 /backups/
 .firebase
+.tern-port
 
 # Editor directories and files
 .idea

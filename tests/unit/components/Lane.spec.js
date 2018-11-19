@@ -160,7 +160,7 @@ describe('Lane', () => {
       propsData: { lane: {}, divider: true },
     })
 
-    expect(wrapper.find('hr.divider').exists()).toBe(true)
+    expect(wrapper.find('hr.v-divider').exists()).toBe(true)
   })
 
   it("hides the divider when it's not desired", () => {

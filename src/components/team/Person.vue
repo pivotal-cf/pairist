@@ -120,7 +120,7 @@ export default {
     height: 113px !important
     width: 100px
 
-  .card__text
+  .v-card__text
     padding: 3px
 
     .name
@@ -129,7 +129,7 @@ export default {
   @media (max-width: 960px)
     margin: 5px
 
-    .card__text
+    .v-card__text
       padding: 5px
 
       .avatar

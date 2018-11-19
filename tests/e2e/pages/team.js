@@ -64,7 +64,7 @@ module.exports = {
         },
 
         item (index) {
-          let item = `(${element}//div[@class = 'list__tile'])[${index}]`
+          let item = `(${element}//div[contains(@class, 'v-list__tile ')])[${index}]`
 
           return {
             toHaveName (name) {
@@ -81,13 +81,13 @@ module.exports = {
 
             check () {
               self.api.useXpath()
-                .click(`${item}//*[@role = 'checkbox']`)
+                .click(`${item}//*[@role = 'checkbox']/parent::*`)
                 .pause(300)
             },
 
             uncheck () {
               self.api.useXpath()
-                .click(`${item}//*[@role = 'checkbox']`)
+                .click(`${item}//*[@role = 'checkbox']/parent::*`)
                 .pause(300)
             },
 
@@ -175,17 +175,17 @@ module.exports = {
     expectMessage (msg, type) {
       this.api.pause(300)
       this.api.useCss()
-        .waitForElementPresent('.snack.snack--top .mdi-close', 2000)
+        .waitForElementPresent('.v-snack.v-snack--top .mdi-close', 2000)
 
       this.api.useCss()
         .assert
-        .containsText('.snack.snack--top div', msg)
+        .containsText('.v-snack.v-snack--top div', msg)
 
       this.api.useCss()
         .assert
-        .cssClassPresent('.snack.snack--top .snack__wrapper', type)
+        .cssClassPresent('.v-snack.v-snack--top .v-snack__wrapper', type)
 
-      this.api.click('.snack.snack--top .mdi-close')
+      this.api.click('.v-snack.v-snack--top .mdi-close')
     },
 
     recommendPairs () {
@@ -319,7 +319,7 @@ module.exports = {
   }],
 
   elements: {
-    title: 'nav .toolbar__title span:nth-child(2)',
+    title: 'nav .v-toolbar__title span:nth-child(2)',
 
     recommendPairsButton: {
       selector: "//nav[contains(@class, 'toolbar')]//i[contains(@class, 'mdi-shuffle-variant')]//ancestor::button",

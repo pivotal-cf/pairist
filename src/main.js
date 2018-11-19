@@ -1,4 +1,7 @@
+import '@mdi/font/css/materialdesignicons.css'
+
 import Vue from 'vue'
+import './plugins/vuetify'
 import Vuetify from 'vuetify'
 import './moment'
 import './filters'

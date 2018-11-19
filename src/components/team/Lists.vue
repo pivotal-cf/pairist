@@ -15,9 +15,11 @@
         </v-btn>
       </v-toolbar>
       <v-list class="pl-2" three-line>
-        <template v-for="list in lists">
-          <List :list="list" :key="list['.key']" />
-        </template>
+        <draggable v-model="lists" :options="{ handle: '.outer-handle' }">
+          <template v-for="list in lists">
+            <List :list="list" :key="list['.key']" />
+          </template>
+        </draggable>
       </v-list>
     </div>
   </v-flex>
@@ -27,16 +29,26 @@
 import List from '@/components/team/List'
 import editable from '@/components/editable'
 import { mapGetters } from 'vuex'
+import draggable from 'vuedraggable'
 
 export default {
   components: {
     editable,
     List,
+    draggable,
   },
 
   computed: {
     ...mapGetters(['canWrite']),
-    ...mapGetters('lists', { lists: 'all' }),
+
+    lists: {
+      get () {
+        return this.$store.getters['lists/all']
+      },
+      set (value) {
+        this.$store.dispatch('lists/reorderLists', value)
+      },
+    },
   },
 
   methods: {
@@ -54,7 +66,7 @@ export default {
 
   @media (min-width: 960px)
     position: relative
-    margin-left: -20px
+    margin-left: -24px
     height:100%
     width: 100%
 </style>
