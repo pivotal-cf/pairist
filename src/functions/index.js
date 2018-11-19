@@ -9,30 +9,30 @@ const history = new History(historyChunkDuration)
 
 admin.initializeApp(functions.config().firebase)
 
-export const saveHistory = functions.database.ref('/teams/{teamName}/current').onWrite(async (event) => {
+export const saveHistory = functions.database.ref('/teams/{teamName}/current').onWrite(async (change, context) => {
   if (functions.config().config.skipRecording) {
     console.log('Not recording history because config.skipRecording was set')
   }
 
-  console.log(`| _START: Recording history for team ${event.params.teamName} (chunk duration: ${historyChunkDuration})`)
-  const current = (await event.data.ref.once('value')).val()
+  console.log(`| _START: Recording history for team ${context.params.teamName} (chunk duration: ${historyChunkDuration})`)
+  const current = change.after.val()
   const historyKey = history.scaleDate(Date.now())
 
   try {
-    await event.data.ref.parent.child('history').child(historyKey).set(current)
-    console.log(`| ___SET: /teams/${event.params.teamName}/history/${historyKey}`)
+    await change.after.ref.parent.child('history').child(historyKey).set(current)
+    console.log(`| ___SET: /teams/${context.params.teamName}/history/${historyKey}`)
   } catch (error) {
-    console.error(`| ___SET: /teams/${event.params.teamName}/history/${historyKey}`, error)
+    console.error(`| ___SET: /teams/${context.params.teamName}/history/${historyKey}`, error)
   }
 
   try {
-    await event.data.ref.parent.child('history').child(historyKey - 2).remove()
-    console.log(`| DELETE: /teams/${event.params.teamName}/history/${historyKey - 2}`)
+    await change.after.ref.parent.child('history').child(historyKey - 2).remove()
+    console.log(`| DELETE: /teams/${context.params.teamName}/history/${historyKey - 2}`)
   } catch (_) { /* don't care if can't delete matching history */ }
   try {
-    await event.data.ref.parent.child('history').child(historyKey - 1).remove()
-    console.log(`| DELETE: /teams/${event.params.teamName}/history/${historyKey - 1}`)
+    await change.after.ref.parent.child('history').child(historyKey - 1).remove()
+    console.log(`| DELETE: /teams/${context.params.teamName}/history/${historyKey - 1}`)
   } catch (_) { /* don't care if can't delete matching history */ }
 
-  console.log(`| FINISH: Recording history for team ${event.params.teamName}`)
+  console.log(`| FINISH: Recording history for team ${context.params.teamName}`)
 })
