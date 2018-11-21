@@ -128,6 +128,9 @@ export default {
     margin: -1px
     margin-bottom: 0
 
+    img
+      object-fit: cover
+
     svg
       background: white
       display: -webkit-inline-box;
