@@ -37,7 +37,7 @@ describe('LaneList', () => {
 
     const lane = wrapper.find(Lane)
     expect(lane.exists()).toBe(true)
-    expect(lane.vm.divider).toBe(false)
+    expect(lane.vm.last).toBe(true)
     expect(lane.vm.lane).toEqual({ '.key': 'new-lane' })
   })
 })

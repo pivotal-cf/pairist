@@ -1,9 +1,9 @@
 <template>
   <v-flex>
-    <div class="lists elevation-6">
-      <v-toolbar color="secondary" dark>
+    <div class="lists">
+      <v-toolbar color="secondary" flat dark>
         <span/>
-        <v-toolbar-title>Lists</v-toolbar-title>
+        <v-toolbar-title flat>Lists</v-toolbar-title>
         <v-spacer/>
         <v-btn
           v-if="canWrite"
@@ -64,9 +64,12 @@ export default {
   display: flex
   flex-flow: column
 
+  .v-toolbar
+    .v-toolbar__content
+      height: 40px !important
+
   @media (min-width: 960px)
     position: relative
-    margin-left: -24px
     height:100%
     width: 100%
 </style>

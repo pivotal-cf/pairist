@@ -6,8 +6,11 @@
     }"
     class="lane"
   >
-    <v-list-tile ripple background>
+    <v-list-tile class="inner-lane" ripple background>
       <v-flex order-xs2 xs12 order-lg1 lg6>
+        <v-list-tile-title v-if="last && dragging" class="grey--text add-lane display-1 pa-4">
+          <v-icon x-large>mdi-playlist-plus</v-icon> Add Lane
+        </v-list-tile-title>
         <Person
           v-for="person in lane.people"
           :person="person"
@@ -61,7 +64,7 @@
         <span>Empty lane</span>
       </v-tooltip>
     </v-list-tile>
-    <v-divider v-if="divider" />
+    <v-divider v-if="!last" />
   </div>
 </template>
 
@@ -83,10 +86,10 @@ export default {
       type: Object,
       required: true,
     },
-    divider: {
+    last: {
       type: Boolean,
       required: false,
-      default: true,
+      default: false,
     },
   },
 
@@ -105,8 +108,14 @@ export default {
 
 <style lang="stylus">
 .lane
+  .add-lane
+    height: auto
+
   @media (min-width: 960px)
-    min-height: 121px !important
+    .inner-lane
+      padding: 5px
+      > div:first-child
+        min-height: 145px !important
 
   .v-list__tile
     height: auto

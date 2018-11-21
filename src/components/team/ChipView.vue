@@ -5,7 +5,7 @@
     :label="entity.type === 'track'"
   >
     <v-avatar v-if="entity.icon" :class="iconColor" :tile="entity.type === 'track'">
-      <v-icon>{{ entity.icon }}</v-icon>
+      <v-icon :color="textColor">{{ entity.icon }}</v-icon>
     </v-avatar>
     <span v-if="entity.name">{{ entity.name }}</span>
     <slot/>

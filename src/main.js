@@ -12,15 +12,16 @@ import { firebaseApp } from './firebase'
 
 Vue.use(Vuetify, {
   theme: {
-    primary: '#243640',
-    secondary: '#00a79d',
-    background: '#f4fffe',
-    lane: '#fefefe',
-    accent: '#1b78b3',
-    error: '#b71c1c',
-    info: '#2196F3',
-    success: '#4CAF50',
-    warning: '#FFC107',
+    'primary': '#243640',
+    'secondary': '#00a79d',
+    'background': '#fefefe',
+    'lane': '#fefefe',
+    'accent': '#1b78b3',
+    'person-color': '#d9efee',
+    'error': '#b71c1c',
+    'info': '#2196F3',
+    'success': '#4CAF50',
+    'warning': '#FFC107',
   },
 })
 

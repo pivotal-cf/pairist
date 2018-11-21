@@ -1,30 +1,36 @@
 <template>
   <transition name="highlight">
-    <v-card
+    <div
       :data-key="person['.key']"
-      class="person title" dark color="secondary"
+      class="person title font-weight-regular person-color"
     >
-      <v-btn v-if="canWrite" class="edit-hover" color="primary" depressed small @click="edit">
+      <v-btn v-if="canWrite && !dragging" class="edit-hover" color="primary" small @click="edit">
         <v-icon>edit</v-icon>
         Edit
       </v-btn>
-      <v-card-text>
-        <v-avatar
-          size="86px"
-          class="grey lighten-4"
+      <v-avatar
+        tile
+        size="100px"
+      >
+        <img
+          v-if="picture"
+          :src="picture"
+          @error="fixPicture"
         >
-          <img
-            :src="picture"
-            @error="fixPicture"
-          >
-        </v-avatar>
+        <svg
+          v-else
+          :data-jdenticon-value="person.name"
+          width="100"
+          height="100"/>
+      </v-avatar>
+      <v-card-text>
         <div class="name" >
           <span :style="{ 'font-size': fontSize }">{{ person.name }}</span>
         </div>
       </v-card-text>
 
       <PersonDialog ref="personDialog" :person="Object.assign({}, person)"/>
-    </v-card>
+    </div>
   </transition>
 </template>
 
@@ -43,13 +49,13 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['canWrite']),
+    ...mapGetters(['canWrite', 'dragging']),
 
     picture () {
       if (this.person.picture && this.person.picture.length > 0) {
         return this.person.picture
       }
-      return require('@/assets/no-picture.svg')
+      return null
     },
 
     fontSize () {
@@ -90,14 +96,19 @@ export default {
 </script>
 
 <style lang="stylus">
-.person
+#app .person
   display: inline-block
   margin-right: 10px
   margin-top: 3px
   text-align: center
   overflow-y: hidden
+  border: 1px solid
+  overflow: hidden
+  position: relative
+  border-radius: 15px
 
   .edit-hover
+    border-radius: 0
     bottom: -30px
     left: 0
     margin: 0
@@ -113,11 +124,20 @@ export default {
       bottom: 0
       opacity: 0.9
 
-  .avatar img
-    object-fit: cover
+  .v-avatar
+    margin: -1px
+    margin-bottom: 0
+
+    svg
+      background: white
+      display: -webkit-inline-box;
+      display: -ms-inline-flexbox;
+      display: inline-flex;
+      height: inherit;
+      width: inherit;
 
   @media (min-width: 960px)
-    height: 113px !important
+    height: 127px !important
     width: 100px
 
   .v-card__text
@@ -132,7 +152,7 @@ export default {
     .v-card__text
       padding: 5px
 
-      .avatar
+      .v-avatar
         height: 70px !important
         width: 70px !important
 

@@ -87,4 +87,7 @@ export default {
 
 .inner-handle
   min-width: 30px
+
+.list .v-list__tile__action .v-input--selection-controls .v-input__slot
+    margin: 0 !important
 </style>

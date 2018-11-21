@@ -1,6 +1,6 @@
 <template>
   <v-flex>
-    <div class="elevation-8 background sidebar">
+    <div class="background sidebar">
       <div
         :class="{
           'phase-out': dragging && dropTarget,
@@ -83,13 +83,30 @@
 
       <div
         :class="{
+          'phase-out': dragging && dropTarget !== constants.LOCATION.PM,
+          'phase-in': dragging && dropTarget === constants.LOCATION.PM
+        }"
+        :data-key="constants.LOCATION.PM"
+        class="background people pm dropzone"
+      >
+        <h2>PM</h2>
+
+        <Person
+          v-for="person in pm('person')"
+          :person="person"
+          :key="person['.key']"
+        />
+      </div>
+
+      <div
+        :class="{
           'phase-out': dragging && dropTarget !== constants.LOCATION.OUT,
           'phase-in': dragging && dropTarget === constants.LOCATION.OUT
         }"
         :data-key="constants.LOCATION.OUT"
         class="background people out dropzone"
       >
-        <h2>PM / Out</h2>
+        <h2>Out</h2>
 
         <Person
           v-for="person in out('person')"
@@ -130,7 +147,7 @@ export default {
   computed: {
     ...mapGetters(['canWrite', 'dragging', 'dropTarget']),
 
-    ...mapGetters('entities', ['out', 'unassigned']),
+    ...mapGetters('entities', ['pm', 'out', 'unassigned']),
   },
 
   methods: {
@@ -152,30 +169,38 @@ export default {
 </script>
 
 <style lang="stylus">
-.people.unassigned
-  min-height: 221px
-
-.tracks.unassigned
-  min-height: 6rem
-
-.roles.unassigned
-  min-height: 6rem
-
-.unassigned
-  padding: 10px
-
-.out
-  flex: 1 1 auto
-  min-height: 221px
-  padding: 10px
 
 #app .sidebar
   display: flex
   flex-flow: column
 
+  .people.pm
+    min-height: 221px
+
+  .people.unassigned
+    min-height: 221px
+
+  .tracks.unassigned
+    min-height: 6rem
+
+  .roles.unassigned
+    min-height: 6rem
+
+  .unassigned, .pm, .out
+    padding: 15px
+    padding-left: 30px
+
+  .pm
+    border-top: 1px dashed rgba(0, 0, 0, 0.15) !important
+
+  .out
+    background: rgba(150, 0, 0, 0.03) !important
+    border-top: 1px dashed rgba(150, 0, 0, 0.5) !important
+    flex: 1 1 auto
+    min-height: 221px
+
   @media (min-width: 960px)
     position: relative
-    margin-left: 30px
     height:100%
     width: 100%
 </style>

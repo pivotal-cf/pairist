@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar class="primary logo" fixed dark app>
+  <v-toolbar class="primary logo" fixed dark flat app>
     <v-toolbar-title>
       <span>
         Pairist
@@ -123,4 +123,7 @@ export default {
   background-repeat: no-repeat
   background-position: 10px 50%
   padding-left: 40px !important
+
+  .v-input--switch__thumb
+    box-shadow: none
 </style>

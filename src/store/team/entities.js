@@ -35,6 +35,10 @@ export default {
       return type =>
         getters.inLocation(constants.LOCATION.OUT)(type)
     },
+    pm (_, getters) {
+      return type =>
+        getters.inLocation(constants.LOCATION.PM)(type)
+    },
     inLocation (state, getters) {
       return location =>
         type =>

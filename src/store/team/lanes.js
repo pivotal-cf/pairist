@@ -57,6 +57,5 @@ export default {
         }
       }, getters.all)
     },
-
   },
 }

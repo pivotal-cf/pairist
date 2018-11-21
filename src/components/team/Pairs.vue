@@ -1,5 +1,5 @@
 <template>
-  <v-container class="dropzone" pt-0 pb-0 fluid fill-height>
+  <v-container class="dropzone" pa-0 fluid fill-height>
     <v-layout row wrap>
       <Lists class="xs12 md4 order-xs3 order-md1" />
       <LaneList class="xs12 md5 order-xs1 order-md2" />
@@ -25,10 +25,10 @@ export default {
 .phase-out:after
   content: '\A'
   position: absolute
-  width: 100%
-  height:100%
-  top:0
-  left:0
+  top: 0
+  left: 0
+  bottom: 0
+  right: 0
   background:rgba(0,0,0,0.1)
   opacity: 1
 </style>

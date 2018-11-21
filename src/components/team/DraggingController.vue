@@ -102,7 +102,7 @@ export default {
   position: relative
   transition: transform 0.4s ease-in-out
   box-shadow 0.4s ease-in-out
-  transform: rotate(4deg)
+  transform: rotate(4deg) scale(1.1)
 
 .highlight-enter-active
   transition: transform 0.2s, filter 0.2s, -webkit-filter 0.2s

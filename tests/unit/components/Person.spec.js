@@ -24,6 +24,7 @@ describe('Person', () => {
   beforeEach(() => {
     getters = {
       canWrite: jest.fn().mockReturnValue(true),
+      dragging: jest.fn().mockReturnValue(false),
     }
     store = new Vuex.Store({
       state: {},
@@ -57,7 +58,7 @@ describe('Person', () => {
     expect(wrapper.find('img').attributes().src).toEqual('lisas-picture.png')
   })
 
-  it('defaults to no avatar', () => {
+  it('defaults to generated avatar', () => {
     const wrapper = shallowMount(Person, { store,
       localVue,
       propsData: {
@@ -66,7 +67,7 @@ describe('Person', () => {
     })
 
     expect(wrapper.find('.name').html()).toContain('Bob')
-    expect(wrapper.find('img').attributes().src).toEqual('no-picture.svg')
+    expect(wrapper.find('svg').attributes()['data-jdenticon-value']).toEqual('Bob')
   })
 
   it("shows an error image if avatar can't be loaded", async () => {
