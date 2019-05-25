@@ -21,11 +21,10 @@
               />
             </v-flex>
             <v-flex xs12 sm6>
-              <v-select
+              <v-autocomplete
                 :items="icons"
                 v-model="editingEntity.icon"
                 label="Icon"
-                autocomplete
               >
                 <template slot="item" slot-scope="data">
                   <v-list-tile-content>
@@ -35,21 +34,20 @@
                     </span>
                   </v-list-tile-content>
                 </template>
-              </v-select>
+              </v-autocomplete>
             </v-flex>
             <v-flex xs12 sm12>
-              <v-select
+              <v-autocomplete
                 :items="colors"
                 v-model="editingEntity.color"
                 label="Background Color"
-                autocomplete
               >
                 <template slot="item" slot-scope="data">
                   <v-list-tile-content :class="[data.item, getColorClass(data.item)]">
                     {{ data.item }}
                   </v-list-tile-content>
                 </template>
-              </v-select>
+              </v-autocomplete>
             </v-flex>
           </v-layout>
         </v-container>

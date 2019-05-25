@@ -56,12 +56,17 @@ export default {
     },
 
     clearEmpty ({ state, dispatch, getters }) {
-      _.forEach(lane => {
-        const fullLane = getters.fullLane(lane)
-        if (fullLane.people.length === 0 && fullLane.tracks.length === 0 && fullLane.roles.length === 0) {
-          dispatch('remove', lane['.key'])
-        }
-      }, state.lanes)
+      _.flow(
+        _.map(lane => {
+          const fullLane = getters.fullLane(lane)
+          if (fullLane.people.length === 0 && fullLane.tracks.length === 0 && fullLane.roles.length === 0) {
+            return lane['.key']
+          }
+          return null
+        }),
+        _.compact,
+        _.forEach(key => dispatch('remove', key)),
+      )(state.lanes)
     },
   },
 }
