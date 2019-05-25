@@ -3,7 +3,6 @@
 set -xe
 
 yarn build --mode "$TARGET_ENV"
-yarn build:funcs
-firebase deploy -P "$TARGET_ENV"
+yarn deploy:funcs
 yarn migrate
 scripts/built-app-version | firebase -P $TARGET_ENV database:set /config/version -y
