@@ -169,10 +169,7 @@ module.exports = {
     team.track('track-3').notToExist()
     team.person('person-5').notToExist()
 
-    team.person('person-1').edit('renamed-1')
-    team.person('person-1').notToExist()
-
-    team.lane('1').toHavePeople('renamed-1')
+    team.lane('1').toHavePeople('person-1')
     team.lane('2').toHavePeople('person-2', 'person-4')
     team.lane('3').toHavePeople('person-3')
 
@@ -184,7 +181,7 @@ module.exports = {
 
     team.recommendPairs()
 
-    team.lane('1').toHavePeople('renamed-1', 'person-2')
+    team.lane('1').toHavePeople('person-1', 'person-2')
     team.lane('2').toHavePeople('person-4', 'person-3')
     team.role('role-1').toBeInLane('1')
     team.role('role-2').toBeInLane('2')
@@ -248,7 +245,7 @@ module.exports = {
 
     team.recommendPairs()
 
-    team.lane('1').toHavePeople('renamed-1')
+    team.lane('1').toHavePeople('person-1')
     team.lane('2').toHavePeople('person-3', 'person-2')
     team.lane('3').toHavePeople('person-4')
     team.role('role-1').toBeInLane('1')

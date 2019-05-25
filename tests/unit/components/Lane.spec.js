@@ -1,15 +1,15 @@
 import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
 import flushPromises from 'flush-promises'
+import Vue from 'vue'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
 import Person from '@/components/team/Person'
 import Chip from '@/components/team/Chip'
 import Lane from '@/components/team/Lane'
 
+Vue.use(Vuetify)
 const localVue = createLocalVue()
-
 localVue.use(Vuex)
-localVue.use(Vuetify)
 
 const addElemWithDataAppToBody = () => {
   const app = document.createElement('div')

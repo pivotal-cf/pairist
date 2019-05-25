@@ -1,15 +1,15 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
+import Vue from 'vue'
 import Vuetify from 'vuetify'
 
 import DraggingController from '@/components/team/DraggingController'
 import Notification from '@/components/Notification'
 import Team from '@/components/team/Team'
 
+Vue.use(Vuetify)
 const localVue = createLocalVue()
-
 localVue.use(Vuex)
-localVue.use(Vuetify)
 
 const $route = {
   params: {

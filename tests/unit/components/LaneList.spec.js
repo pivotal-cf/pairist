@@ -1,13 +1,13 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
+import Vue from 'vue'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
 import Lane from '@/components/team/Lane'
 import LaneList from '@/components/team/LaneList'
 
+Vue.use(Vuetify)
 const localVue = createLocalVue()
-
 localVue.use(Vuex)
-localVue.use(Vuetify)
 
 describe('LaneList', () => {
   let getters

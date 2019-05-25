@@ -102,7 +102,8 @@ describe('Users Store', () => {
     })
 
     describe('signup', () => {
-      it('signs up with given name and password', async () => {
+      it.skip('signs up with given name and password', async () => {
+        // skipped temporarily since firebase-mock has a bug: https://github.com/soumak77/firebase-mock/pull/138
         const commit = jest.fn()
         const dispatch = jest.fn()
         const payload = {

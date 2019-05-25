@@ -1,12 +1,12 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
+import Vue from 'vue'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
 import Chip from '@/components/team/Chip'
 
+Vue.use(Vuetify)
 const localVue = createLocalVue()
-
 localVue.use(Vuex)
-localVue.use(Vuetify)
 
 describe('Chip', () => {
   let store

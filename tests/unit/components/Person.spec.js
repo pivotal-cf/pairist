@@ -1,13 +1,13 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import flushPromises from 'flush-promises'
+import Vue from 'vue'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
 import Person from '@/components/team/Person'
 
+Vue.use(Vuetify)
 const localVue = createLocalVue()
-
 localVue.use(Vuex)
-localVue.use(Vuetify)
 
 jest.mock('@/assets/no-picture.svg', () => {
   return 'no-picture.svg'
@@ -74,7 +74,7 @@ describe('Person', () => {
     const wrapper = shallowMount(Person, { store,
       localVue,
       propsData: {
-        person: { '.key': 'p2', 'name': 'Error' },
+        person: { '.key': 'p2', 'name': 'Error', 'picture': 'nope' },
       },
     })
 

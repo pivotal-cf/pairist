@@ -41,7 +41,7 @@ export default {
       let user
 
       try {
-        user = await auth.createUserWithEmailAndPassword(email, password)
+        user = (await auth.createUserWithEmailAndPassword(email, password)).user
       } catch (error) {
         commit('notify', {
           message: _.replace('email address', 'name', error.message),

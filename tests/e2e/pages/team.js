@@ -260,11 +260,11 @@ module.exports = {
             .pause(200)
             .click(element + "/../..//button[contains(@class, 'edit-hover')]")
           self.api
-            .useXpath()
             .useCss()
             .waitForElementVisible("input[type='text']", 2000)
             .pause(500)
             .clearValue("input[type='text']")
+            .pause(500)
             .setValue("input[type='text']", newName)
 
           if (newPicture) {
