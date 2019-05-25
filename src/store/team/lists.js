@@ -1,4 +1,4 @@
-import { firebaseMutations, firebaseAction } from 'vuexfire'
+import { vuexfireMutations, firebaseAction } from 'vuexfire'
 
 export default {
   namespaced: true,
@@ -9,7 +9,7 @@ export default {
 
   mutations: {
     setRef (state, ref) { state.ref = ref },
-    ...firebaseMutations,
+    ...vuexfireMutations,
   },
 
   getters: {
@@ -24,14 +24,14 @@ export default {
       commit('setRef', ref.ref)
     }),
 
-    async saveItem ({ state }, { list, item }) {
+    async saveItem ({ state }, { listKey, item }) {
       if (item['.key']) {
         const key = item['.key']
         delete item['.key']
 
-        await state.ref.child(list['.key']).child('items').child(key).update(item)
+        await state.ref.child(listKey).child('items').child(key).update(item)
       } else {
-        await state.ref.child(list['.key']).child('items').push({
+        await state.ref.child(listKey).child('items').push({
           title: item.title,
         })
       }
@@ -43,8 +43,8 @@ export default {
       })
     },
 
-    removeItem ({ state }, { list, key }) {
-      state.ref.child(list['.key']).child('items').child(key).remove()
+    removeItem ({ state }, { listKey, key }) {
+      state.ref.child(listKey).child('items').child(key).remove()
     },
 
     save ({ state }, list) {

@@ -93,9 +93,9 @@ describe('Lists Store', () => {
         const items = jest.fn().mockReturnValue({ push })
         const child = jest.fn().mockReturnValue({ child: items })
         const state = { ref: { child } }
-        const list = { '.key': 'list-key' }
+        const listKey = 'list-key'
 
-        store.actions.saveItem({ state }, { list, item: { title: 'item' } })
+        store.actions.saveItem({ state }, { listKey, item: { title: 'item' } })
         expect(child).toHaveBeenCalledTimes(1)
         expect(child).toHaveBeenCalledWith('list-key')
         expect(items).toHaveBeenCalledTimes(1)
@@ -112,9 +112,9 @@ describe('Lists Store', () => {
         const items = jest.fn().mockReturnValue({ child: item })
         const child = jest.fn().mockReturnValue({ child: items })
         const state = { ref: { child } }
-        const list = { '.key': 'list-key' }
+        const listKey = 'list-key'
 
-        store.actions.saveItem({ state }, { list, item: { '.key': 'p1', 'title': 'smith' } })
+        store.actions.saveItem({ state }, { listKey, item: { '.key': 'p1', 'title': 'smith' } })
         expect(child).toHaveBeenCalledTimes(1)
         expect(child).toHaveBeenCalledWith('list-key')
         expect(items).toHaveBeenCalledTimes(1)
@@ -136,9 +136,9 @@ describe('Lists Store', () => {
         const items = jest.fn().mockReturnValue({ child: item })
         const child = jest.fn().mockReturnValue({ child: items })
         const state = { ref: { child } }
-        const list = { '.key': 'list-key' }
+        const listKey = 'list-key'
 
-        store.actions.removeItem({ dispatch, state }, { list, key: 'key' })
+        store.actions.removeItem({ dispatch, state }, { listKey, key: 'key' })
         expect(child).toHaveBeenCalledTimes(1)
         expect(child).toHaveBeenCalledWith('list-key')
         expect(items).toHaveBeenCalledTimes(1)

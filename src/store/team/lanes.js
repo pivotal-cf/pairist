@@ -1,4 +1,4 @@
-import { firebaseMutations, firebaseAction } from 'vuexfire'
+import { vuexfireMutations, firebaseAction } from 'vuexfire'
 import _ from 'lodash/fp'
 
 export default {
@@ -13,19 +13,24 @@ export default {
   mutations: {
     setRef (state, ref) { state.ref = ref },
     laneAdded (state, key) { state.lastAddedKey = key },
-    ...firebaseMutations,
+    ...vuexfireMutations,
   },
 
   getters: {
-    all (state, _getters, _rootState, rootGetters) {
-      return _.map(lane => (
+    all (state, getters) {
+      return _.map(getters.fullLane)(state.lanes)
+    },
+
+    fullLane (_state, _getters, _rootState, rootGetters) {
+      return (lane) => (
         {
-          people: rootGetters['entities/inLocation'](lane['.key'])('person'),
-          tracks: rootGetters['entities/inLocation'](lane['.key'])('track'),
-          roles: rootGetters['entities/inLocation'](lane['.key'])('role'),
+          'people': rootGetters['entities/inLocation'](lane['.key'])('person'),
+          'tracks': rootGetters['entities/inLocation'](lane['.key'])('track'),
+          'roles': rootGetters['entities/inLocation'](lane['.key'])('role'),
+          '.key': lane['.key'],
           ...lane,
         }
-      ))(state.lanes)
+      )
     },
 
     lastAddedKey (state) { return state.lastAddedKey },
@@ -50,12 +55,13 @@ export default {
       state.ref.child(key).update({ locked })
     },
 
-    clearEmpty ({ dispatch, getters }) {
+    clearEmpty ({ state, dispatch, getters }) {
       _.forEach(lane => {
-        if (lane.people.length === 0 && lane.tracks.length === 0 && lane.roles.length === 0) {
+        const fullLane = getters.fullLane(lane)
+        if (fullLane.people.length === 0 && fullLane.tracks.length === 0 && fullLane.roles.length === 0) {
           dispatch('remove', lane['.key'])
         }
-      }, getters.all)
+      }, state.lanes)
     },
   },
 }

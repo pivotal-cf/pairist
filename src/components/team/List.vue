@@ -141,23 +141,23 @@ export default {
       if (value === '') { return }
 
       this.newItem.title = value
-      await this.$store.dispatch('lists/saveItem', { list: { ...this.list }, item: { ...this.newItem } })
+      await this.$store.dispatch('lists/saveItem', { listKey: this.list['.key'], item: { ...this.newItem } })
       this.newItem = { title: '' }
       this.$refs.newItemEl.clear()
     },
 
     async updateItem (item) {
       this.loading.push(item['.key'])
-      await this.$store.dispatch('lists/saveItem', { list: { ...this.list }, item })
+      await this.$store.dispatch('lists/saveItem', { listKey: this.list['.key'], item })
       this.loading.splice(this.loading.indexOf(item['.key']), 1)
     },
 
     removeItem (key) {
-      this.$store.dispatch('lists/removeItem', { list: { ...this.list }, key })
+      this.$store.dispatch('lists/removeItem', { listKey: this.list['.key'], key })
     },
 
     changeTitle (title) {
-      this.$store.dispatch('lists/save', { ...this.list, title })
+      this.$store.dispatch('lists/save', { '.key': this.list['.key'], title })
     },
 
     remove () {

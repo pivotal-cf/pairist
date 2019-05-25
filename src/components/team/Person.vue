@@ -29,7 +29,7 @@
         </div>
       </v-card-text>
 
-      <PersonDialog ref="personDialog" :person="Object.assign({}, person)"/>
+      <PersonDialog ref="personDialog" :person="Object.assign({ '.key': person['.key'] }, person)"/>
     </div>
   </transition>
 </template>

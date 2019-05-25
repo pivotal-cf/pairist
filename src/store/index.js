@@ -5,7 +5,7 @@ import team from './team/index'
 import user from './user'
 
 import { db } from '@/firebase'
-import { firebaseMutations, firebaseAction } from 'vuexfire'
+import { vuexfireMutations, firebaseAction } from 'vuexfire'
 import _ from 'lodash/fp'
 
 import version from '@/version'
@@ -28,7 +28,7 @@ export const store = new Vuex.Store({
   },
 
   mutations: {
-    ...firebaseMutations,
+    ...vuexfireMutations,
   },
 
   getters: {

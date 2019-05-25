@@ -25,21 +25,41 @@ describe('Lanes Store', () => {
 
   describe('getters', () => {
     describe('all', () => {
-      it('returns the lanes from the state with entities from root', () => {
+      it('returns full lanes from state', () => {
         const lanes = [
-          { '.key': 1 }, { '.key': 2 }, { '.key': 3 },
+          { '.key': 1 },
+          { '.key': 2 },
+          { '.key': 3 },
         ]
         const rootGetters = {
           'entities/inLocation': jest.fn().mockImplementation((key) =>
             (type) => ({ [type]: key })),
         }
+        const getters = {
+          fullLane: store.getters.fullLane(null, null, null, rootGetters),
+        }
 
-        const result = store.getters.all({ lanes }, null, null, rootGetters)
+        const result = store.getters.all({ lanes }, getters)
         expect(result).toEqual([
           { '.key': 1, 'people': { person: 1 }, 'tracks': { track: 1 }, 'roles': { role: 1 } },
           { '.key': 2, 'people': { person: 2 }, 'tracks': { track: 2 }, 'roles': { role: 2 } },
           { '.key': 3, 'people': { person: 3 }, 'tracks': { track: 3 }, 'roles': { role: 3 } },
         ])
+      })
+    })
+
+    describe('fullLane', () => {
+      it('returns the lane  with entities from root', () => {
+        const lane = { '.key': 1 }
+        const rootGetters = {
+          'entities/inLocation': jest.fn().mockImplementation((key) =>
+            (type) => ({ [type]: key })),
+        }
+
+        const result = store.getters.fullLane(null, null, null, rootGetters)(lane)
+        expect(result).toEqual(
+          { '.key': 1, 'people': { person: 1 }, 'tracks': { track: 1 }, 'roles': { role: 1 } }
+        )
       })
     })
 
@@ -127,10 +147,11 @@ describe('Lanes Store', () => {
           { '.key': 4, 'people': [], 'tracks': [], 'roles': [4] },
           { '.key': 5, 'people': [5], 'tracks': [5], 'roles': [5] },
         ]
+        const state = { lanes }
         const dispatch = jest.fn()
-        const getters = { all: lanes }
+        const getters = { fullLane: (lane) => lane }
 
-        store.actions.clearEmpty({ dispatch, getters })
+        store.actions.clearEmpty({ state, dispatch, getters })
         expect(dispatch).toHaveBeenCalledTimes(1)
         expect(dispatch).toHaveBeenCalledWith('remove', 1)
       })

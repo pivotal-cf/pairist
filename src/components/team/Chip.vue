@@ -8,7 +8,7 @@
       <v-btn v-if="canWrite" class="edit-hover" fab icon color="primary" depressed small @click="edit">
         <v-icon>edit</v-icon>
       </v-btn>
-      <ChipDialog ref="chipDialog" :entity="Object.assign({}, entity)" />
+      <ChipDialog ref="chipDialog" :entity="Object.assign({ '.key': entity['.key'] }, entity)" />
     </ChipView>
   </transition>
 </template>

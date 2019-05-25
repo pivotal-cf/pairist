@@ -1,4 +1,4 @@
-import { firebaseMutations, firebaseAction } from 'vuexfire'
+import { vuexfireMutations, firebaseAction } from 'vuexfire'
 import _ from 'lodash/fp'
 
 import constants from '@/lib/constants'
@@ -12,7 +12,7 @@ export default {
 
   mutations: {
     setRef (state, ref) { state.ref = ref },
-    ...firebaseMutations,
+    ...vuexfireMutations,
   },
 
   getters: {

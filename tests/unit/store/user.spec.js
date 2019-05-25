@@ -27,7 +27,7 @@ jest.mock('vuexfire', () => {
         return action(stuff, args)
       }
     },
-    firebaseMutations: {},
+    vuexfireMutations: {},
   }
 })
 

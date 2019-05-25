@@ -1,4 +1,4 @@
-import { firebaseMutations, firebaseAction } from 'vuexfire'
+import { vuexfireMutations, firebaseAction } from 'vuexfire'
 import history from '@/history'
 import _ from 'lodash/fp'
 
@@ -11,7 +11,7 @@ export default {
 
   mutations: {
     setRef (state, ref) { state.ref = ref },
-    ...firebaseMutations,
+    ...vuexfireMutations,
   },
 
   getters: {
@@ -24,6 +24,7 @@ export default {
         )(_.keys(entities))
 
       return _.flow(
+        _.map(h => ({ '.key': h['.key'], ...h })),
         _.filter(_.flow(_.prop('.key'), parseInt, _.lte(_, startDate))),
         _.map(h => _.assoc('entities', withKey(h.entities), h)),
       )(state.history)

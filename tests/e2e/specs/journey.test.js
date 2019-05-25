@@ -240,6 +240,7 @@ module.exports = {
     let team = client.page.team()
 
     team.person('person-2').moveToLane('2')
+    team.person('person-4').moveToUnassigned()
 
     team.lockLane('1')
 
