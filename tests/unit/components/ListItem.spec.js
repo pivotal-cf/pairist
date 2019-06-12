@@ -1,13 +1,15 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils'
+import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
+import VueShowdown from 'vue-showdown'
 import editable from '@/components/editable'
 import ListItem from '@/components/team/ListItem'
 
 Vue.use(Vuetify)
 const localVue = createLocalVue()
 localVue.use(Vuex)
+localVue.use(VueShowdown)
 
 describe('ListItem', () => {
   let getters
@@ -25,7 +27,7 @@ describe('ListItem', () => {
     propsData = {
       item: {
         checked: false,
-        title: '',
+        title: 'some-title **with bold**',
       },
     }
   })
@@ -34,9 +36,16 @@ describe('ListItem', () => {
     shallowMount(ListItem, { propsData, store, localVue })
   })
 
-  it('doesn\'t have an editable title', () => {
+  it('renders markdown formatted titles', () => {
+    let wrapper = mount(ListItem, { propsData, store, localVue })
+    expect(wrapper.find('.v-list__tile__sub-title p').html())
+      .toEqual('<p>some-title <strong>with bold</strong></p>')
+  })
+
+  it('cannot be edited', () => {
     let wrapper = shallowMount(ListItem, { propsData, store, localVue })
-    expect(wrapper.find(editable).exists()).toBe(false)
+    wrapper.vm.setEditMode(true)
+    expect(wrapper.find(editable).element.style.display).toEqual('none')
   })
 
   describe('canWrite is true', () => {
@@ -44,11 +53,23 @@ describe('ListItem', () => {
 
     beforeEach(() => {
       getters.canWrite.mockReturnValue(true)
-      wrapper = shallowMount(ListItem, { propsData, store, localVue })
+      wrapper = mount(ListItem, { propsData, store, localVue })
     })
 
-    it('has an editable title', () => {
-      expect(wrapper.find(editable).exists()).toBe(true)
+    describe('in edit mode', () => {
+      beforeEach(() => {
+        getters.canWrite.mockReturnValue(true)
+        wrapper = mount(ListItem, { propsData, store, localVue })
+        wrapper.vm.setEditMode(true)
+      })
+
+      it('renders an editable title', () => {
+        expect(wrapper.find(editable).element.style.display).toEqual('')
+      })
+
+      it('renders non-formatted markdown editable titles', () => {
+        expect(wrapper.find(editable).props('content')).toEqual('some-title **with bold**')
+      })
     })
   })
 })
