@@ -6,6 +6,7 @@
     <div
       ref="contentWrapper"
       class="editable-content" contenteditable="true"
+      @blur="$emit('blur')"
       @input="input" @keyup.enter="update"
       @keydown.enter="disableEvent" @keypress.enter="disableEvent"
     />
@@ -50,6 +51,10 @@ export default {
   },
 
   methods: {
+    focus () {
+      this.$refs.contentWrapper.focus()
+    },
+
     input (event) {
       this.contentText = event.target.innerText
       if (this.saveOnInput) {

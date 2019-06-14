@@ -15,16 +15,22 @@
       </v-list-tile-action>
       <v-list-tile-content>
         <v-list-tile-sub-title>
-          <editable
-            v-if="canWrite"
-            :class="{ checked: item.checked }"
-            :content="item.title"
-            placeholder="Add title..."
-            @update="title = $event"
-          />
-          <div v-else
-               :class="{ checked: item.checked }" >
-            {{ item.title }}
+          <div @click="setEditMode(true)">
+            <editable
+              v-show="editing"
+              ref="editable"
+              :class="{ checked: item.checked }"
+              :content="title"
+              placeholder="Add title..."
+              @blur="setEditMode(false)"
+              @update="title = $event"
+            />
+            <VueShowdown
+              v-show="!editing"
+              :markdown="title"
+              :class="{ checked: item.checked }"
+              flavor="github"
+            />
           </div>
         </v-list-tile-sub-title>
       </v-list-tile-content>
@@ -57,6 +63,12 @@ export default {
     },
   },
 
+  data () {
+    return {
+      editing: false,
+    }
+  },
+
   computed: {
     ...mapGetters(['canWrite']),
 
@@ -70,6 +82,17 @@ export default {
   },
 
   methods: {
+    setEditMode (enabled) {
+      if (!this.canWrite) return
+      this.editing = enabled
+
+      if (enabled) {
+        this.$nextTick(() => {
+          this.$refs.editable.focus()
+        })
+      }
+    },
+
     save () {
       this.$emit('update', this.item)
     },
@@ -90,4 +113,7 @@ export default {
 
 .list .v-list__tile__action .v-input--selection-controls .v-input__slot
     margin: 0 !important
+
+.list .v-list__tile__sub-title p
+    margin: 0
 </style>

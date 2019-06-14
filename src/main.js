@@ -1,6 +1,7 @@
 import '@mdi/font/css/materialdesignicons.css'
 
 import Vue from 'vue'
+import './plugins/vue-showdown'
 import './plugins/vuetify'
 import Vuetify from 'vuetify'
 import './moment'
