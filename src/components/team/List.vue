@@ -22,7 +22,7 @@
       </v-btn>
     </v-subheader>
 
-    <draggable v-model="items" :options="{ handle: '.inner-handle' }">
+    <draggable v-model="items" handle=".inner-handle">
       <template v-for="item in items">
         <ListItem :item="item" :key="item['.key']"
                   :loading="isLoading(item['.key'])" @update="updateItem"
