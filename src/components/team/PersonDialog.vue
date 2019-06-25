@@ -1,6 +1,6 @@
 <template>
-  <v-dialog v-model="show" max-width="500px">
-    <v-card v-if="show">
+  <v-dialog v-model="dialog" max-width="500px">
+    <v-card v-if="dialog">
       <v-card-title>
         <span class="headline">{{ actionType }} Person</span>
       </v-card-title>
@@ -13,7 +13,7 @@
                 label="Name"
                 autofocus
                 required
-                @keyup.enter="save"
+                @keypress.enter="save"
               />
             </v-flex>
             <v-flex xs12 sm6>
@@ -21,7 +21,7 @@
                 v-model="person.picture"
                 type="url"
                 label="Picture URL"
-                @keyup.enter="save"
+                @keypress.enter="save"
               />
             </v-flex>
           </v-layout>
@@ -33,7 +33,7 @@
           Remove
         </v-btn>
         <v-spacer/>
-        <v-btn color="secondary darken-2" flat @click="show = false">Close</v-btn>
+        <v-btn color="secondary darken-2" flat @click="dialog = false">Close</v-btn>
         <v-btn color="secondary darken-2 dialog-save" flat @click="save">Save</v-btn>
       </v-card-actions>
     </v-card>
@@ -66,7 +66,7 @@ export default {
 
   data () {
     return {
-      show: false,
+      dialog: false,
       confirmRemove: false,
     }
   },
@@ -84,7 +84,7 @@ export default {
   methods: {
     handleKeyPress (event) {
       if (event.keyCode === 13 && this.dialog === true) {
-        this.confirmRemove()
+        this.remove()
       } else if (event.keyCode === 27) {
         this.dialog = false
       }
@@ -93,13 +93,13 @@ export default {
     async save () {
       await this.$store.dispatch('entities/save', Object.assign({ type: 'person' }, this.person))
 
-      this.show = false
+      this.dialog = false
       this.person.name = ''
       this.person.picture = ''
     },
 
     open () {
-      this.show = true
+      this.dialog = true
     },
 
     remove () {
