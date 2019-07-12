@@ -59,17 +59,19 @@ export default {
     },
 
     fontSize () {
-      if (this.person.name.length < 8) {
+      let { name } = this.person
+
+      if (!name || name.length < 8) {
         return '18px'
-      } else if (this.person.name.length < 9) {
+      } else if (name.length < 9) {
         return '16px'
-      } else if (this.person.name.length < 10) {
+      } else if (name.length < 10) {
         return '15px'
-      } else if (this.person.name.length < 12) {
+      } else if (name.length < 12) {
         return '12px'
-      } else if (this.person.name.length < 15) {
+      } else if (name.length < 15) {
         return '11px'
-      } else if (this.person.name.length < 18) {
+      } else if (name.length < 18) {
         return '10px'
       } else {
         return '9px'

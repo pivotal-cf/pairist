@@ -87,7 +87,7 @@ describe('Person', () => {
   })
 
   it("updates name's font size based on length", async () => {
-    const person = { '.key': 'p3', 'name': 'N' }
+    const person = { '.key': 'p3' }
     const wrapper = shallowMount(Person, { store,
       localVue,
       propsData: {
@@ -96,7 +96,12 @@ describe('Person', () => {
     })
 
     const name = wrapper.find('.name span')
-    expect(name.text()).toEqual('N')
+    expect(name.text()).toEqual('')
+    expect(name.element.style.fontSize).toEqual('18px')
+
+    person.name = 'N'
+    wrapper.setProps({ person: { ...person } })
+    await flushPromises()
     expect(name.element.style.fontSize).toEqual('18px')
 
     person.name = '12345678'
