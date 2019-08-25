@@ -3,10 +3,10 @@ export const emojisByName = {
   thumbs_down: '👎',
   heart: '❤️',
   eyes: '👀',
+  rocket: '🚀',
   clock: '🕑',
-  snowman: '⛄',
+  check: '✅',
   party_popper: '🎉',
-  light_bulb: '💡',
 }
 
 export const emojiNames = Object.keys(emojisByName)

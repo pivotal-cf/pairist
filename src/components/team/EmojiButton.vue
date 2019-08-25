@@ -1,7 +1,7 @@
 <template>
   <v-btn icon ripple class="emoji-button" @click="handleClick">
     <span class="emoji-button__emoji">{{ emojisByName[this.$props.name] }}</span>
-    <span v-if="showCount" class="emoji-button__count">{{ this.$props.count }}</span>
+    <span v-if="showCount" class="emoji-button__count primary--text">{{ this.$props.count }}</span>
   </v-btn>
 </template>
 
