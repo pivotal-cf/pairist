@@ -46,7 +46,6 @@
           </li>
         </ul>
       </v-list-tile-content>
-      <v-progress-circular v-if="loading" indeterminate color="primary"/>
       <v-list-tile-action v-if="canWrite">
         <v-menu>
           <v-btn slot="activator" icon ripple class="add-emoji">
@@ -55,7 +54,10 @@
           <EmojiPicker @pick="addEmoji($event)"/>
         </v-menu>
       </v-list-tile-action>
-      <v-list-tile-action v-if="canWrite">
+      <v-list-tile-action v-if="loading">
+        <v-progress-circular indeterminate color="grey lighten-1" size="24"/>
+      </v-list-tile-action>
+      <v-list-tile-action v-else-if="canWrite">
         <v-btn icon ripple class="remove-item" @click="remove">
           <v-icon color="grey lighten-1">close</v-icon>
         </v-btn>
