@@ -33,8 +33,28 @@
             />
           </div>
         </v-list-tile-sub-title>
+
+        <ul class="emoji-list">
+          <li v-for="emoji in visibleEmojis" :key="emoji.name" class="emoji-list__item">
+            <EmojiButton
+              :count="emoji.count"
+              :name="emoji.name"
+              show-count
+              @click="addEmoji(emoji.name)"
+              @shiftClick="removeEmoji(emoji.name)"
+            />
+          </li>
+        </ul>
       </v-list-tile-content>
       <v-progress-circular v-if="loading" indeterminate color="primary"/>
+      <v-list-tile-action v-if="canWrite">
+        <v-menu>
+          <v-btn slot="activator" icon ripple class="add-emoji">
+            <v-icon color="grey lighten-1">insert_emoticon</v-icon>
+          </v-btn>
+          <EmojiPicker @pick="addEmoji($event)"/>
+        </v-menu>
+      </v-list-tile-action>
       <v-list-tile-action v-if="canWrite">
         <v-btn icon ripple class="remove-item" @click="remove">
           <v-icon color="grey lighten-1">close</v-icon>
@@ -47,10 +67,16 @@
 
 <script>
 import editable from '@/components/editable'
+import EmojiPicker from '@/components/team/EmojiPicker'
+import EmojiButton from '@/components/team/EmojiButton'
 import { mapGetters } from 'vuex'
 
 export default {
-  components: { editable },
+  components: {
+    editable,
+    EmojiPicker,
+    EmojiButton,
+  },
 
   props: {
     item: {
@@ -79,6 +105,23 @@ export default {
         this.$emit('update', item)
       },
     },
+
+    visibleEmojis () {
+      const visibleEmojis = []
+
+      for (const emojiName in (this.item.emojis || {})) {
+        const emoji = this.item.emojis[emojiName]
+        if (!emoji || !emoji.count) continue
+
+        visibleEmojis.push({
+          name: emojiName,
+          count: emoji.count,
+          timestamp: emoji.timestamp,
+        })
+      }
+
+      return visibleEmojis.sort((a, b) => a.timestamp - b.timestamp)
+    },
   },
 
   methods: {
@@ -91,6 +134,29 @@ export default {
           this.$refs.editable.focus()
         })
       }
+    },
+
+    updateEmoji (emojiName, adding) {
+      this.item.emojis = this.item.emojis || {}
+      const existingEmoji = this.item.emojis[emojiName]
+
+      if (!adding && existingEmoji.count <= 1) {
+        delete this.item.emojis[emojiName]
+      } else if (existingEmoji && existingEmoji.count >= 1) {
+        existingEmoji.count = adding ? existingEmoji.count + 1 : Math.max(existingEmoji.count - 1, 0)
+      } else {
+        this.item.emojis[emojiName] = { count: 1, timestamp: Date.now() }
+      }
+
+      this.$emit('update', this.item)
+    },
+
+    addEmoji (emojiName) {
+      this.updateEmoji(emojiName, true)
+    },
+
+    removeEmoji (emojiName) {
+      this.updateEmoji(emojiName, false)
     },
 
     save () {
@@ -116,4 +182,14 @@ export default {
 
 .list .v-list__tile__sub-title p
     margin: 0
+
+.emoji-list
+  padding: 0
+
+  .emoji-list__item
+    list-style-type: none
+    display: inline-block
+
+  .emoji-list__item + .emoji-list__item
+    margin-left: 8px
 </style>
