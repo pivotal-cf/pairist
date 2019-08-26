@@ -34,7 +34,7 @@ export default {
       commit('updateNow')
       setInterval(() => {
         commit('updateNow')
-      }, (process.env.NODE_ENV === 'produciton' ? 60 : 5) * 1000)
+      }, (process.env.NODE_ENV === 'production' ? 60 : 5) * 1000)
     },
 
     clearNotification ({ commit }) {

@@ -15,7 +15,7 @@
         </v-btn>
       </v-toolbar>
       <v-list class="pl-2" three-line>
-        <draggable v-model="lists" :options="{ handle: '.outer-handle' }">
+        <draggable v-model="lists" handle=".outer-handle">
           <template v-for="list in lists">
             <List :list="list" :key="list['.key']" />
           </template>
