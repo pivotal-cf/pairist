@@ -192,6 +192,4 @@ export default {
     list-style-type: none
     display: inline-block
 
-  .emoji-list__item + .emoji-list__item
-    margin-left: 8px
 </style>
