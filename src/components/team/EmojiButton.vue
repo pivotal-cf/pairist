@@ -1,5 +1,5 @@
 <template>
-  <v-btn flat ripple class="emoji-button" @click="handleClick">
+  <v-btn flat ripple class="emoji-button" title="Shift-Click to remove emoji" @click="handleClick">
     <span class="emoji-button__emoji">{{ emojisByName[this.$props.name] }}</span>
     <span v-if="showCount" class="emoji-button__count primary--text">{{ this.$props.count }}</span>
   </v-btn>
