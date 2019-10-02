@@ -7,6 +7,7 @@ export const emojisByName = {
   clock: '🕑',
   check: '✅',
   party_popper: '🎉',
+  full_moon_with_face: '🌝',
 }
 
 export const emojiNames = Object.keys(emojisByName)
