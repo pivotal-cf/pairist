@@ -8,4 +8,8 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   snapshotSerializers: ['jest-serializer-vue'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/e2e/',
+  ],
 }
