@@ -1,0 +1,24 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": {
+    "predeploy": ["yarn --cwd \"$RESOURCE_DIR\" install", "yarn --cwd \"$RESOURCE_DIR\" build"]
+  },
+  "emulators": {
+    "firestore": {
+      "port": 4700
+    }
+  },
+  "hosting": {
+    "public": "build",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

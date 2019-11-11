@@ -1,0 +1,80 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function authenticated() {
+      return request.auth.uid != null;
+    }
+
+    function isTeamMember(teamId) {
+      return request.auth.uid in get(/databases/$(database)/documents/teamMembers/$(teamId)).data;
+    }
+
+    function teamExists(teamId) {
+      return exists(/databases/$(database)/documents/teams/$(teamId));
+    }
+
+    function isPublicTeam() {
+      return resource.data.isPublic == true && resource.data.isArchived != true;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /teamMembers/{teamId} {
+      allow read: if authenticated() && isTeamMember(teamId);
+      allow write: if false;
+    }
+
+    match /memberTeams/{userId} {
+      allow read: if authenticated() && userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /teamHistories/{teamId} {
+      allow read: if authenticated() && isTeamMember(teamId);
+      allow write: if false;
+    }
+
+    match /teams/{teamId} {
+      function isValidTeamId(teamId) {
+        return teamId.matches('[a-z0-9_-]+')
+      }
+
+      function isValidUpdateRequest() {
+        return !('id' in request.resource.data);
+      }
+
+      allow read: if isPublicTeam() || (authenticated() && isTeamMember(teamId));
+      allow create: if authenticated() && !teamExists(teamId) && isValidTeamId(teamId);
+      allow update: if authenticated() && isTeamMember(teamId) && isValidUpdateRequest();
+      allow delete: if false;
+    }
+
+    match /teams/{teamId}/lists/{document=**} {
+      allow read: if isPublicTeam() || (authenticated() && isTeamMember(teamId));
+      allow write: if authenticated() && isTeamMember(teamId);
+    }
+
+    match /teams/{teamId}/tracks/{document=**} {
+      allow read: if isPublicTeam() || (authenticated() && isTeamMember(teamId));
+      allow write: if authenticated() && isTeamMember(teamId);
+    }
+
+    match /teams/{teamId}/roles/{document=**} {
+      allow read: if isPublicTeam() || (authenticated() && isTeamMember(teamId));
+      allow write: if authenticated() && isTeamMember(teamId);
+    }
+
+    match /teams/{teamId}/people/{document=**} {
+      allow read: if isPublicTeam() || (authenticated() && isTeamMember(teamId));
+      allow write: if authenticated() && isTeamMember(teamId);
+    }
+
+    match /teams/{teamId}/lanes/{document=**} {
+      allow read: if isPublicTeam() || (authenticated() && isTeamMember(teamId));
+      allow write: if authenticated() && isTeamMember(teamId);
+    }
+  }
+}

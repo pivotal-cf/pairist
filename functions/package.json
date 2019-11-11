@@ -1,0 +1,23 @@
+{
+  "name": "functions",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "serve": "yarn build && firebase serve --only functions",
+    "shell": "yarn build && firebase functions:shell",
+    "start": "yarn shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "10"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^9.4.1",
+    "firebase-functions": "^3.11.0"
+  },
+  "devDependencies": {
+    "typescript": "4.1.2"
+  }
+}

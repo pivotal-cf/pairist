@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Pairist",
+  "name": "A smart pairing board that cares about how your team learns and shares.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,12 +8,17 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "logo-48x48.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "48x48"
     },
     {
-      "src": "logo512.png",
+      "src": "logo-92x92.png",
+      "type": "image/png",
+      "sizes": "92x92"
+    },
+    {
+      "src": "logo-512x512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

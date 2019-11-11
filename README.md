@@ -1,44 +1,27 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Pairist 2
 
-## Available Scripts
+This is a re-imagining of the Pairist project. Pairist is a web app for teams that pair. It helps you keep track of your pairs and pairing history, the work you have in progress, standup notes, and action items. It can recommend pairs each day based on who has context on what and how recently people have paired with one another.
 
-In the project directory, you can run:
+## What's new?
 
-### `yarn start`
+Pairist 2 makes several improvements and changes to original Pairist:
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 🔐 You log in as a _person_, not a team
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+Previously, Pairist only supported basic authentication (username/password). Login information was shared for a whole team. Pairist 2 uses Google authentication, and you authenticate as yourself (rather than as your team).
 
-### `yarn test`
+Now that you're logged in as a _person_, not a team, you can be a member of multiple teams!
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+A team's "people" are now real users who have been added to the team. Team members can be easily added to/removed from teams to support frequent team-switching.
 
-### `yarn build`
+### 🎨 New & improved UI
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The UI has been updated to be more accessible and more mobile-friendly. We moved away from the Material UI-style components in the original Pairist. Still, the interface should be familiar to anyone who has used the original Pairist.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+A few long-standing UI bugs were addressed, especially around text editing for list items and elements getting cut off in smaller browser windows.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### ⚛️ Rewritten using React, TypeScript, and Cloud Firestore
 
-### `yarn eject`
+The original version was written in Vue and regular JavaScript. Though this was working fine, in the spirit of experimentation we decided to migrate to React (for fun) and TypeScript (to benefit from static type-checking).
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+The back-end previously used Firebase's Realtime Database. Pairist 2 still uses Firebase, but has switched to the newer Cloud Firestore offering. [Learn more about the difference.](https://firebase.google.com/docs/database/rtdb-vs-firestore)

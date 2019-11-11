@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "$PAIRIST_PROJECT_ID" ]; then
+  echo "PAIRIST_PROJECT_ID is not set."
+  echo "This should be set to your Firebase project ID."
+  exit 1
+fi
+
+if [ -z "$PAIRIST_SERVICE_ACCOUNT_PATH" ]; then
+  echo "PAIRIST_SERVICE_ACCOUNT_PATH is not set."
+  echo "This should be a path to a service account key JSON file for your project."
+  exit 1
+fi
+
+if [ -z "$PAIRIST_ALLOWED_EMAIL_DOMAINS" ]; then
+  echo "WARNING: PAIRIST_ALLOWED_EMAIL_DOMAINS is not set."
+  echo "This allows signups from any email domains."
+  echo "If provided, this should be a comma-separated list of domains: 'gmail.com,example.com'"
+fi
+
+set -x
+
+# Install project dependencies
+yarn
+
+# Build project for deployment
+yarn build --mode production
+
+# Configure function environment
+firebase functions:config:set pairist.history_chunk_duration=10000
+firebase functions:config:set pairist.allowed_email_domains=${PAIRIST_ALLOWED_EMAIL_DOMAINS}
+
+# Deploy functions, hosting, database
+firebase deploy -P ${PAIRIST_PROJECT_ID}
