@@ -2,7 +2,9 @@
   <v-content>
     <router-view/>
 
+    <SunsetNotification/>
     <Notification/>
+
     <DraggingController
       v-if="canWrite"
       :draggables="['person', 'track', 'role']"
@@ -57,13 +59,18 @@
 
 <script>
 import Notification from '@/components/Notification'
+import SunsetNotification from '@/components/SunsetNotification'
 
 import DraggingController from './DraggingController'
 
 import { mapGetters } from 'vuex'
 
 export default {
-  components: { Notification, DraggingController },
+  components: {
+    Notification,
+    SunsetNotification,
+    DraggingController,
+  },
 
   computed: {
     history () {

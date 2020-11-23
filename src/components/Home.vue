@@ -55,6 +55,8 @@
         </v-flex>
       </v-layout>
     </v-container>
+
+    <SunsetNotification/>
     <Notification/>
   </v-content>
 </template>
@@ -63,10 +65,12 @@
 import { mapGetters, mapActions } from 'vuex'
 
 import Notification from '@/components/Notification'
+import SunsetNotification from '@/components/SunsetNotification'
 
 export default {
   components: {
     Notification,
+    SunsetNotification,
   },
 
   data () {
