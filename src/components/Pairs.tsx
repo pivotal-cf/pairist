@@ -91,6 +91,10 @@ const styles = css`
     height: 100%;
     display: flex;
     flex-direction: column;
+
+    @media screen and (max-width: $breakpoint) {
+      order: 99;
+    }
   }
 
   .header {
