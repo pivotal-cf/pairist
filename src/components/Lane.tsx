@@ -112,6 +112,7 @@ export default function Lane(props: Props) {
               emoji={track.emoji}
               color={track.color}
               draggable={!isLocked}
+              editable
             />
           ))}
           {roles.map((role) => (
@@ -123,6 +124,7 @@ export default function Lane(props: Props) {
               emoji={role.emoji}
               color={role.color}
               draggable={!isLocked}
+              editable
             />
           ))}
         </div>

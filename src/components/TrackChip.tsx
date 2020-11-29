@@ -14,6 +14,7 @@ interface Props {
   emoji?: string;
   name: string;
   color: string;
+  editable?: boolean;
 }
 
 export default function TrackChip(props: Props) {
@@ -41,25 +42,27 @@ export default function TrackChip(props: Props) {
     >
       {props.emoji && <span className={styles.emoji}>{emojis[props.emoji]}</span>}
       <span className={styles.name}>{props.name}</span>
-      <div className={styles.editButton}>
-        <IconButton
-          className={styles.editButton}
-          label={`edit ${props.flavor}`}
-          icon={<Edit2 />}
-          onClick={() =>
-            setModalContent(
-              <CreateTrackOrRole
-                mode="edit"
-                flavor={props.flavor}
-                entityId={props.entityId}
-                initialName={props.name}
-                initialColor={props.color}
-                initialEmoji={props.emoji}
-              />
-            )
-          }
-        />
-      </div>
+      {props.editable && (
+        <div className={styles.editButton}>
+          <IconButton
+            className={styles.editButton}
+            label={`edit ${props.flavor}`}
+            icon={<Edit2 />}
+            onClick={() =>
+              setModalContent(
+                <CreateTrackOrRole
+                  mode="edit"
+                  flavor={props.flavor}
+                  entityId={props.entityId}
+                  initialName={props.name}
+                  initialColor={props.color}
+                  initialEmoji={props.emoji}
+                />
+              )
+            }
+          />
+        </div>
+      )}
     </div>
   );
 }

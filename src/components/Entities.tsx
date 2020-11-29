@@ -88,6 +88,7 @@ export default function Entities(props: Props) {
                 emoji={track.emoji}
                 color={track.color}
                 draggable
+                editable
               />
             );
           })}
@@ -117,6 +118,7 @@ export default function Entities(props: Props) {
                 emoji={role.emoji}
                 color={role.color}
                 draggable
+                editable
               />
             );
           })}
