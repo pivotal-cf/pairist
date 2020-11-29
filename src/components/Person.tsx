@@ -5,13 +5,12 @@ import { cn } from '../helpers';
 interface Props {
   userId: string;
   displayName: string;
-  email?: string;
   photoURL: string;
   draggable: boolean;
 }
 
 export default function Person(props: Props) {
-  const name = props.displayName || props.email || 'Anonymous';
+  const name = props.displayName || '(no display name)';
 
   function onDragStart(evt: React.DragEvent<HTMLDivElement>) {
     evt.dataTransfer.setData('entityType', 'person');
