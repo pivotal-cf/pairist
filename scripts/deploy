@@ -8,12 +8,6 @@ if [ -z "$PAIRIST_PROJECT_ID" ]; then
   exit 1
 fi
 
-if [ -z "$PAIRIST_SERVICE_ACCOUNT_PATH" ]; then
-  echo "PAIRIST_SERVICE_ACCOUNT_PATH is not set."
-  echo "This should be a path to a service account key JSON file for your project."
-  exit 1
-fi
-
 if [ -z "$PAIRIST_ALLOWED_EMAIL_DOMAINS" ]; then
   echo "WARNING: PAIRIST_ALLOWED_EMAIL_DOMAINS is not set."
   echo "This allows signups from any email domains."
@@ -29,8 +23,10 @@ yarn
 yarn build --mode production
 
 # Configure function environment
-firebase functions:config:set pairist.history_chunk_duration=10000
 firebase functions:config:set pairist.allowed_email_domains=${PAIRIST_ALLOWED_EMAIL_DOMAINS}
+firebase functions:config:set pairist.history_cron_schedule=${PAIRIST_HISTORY_CRON_SCHEDULE}
+firebase functions:config:set pairist.history_cron_timezone=${PAIRIST_HISTORY_CRON_TIMEZONE}
+firebase functions:config:set pairist.history_entries_to_keep=${PAIRIST_HISTORY_ENTRIES_TO_KEEP}
 
 # Deploy functions, hosting, database
 firebase deploy -P ${PAIRIST_PROJECT_ID}
