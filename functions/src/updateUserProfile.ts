@@ -16,16 +16,13 @@ export const updateUserProfile = functions.https.onCall(async (data, context) =>
   const { uid } = context.auth;
   const { displayName, photoURL } = data;
 
-  console.log(
-    `Updating profile for user ${uid}, displayName: ${displayName}, photoURL: ${photoURL}`
-  );
-
-  const profileFields: any = {};
-  if (displayName) profileFields.displayName = displayName;
-  if (photoURL) profileFields.photoURL = photoURL;
+  console.log(`Updating profile for user ${uid}`);
 
   // First, actually update the authenticated user's profile
-  const updatedUser = await auth.updateUser(uid, profileFields);
+  const updatedUser = await auth.updateUser(uid, {
+    displayName: displayName || '',
+    photoURL: photoURL || '',
+  });
 
   // Then, we need to update the teamMembers collection to reflect the new displayName/photoURL.
   // To do that, first get the teams that this user is a member of.

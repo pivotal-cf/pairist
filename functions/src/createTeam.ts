@@ -43,8 +43,8 @@ export const createTeam = functions.https.onCall(async (data, context) => {
 
   batch.set(db.collection('teamMembers').doc(teamId), {
     [uid]: {
-      displayName: userDisplayName,
-      photoURL: userPhotoURL,
+      displayName: userDisplayName || '',
+      photoURL: userPhotoURL || '',
     },
   });
 
