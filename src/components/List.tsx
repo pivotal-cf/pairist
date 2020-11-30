@@ -1,7 +1,7 @@
 import { css } from 'astroturf';
 import React, { FormEvent, useCallback, useRef, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
-import { Trash2 } from 'react-feather';
+import { ArrowDown, ArrowUp, Trash2 } from 'react-feather';
 import { useParams } from 'react-router';
 import * as listActions from '../actions/list';
 import * as listItemActions from '../actions/list-item';
@@ -19,6 +19,9 @@ import Textarea from './Textarea';
 interface Props {
   listId: string;
   title: string;
+  index: number;
+  moveDown: (index: number) => any;
+  moveUp: (index: number) => any;
 }
 
 const ListItems: React.FC<{
@@ -133,8 +136,19 @@ export default function List(props: Props) {
             placeholder="Set list title..."
           />
         </div>
+        <IconButton
+          label="Move list down"
+          icon={<ArrowDown />}
+          onClick={() => props.moveDown(props.index)}
+        />
+        <IconButton
+          label="Move list up"
+          icon={<ArrowUp />}
+          onClick={() => props.moveUp(props.index)}
+        />
         <IconButton label="Delete list" icon={<Trash2 />} onClick={deleteList} />
       </h2>
+
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId={props.listId}>
           {(droppableProvided) => (

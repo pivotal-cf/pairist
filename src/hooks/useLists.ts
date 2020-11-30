@@ -1,13 +1,7 @@
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useParams } from 'react-router';
 import { db } from '../firebase';
-import { RouteParams } from '../types';
-
-interface List {
-  listId: string;
-  title: string;
-  order: number;
-}
+import { ListData, RouteParams } from '../types';
 
 export function useLists() {
   const { teamId = '-' } = useParams<RouteParams>();
@@ -23,5 +17,5 @@ export function useLists() {
     return [];
   }
 
-  return data as List[];
+  return data as ListData[];
 }

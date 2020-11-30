@@ -27,10 +27,45 @@ export default function Lists() {
     }
   }
 
+  async function moveListDown(movedIndex: number) {
+    if (movedIndex >= lists.length - 1) return;
+
+    const movedList = lists[movedIndex];
+    const movedListOrder = movedList.order;
+    const swappedList = lists[movedIndex + 1];
+    const swappedListOrder = swappedList.order;
+
+    listActions.reorderLists(teamId, [
+      { ...movedList, order: swappedListOrder },
+      { ...swappedList, order: movedListOrder },
+    ]);
+  }
+
+  async function moveListUp(movedIndex: number) {
+    if (movedIndex <= 0) return;
+
+    const movedList = lists[movedIndex];
+    const movedListOrder = movedList.order;
+    const swappedList = lists[movedIndex - 1];
+    const swappedListOrder = swappedList.order;
+
+    listActions.reorderLists(teamId, [
+      { ...movedList, order: swappedListOrder },
+      { ...swappedList, order: movedListOrder },
+    ]);
+  }
+
   let content: React.ReactNode = null;
   if (lists.length) {
-    content = lists.map((list) => (
-      <List key={list.listId} listId={list.listId} title={list.title} />
+    content = lists.map((list, index) => (
+      <List
+        key={list.listId}
+        listId={list.listId}
+        title={list.title}
+        index={index}
+        moveDown={moveListDown}
+        moveUp={moveListUp}
+      />
     ));
   }
 
