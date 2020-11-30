@@ -10,10 +10,6 @@ service cloud.firestore {
       return request.auth.uid in get(/databases/$(database)/documents/teamMembers/$(teamId)).data;
     }
 
-    function teamExists(teamId) {
-      return exists(/databases/$(database)/documents/teams/$(teamId));
-    }
-
     function isPublicTeam() {
       return resource.data.isPublic == true && resource.data.isArchived != true;
     }
@@ -38,17 +34,9 @@ service cloud.firestore {
     }
 
     match /teams/{teamId} {
-      function isValidTeamId(teamId) {
-        return teamId.matches('[a-z0-9_-]+')
-      }
-
-      function isValidUpdateRequest() {
-        return !('id' in request.resource.data);
-      }
-
       allow read: if isPublicTeam() || (authenticated() && isTeamMember(teamId));
-      allow create: if authenticated() && !teamExists(teamId) && isValidTeamId(teamId);
-      allow update: if authenticated() && isTeamMember(teamId) && isValidUpdateRequest();
+      allow create: if false;
+      allow update: if authenticated() && isTeamMember(teamId);
       allow delete: if false;
     }
 
