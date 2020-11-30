@@ -2,17 +2,19 @@ import { css } from 'astroturf';
 import React from 'react';
 import { Shuffle } from 'react-feather';
 import { useParams } from 'react-router-dom';
+import * as pairingActions from '../actions/pairing';
 import { useLanes } from '../hooks/useLanes';
+import { useNotification } from '../hooks/useNotification';
 import { usePeople } from '../hooks/usePeople';
 import { useRoles } from '../hooks/useRoles';
+import { useTeamHistories } from '../hooks/useTeamHistories';
 import { useTeamMembers } from '../hooks/useTeamMembers';
 import { useTracks } from '../hooks/useTracks';
 import { RoleData, RouteParams, TrackData } from '../types';
 import CreateLane from './CreateLane';
 import IconButton from './IconButton';
 import Lane from './Lane';
-
-async function recommendPairs() {}
+import Notification from './Notification';
 
 export default function Pairs() {
   const { teamId = '-' } = useParams<RouteParams>();
@@ -21,6 +23,8 @@ export default function Pairs() {
   const roles = useRoles();
   const people = usePeople();
   const members = useTeamMembers();
+  const teamHistory = useTeamHistories();
+  const [, setNotification] = useNotification();
 
   const tracksByLaneId: { [id: string]: TrackData[] } = {};
   const rolesByLaneId: { [id: string]: RoleData[] } = {};
@@ -55,6 +59,35 @@ export default function Pairs() {
       displayName: memberData.displayName,
       photoURL: memberData.photoURL,
     });
+  }
+
+  function recommendPairs() {
+    const madeRecommendation = pairingActions.getRecommendations(
+      teamId,
+      {
+        tracks: tracks.reduce(
+          (acc, track) => ({ ...acc, [track.trackId]: { laneId: track.laneId } }),
+          {}
+        ),
+        roles: roles.reduce(
+          (acc, role) => ({ ...acc, [role.roleId]: { laneId: role.laneId } }),
+          {}
+        ),
+        people: people.reduce(
+          (acc, person) => ({ ...acc, [person.userId]: { laneId: person.laneId } }),
+          {}
+        ),
+        lanes: lanes.reduce(
+          (acc, lane) => ({ ...acc, [lane.laneId]: { isLocked: lane.isLocked } }),
+          {}
+        ),
+      },
+      teamHistory
+    );
+
+    if (!madeRecommendation) {
+      setNotification('Failed to make a recommendation. Do you have too many lanes?');
+    }
   }
 
   return (

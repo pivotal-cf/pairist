@@ -1,11 +1,20 @@
-import React, { useContext, useState } from 'react';
+import React, {
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+  FC,
+  createContext,
+  useContext,
+  useState,
+} from 'react';
 
-const ModalContext = React.createContext<
-  [React.ReactNode, React.Dispatch<React.SetStateAction<React.ReactNode>>]
->([null, () => {}]);
+const ModalContext = createContext<[ReactNode, Dispatch<SetStateAction<ReactNode>>]>([
+  null,
+  () => {},
+]);
 
-export const ModalProvider: React.FC = props => {
-  const state = useState<React.ReactNode>(null);
+export const ModalProvider: FC = (props) => {
+  const state = useState<ReactNode>(null);
 
   return <ModalContext.Provider value={state}>{props.children}</ModalContext.Provider>;
 };

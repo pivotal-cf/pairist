@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 export const pairs = (array) => {
   let results = [];
 

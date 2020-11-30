@@ -48,3 +48,30 @@ export interface PersonData {
   userId: string;
   laneId: string;
 }
+
+export interface TeamPlacements {
+  tracks: {
+    [userId: string]: {
+      laneId: string;
+    };
+  };
+  roles: {
+    [userId: string]: {
+      laneId: string;
+    };
+  };
+  people: {
+    [userId: string]: {
+      laneId: string;
+    };
+  };
+  lanes: {
+    [laneId: string]: {
+      isLocked: boolean;
+    };
+  };
+}
+
+export interface TeamHistory {
+  [timestamp: string]: TeamPlacements;
+}

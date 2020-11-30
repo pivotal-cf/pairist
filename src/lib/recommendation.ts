@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import bigInt from 'big-integer';
 import { combination, permutation } from 'js-combinatorics';
 import _ from 'lodash';

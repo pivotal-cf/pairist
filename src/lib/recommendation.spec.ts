@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import assert from 'assert';
 import fs from 'fs';
 import { combination } from 'js-combinatorics';
