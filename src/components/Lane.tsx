@@ -102,7 +102,7 @@ export default function Lane(props: Props) {
             />
           ))}
         </div>
-        <div>
+        <div className={styles.chips}>
           {tracks.map((track) => (
             <TrackChip
               key={track.trackId}
@@ -170,6 +170,16 @@ const styles = css`
     flex-grow: 1;
   }
 
+  .chips {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
   .buttons {
+    display: flex;
+    flex-direction: column;
   }
 `;
