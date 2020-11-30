@@ -40,6 +40,13 @@ export const addTeamMember = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError('failed-precondition', 'Cannot add unverified user.');
   }
 
+  if (userToAdd.uid in currentMembers) {
+    throw new functions.https.HttpsError(
+      'failed-precondition',
+      'User is already a member of this team.'
+    );
+  }
+
   const batch = db.batch();
 
   batch.set(
