@@ -1,9 +1,12 @@
 import { css } from 'astroturf';
-import React, { useState } from 'react';
+import React from 'react';
 import { cn } from '../helpers';
 import IconButton from './IconButton';
+import ConfirmDelete from './ConfirmDelete';
 import { Lock, Trash, Unlock } from 'react-feather';
 import * as personActions from '../actions/person';
+import * as teamActions from '../actions/team';
+import { useModal } from '../hooks/useModal';
 
 interface Props {
   userId: string;
@@ -17,6 +20,7 @@ interface Props {
 
 export default function Person(props: Props) {
   const { displayName, teamId, isLocked, userId } = props;
+  const [, setModalContent] = useModal();
 
   const name = displayName || '(no display name)';
 
@@ -26,6 +30,15 @@ export default function Person(props: Props) {
     } else {
       personActions.lockPerson(teamId, userId);
     }
+  }
+
+  function removeMember() {
+    setModalContent(
+      <ConfirmDelete
+        action={`remove ${displayName || 'this user'} from this team`}
+        onConfirm={() => teamActions.removeTeamMember(teamId, userId)}
+      />
+    );
   }
 
   function onDragStart(evt: React.DragEvent<HTMLDivElement>) {
@@ -58,7 +71,7 @@ export default function Person(props: Props) {
             onClick={toggleLocked}
             dark={isLocked}
           />
-          <IconButton icon={<Trash />} label="Remove person from team" />
+          <IconButton icon={<Trash />} label="Remove person from team" onClick={removeMember} />
         </div>
       )}
     </div>

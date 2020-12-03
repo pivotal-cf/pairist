@@ -1,9 +1,10 @@
-import { auth, db, fieldValue, funcs } from '../firebase';
+import { auth, db, funcs } from '../firebase';
 import { TeamData } from '../types';
 
 const teamsRef = db.collection('teams');
 const createTeamFunc = funcs.httpsCallable('createTeam');
 const addTeamMemberFunc = funcs.httpsCallable('addTeamMember');
+const removeTeamMemberFunc = funcs.httpsCallable('removeTeamMember');
 
 export async function createTeam(team: Partial<TeamData>) {
   const { teamId, isPublic, teamName } = team;
@@ -42,13 +43,9 @@ export async function addTeamMember(teamId: string, teamName: string, memberEmai
   });
 }
 
-export async function removeTeamMember(opts: { id: string; userId: string }) {
-  await teamsRef.doc(opts.id).set(
-    {
-      members: {
-        [opts.userId]: fieldValue.delete(),
-      },
-    },
-    { merge: true }
-  );
+export async function removeTeamMember(teamId: string, userId: string) {
+  await removeTeamMemberFunc({
+    teamId,
+    userId,
+  });
 }
