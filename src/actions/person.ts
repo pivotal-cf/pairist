@@ -10,3 +10,22 @@ export async function movePersonToLane(teamId: string, userId: string, laneId: s
     { merge: true }
   );
 }
+
+export async function lockPerson(teamId: string, userId: string) {
+  await teamsRef.doc(teamId).collection('people').doc(userId).set(
+    {
+      isLocked: true,
+      laneId: '',
+    },
+    { merge: true }
+  );
+}
+
+export async function unlockPerson(teamId: string, userId: string) {
+  await teamsRef.doc(teamId).collection('people').doc(userId).set(
+    {
+      isLocked: false,
+    },
+    { merge: true }
+  );
+}

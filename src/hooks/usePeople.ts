@@ -1,12 +1,7 @@
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useParams } from 'react-router';
 import { db } from '../firebase';
-import { RouteParams } from '../types';
-
-interface PersonData {
-  laneId: string;
-  userId: string;
-}
+import { PersonData, RouteParams } from '../types';
 
 export function usePeople() {
   const { teamId = '-' } = useParams<RouteParams>();

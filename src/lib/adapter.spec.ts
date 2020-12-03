@@ -12,8 +12,9 @@ describe('adaptCurrentDataForRecommendationEngine', () => {
         l2: { isLocked: false },
       },
       people: {
-        p1: { laneId: '' },
-        p2: { laneId: 'l2' },
+        p1: { laneId: '', isLocked: false },
+        p2: { laneId: 'l2', isLocked: false },
+        p3: { laneId: '', isLocked: true },
       },
       roles: {
         r1: { laneId: 'l1' },
@@ -32,6 +33,7 @@ describe('adaptCurrentDataForRecommendationEngine', () => {
       entities: expect.arrayContaining([
         { '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED },
         { '.key': 'p2', type: 'person', location: 'l2' },
+        { '.key': 'p3', type: 'person', location: constants.LOCATION.OUT },
         { '.key': 'r1', type: 'role', location: 'l1' },
         { '.key': 'r2', type: 'role', location: constants.LOCATION.UNASSIGNED },
         { '.key': 't1', type: 'track', location: constants.LOCATION.UNASSIGNED },
@@ -49,8 +51,9 @@ describe('adaptHistoryDataForRecommendationEngine', () => {
           l2: { isLocked: false },
         },
         people: {
-          p1: { laneId: '' },
-          p2: { laneId: 'l2' },
+          p1: { laneId: '', isLocked: false },
+          p2: { laneId: 'l2', isLocked: false },
+          p3: { laneId: '', isLocked: true },
         },
         roles: {
           r1: { laneId: 'l1' },
@@ -82,6 +85,7 @@ describe('adaptHistoryDataForRecommendationEngine', () => {
         entities: expect.arrayContaining([
           { '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED },
           { '.key': 'p2', type: 'person', location: 'l2' },
+          { '.key': 'p3', type: 'person', location: constants.LOCATION.OUT },
           { '.key': 'r1', type: 'role', location: 'l1' },
           { '.key': 'r2', type: 'role', location: constants.LOCATION.UNASSIGNED },
           { '.key': 't1', type: 'track', location: constants.LOCATION.UNASSIGNED },

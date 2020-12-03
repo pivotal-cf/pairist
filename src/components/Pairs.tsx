@@ -14,7 +14,6 @@ import { RoleData, RouteParams, TrackData } from '../types';
 import CreateLane from './CreateLane';
 import IconButton from './IconButton';
 import Lane from './Lane';
-import Notification from './Notification';
 
 export default function Pairs() {
   const { teamId = '-' } = useParams<RouteParams>();
@@ -66,19 +65,31 @@ export default function Pairs() {
       teamId,
       {
         tracks: tracks.reduce(
-          (acc, track) => ({ ...acc, [track.trackId]: { laneId: track.laneId } }),
+          (acc, track) => ({
+            ...acc,
+            [track.trackId]: { laneId: track.laneId },
+          }),
           {}
         ),
         roles: roles.reduce(
-          (acc, role) => ({ ...acc, [role.roleId]: { laneId: role.laneId } }),
+          (acc, role) => ({
+            ...acc,
+            [role.roleId]: { laneId: role.laneId },
+          }),
           {}
         ),
         people: people.reduce(
-          (acc, person) => ({ ...acc, [person.userId]: { laneId: person.laneId } }),
+          (acc, person) => ({
+            ...acc,
+            [person.userId]: { laneId: person.laneId, isLocked: person.isLocked },
+          }),
           {}
         ),
         lanes: lanes.reduce(
-          (acc, lane) => ({ ...acc, [lane.laneId]: { isLocked: lane.isLocked } }),
+          (acc, lane) => ({
+            ...acc,
+            [lane.laneId]: { isLocked: lane.isLocked },
+          }),
           {}
         ),
       },

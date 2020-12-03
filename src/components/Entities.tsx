@@ -31,7 +31,10 @@ export default function Entities(props: Props) {
   const peopleLocations: any = people.reduce(
     (acc, person) => ({
       ...acc,
-      [person.userId]: person.laneId,
+      [person.userId]: {
+        laneId: person.laneId,
+        isLocked: person.isLocked,
+      },
     }),
     {}
   );
@@ -137,7 +140,9 @@ export default function Entities(props: Props) {
 
         <div className={styles.content}>
           {Object.keys(members).map((userId) => {
-            if (peopleLocations[userId]) return null;
+            const { laneId, isLocked } = peopleLocations[userId];
+
+            if (laneId) return null;
 
             const person = members[userId];
 
@@ -147,7 +152,10 @@ export default function Entities(props: Props) {
                 userId={userId}
                 displayName={person.displayName}
                 photoURL={person.photoURL}
+                teamId={teamId}
+                isLocked={isLocked}
                 draggable
+                editable
               />
             );
           })}

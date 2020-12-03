@@ -47,6 +47,7 @@ export interface LaneData {
 export interface PersonData {
   userId: string;
   laneId: string;
+  isLocked: boolean;
 }
 
 export interface TeamPlacements {
@@ -63,6 +64,7 @@ export interface TeamPlacements {
   people: {
     [userId: string]: {
       laneId: string;
+      isLocked: boolean;
     };
   };
   lanes: {

@@ -50,10 +50,14 @@ export function adaptCurrentDataForRecommendationEngine(current: TeamPlacements)
   Object.keys(people).forEach((userId) => {
     const person = people[userId];
 
+    let location = constants.LOCATION.UNASSIGNED;
+    if (person.isLocked) location = constants.LOCATION.OUT;
+    else if (person.laneId) location = person.laneId;
+
     adaptedEntities.push({
       '.key': userId,
       type: 'person',
-      location: person.laneId || constants.LOCATION.UNASSIGNED,
+      location,
     });
   });
 

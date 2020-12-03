@@ -1,24 +1,45 @@
 import { css } from 'astroturf';
-import React from 'react';
+import React, { useState } from 'react';
 import { cn } from '../helpers';
+import IconButton from './IconButton';
+import { Lock, Trash, Unlock } from 'react-feather';
+import * as personActions from '../actions/person';
 
 interface Props {
   userId: string;
   displayName: string;
   photoURL: string;
+  teamId: string;
+  isLocked?: boolean;
   draggable: boolean;
+  editable?: boolean;
 }
 
 export default function Person(props: Props) {
-  const name = props.displayName || '(no display name)';
+  const { displayName, teamId, isLocked, userId } = props;
+
+  const name = displayName || '(no display name)';
+
+  function toggleLocked() {
+    if (isLocked) {
+      personActions.unlockPerson(teamId, userId);
+    } else {
+      personActions.lockPerson(teamId, userId);
+    }
+  }
 
   function onDragStart(evt: React.DragEvent<HTMLDivElement>) {
+    if (isLocked) return;
     evt.dataTransfer.setData('entityType', 'person');
     evt.dataTransfer.setData('entityId', props.userId);
   }
 
   return (
-    <div className={cn(styles.person)} draggable={props.draggable} onDragStart={onDragStart}>
+    <div
+      className={cn(styles.person)}
+      draggable={props.draggable && !isLocked}
+      onDragStart={onDragStart}
+    >
       <div className={styles.photo}>
         {props.photoURL ? (
           <img className={styles.img} src={props.photoURL} alt={name} draggable={false} />
@@ -26,7 +47,20 @@ export default function Person(props: Props) {
           <svg className={styles.img} width="80" height="80" data-jdenticon-value={props.userId} />
         )}
       </div>
+
       <div className={styles.name}>{name}</div>
+
+      {props.editable && (
+        <div className={styles.buttons}>
+          <IconButton
+            icon={isLocked ? <Lock /> : <Unlock />}
+            label={isLocked ? 'Unlock person' : 'Lock person'}
+            onClick={toggleLocked}
+            dark={isLocked}
+          />
+          <IconButton icon={<Trash />} label="Remove person from team" />
+        </div>
+      )}
     </div>
   );
 }
@@ -63,5 +97,9 @@ const styles = css`
 
   .name {
     padding: 0 $unit;
+  }
+
+  .buttons {
+    margin-right: $unit-half;
   }
 `;

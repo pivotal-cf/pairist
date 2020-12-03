@@ -97,6 +97,7 @@ export default function Lane(props: Props) {
               key={person.userId}
               userId={person.userId}
               displayName={person.displayName}
+              teamId={teamId}
               photoURL={person.photoURL}
               draggable={!isLocked}
             />
