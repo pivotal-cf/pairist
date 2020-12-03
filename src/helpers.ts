@@ -1,5 +1,11 @@
 export const cn = (...classNames: any[]) => {
-  return classNames.filter(Boolean).join(' ');
+  let merged = '';
+
+  for (const className of classNames) {
+    if (className) merged += ' ' + className;
+  }
+
+  return merged;
 };
 
 export function validateTeamSettings(teamName: string, teamURL: string) {
