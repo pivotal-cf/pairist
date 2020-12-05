@@ -20,7 +20,7 @@ export const addTeamMember = functions.https.onCall(async (data, context) => {
   const membersSnapshot = await db.collection('teamMembers').doc(teamId).get();
   const currentMembers = membersSnapshot.data() || {};
 
-  if (!(uid in currentMembers)) {
+  if (!currentMembers.hasOwnProperty(uid)) {
     throw new functions.https.HttpsError(
       'failed-precondition',
       'Not authenticated as a member of this team.'
@@ -40,7 +40,7 @@ export const addTeamMember = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError('failed-precondition', 'Cannot add unverified user.');
   }
 
-  if (userToAdd.uid in currentMembers) {
+  if (currentMembers.hasOwnProperty(userToAdd.uid)) {
     throw new functions.https.HttpsError(
       'failed-precondition',
       'User is already a member of this team.'

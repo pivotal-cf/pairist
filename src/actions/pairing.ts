@@ -44,11 +44,11 @@ export function getRecommendations(teamId: string, current: TeamPlacements, hist
     }
 
     for (const entityId of entities) {
-      if (entityId in current.tracks) {
+      if (current.tracks.hasOwnProperty(entityId)) {
         trackActions.moveTrackToLane(teamId, entityId, laneId);
-      } else if (entityId in current.roles) {
+      } else if (current.roles.hasOwnProperty(entityId)) {
         roleActions.moveRoleToLane(teamId, entityId, laneId);
-      } else if (entityId in current.people) {
+      } else if (current.people.hasOwnProperty(entityId)) {
         personActions.movePersonToLane(teamId, entityId, laneId);
       }
     }

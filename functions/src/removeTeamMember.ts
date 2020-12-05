@@ -19,7 +19,7 @@ export const removeTeamMember = functions.https.onCall(async (data, context) => 
   const membersSnapshot = await db.collection('teamMembers').doc(teamId).get();
   const currentMembers = membersSnapshot.data() || {};
 
-  if (!(uid in currentMembers)) {
+  if (!currentMembers.hasOwnProperty(uid)) {
     throw new functions.https.HttpsError(
       'failed-precondition',
       'Not authenticated as a member of this team.'
@@ -28,7 +28,7 @@ export const removeTeamMember = functions.https.onCall(async (data, context) => 
 
   console.log(`Removing user ${userId} from team ${teamId}`);
 
-  if (!(userId in currentMembers)) {
+  if (!currentMembers.hasOwnProperty(userId)) {
     throw new functions.https.HttpsError(
       'failed-precondition',
       'User is not a member of this team.'
