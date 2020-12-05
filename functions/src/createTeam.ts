@@ -14,7 +14,7 @@ export const createTeam = functions.https.onCall(async (data, context) => {
 
   const { uid } = context.auth;
 
-  let { teamId, teamName, isPublic, userDisplayName, userPhotoURL } = data;
+  let { teamId, teamName, userDisplayName, userPhotoURL } = data;
 
   teamId = teamId.toLowerCase();
 
@@ -33,7 +33,6 @@ export const createTeam = functions.https.onCall(async (data, context) => {
 
   batch.set(db.collection('teams').doc(teamId), {
     created: admin.firestore.FieldValue.serverTimestamp(),
-    isPublic: isPublic || false,
     teamName,
   });
 

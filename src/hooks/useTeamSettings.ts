@@ -5,8 +5,6 @@ import { RouteParams } from '../types';
 
 interface TeamSettings {
   teamName: string;
-  isPublic: boolean;
-  isArchived: boolean;
 }
 
 export function useTeamSettings() {

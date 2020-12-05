@@ -18,7 +18,6 @@ export const CreateTeam: React.FC = () => {
   const [, setModalContent] = useModal();
   const [teamName, setTeamName] = useState('');
   const [teamURL, setTeamURL] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -44,7 +43,6 @@ export const CreateTeam: React.FC = () => {
       await teamActions.createTeam({
         teamId: teamURL,
         teamName,
-        isPublic,
       });
 
       setModalContent(null);
@@ -83,15 +81,6 @@ export const CreateTeam: React.FC = () => {
             }}
           />
         </FormField>
-
-        <Checkbox
-          id="create-team-is-public"
-          label="Make team publicly visible"
-          value={isPublic}
-          onChange={(evt) => {
-            setIsPublic(evt.target.checked);
-          }}
-        />
       </ModalBody>
 
       <ModalFooter error={error}>

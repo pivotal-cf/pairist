@@ -5,7 +5,6 @@ export interface RouteParams {
 export interface TeamData {
   teamId: string;
   teamName: string;
-  isPublic: boolean;
 }
 
 export interface ListData {

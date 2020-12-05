@@ -28,11 +28,6 @@ export default function EditTeam(props: Props) {
     setTeamName(teamSettings.teamName);
   }, [teamSettings.teamName]);
 
-  const [isPublic, setIsPublic] = useState(false);
-  useEffect(() => {
-    setIsPublic(teamSettings.isPublic);
-  }, [teamSettings.isPublic]);
-
   async function save(evt?: FormEvent) {
     evt && evt.preventDefault();
 
@@ -45,7 +40,6 @@ export default function EditTeam(props: Props) {
     await teamActions.updateTeam({
       teamId: props.teamId,
       teamName,
-      isPublic,
     });
 
     setModalContent(null);
@@ -67,15 +61,6 @@ export default function EditTeam(props: Props) {
             }}
           />
         </FormField>
-
-        <Checkbox
-          id="edit-team-is-public"
-          label="Make team publicly visible"
-          value={isPublic || false}
-          onChange={(evt) => {
-            setIsPublic(evt.target.checked);
-          }}
-        />
       </ModalBody>
 
       <ModalFooter error={error}>

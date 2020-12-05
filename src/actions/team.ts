@@ -7,7 +7,7 @@ const addTeamMemberFunc = funcs.httpsCallable('addTeamMember');
 const removeTeamMemberFunc = funcs.httpsCallable('removeTeamMember');
 
 export async function createTeam(team: Partial<TeamData>) {
-  const { teamId, isPublic, teamName } = team;
+  const { teamId, teamName } = team;
 
   if (!teamId) return;
 
@@ -16,7 +16,6 @@ export async function createTeam(team: Partial<TeamData>) {
   await createTeamFunc({
     teamId,
     teamName,
-    isPublic,
     userDisplayName: currentUser ? currentUser.displayName : '',
     userPhotoURL: currentUser ? currentUser.photoURL : '',
   });
@@ -24,7 +23,6 @@ export async function createTeam(team: Partial<TeamData>) {
 
 export async function updateTeam(team: Partial<TeamData>) {
   const opts: Partial<TeamData> = {};
-  if ('isPublic' in team) opts.isPublic = team.isPublic;
   if ('teamName' in team) opts.teamName = team.teamName;
 
   await teamsRef.doc(team.teamId).set(

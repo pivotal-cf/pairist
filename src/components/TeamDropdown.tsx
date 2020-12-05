@@ -57,13 +57,7 @@ export default function TeamDropdown(props: Props) {
 
   let buttonContent;
   if (currentTeamName) {
-    buttonContent = (
-      <>
-        <span>{currentTeamName}</span>
-        {teamSettings.isPublic && <span className={styles.publicTag}>public</span>}
-        {teamSettings.isArchived && <span className={styles.archivedTag}>archived</span>}
-      </>
-    );
+    buttonContent = <span>{currentTeamName}</span>;
   } else {
     buttonContent = <span>Loading...</span>;
   }
@@ -91,25 +85,5 @@ const styles = css`
     display: inline-block;
     width: 0.8em;
     height: 0.8em;
-  }
-
-  .publicTag {
-    font-size: 0.7em;
-    vertical-align: middle;
-    border-radius: $unit-half;
-    padding: $unit-half;
-    margin-left: $unit;
-    font-weight: normal;
-    background: rgba(255, 255, 255, 0.2);
-  }
-
-  .archivedTag {
-    font-size: 0.7em;
-    vertical-align: middle;
-    border-radius: $unit-half;
-    padding: $unit-half;
-    margin-left: $unit;
-    font-weight: normal;
-    background: rgba(255, 50, 50, 0.2);
   }
 `;
