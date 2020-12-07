@@ -2,31 +2,38 @@
 
 set -e
 
-if [ -z "$PAIRIST_PROJECT_ID" ]; then
-  echo "PAIRIST_PROJECT_ID is not set."
+if [ -z "$PAIRIST_FIREBASE_PROJECT_ID" ]; then
+  echo "PAIRIST_FIREBASE_PROJECT_ID is not set."
   echo "This should be set to your Firebase project ID."
+  exit 1
+fi
+
+if [ -z "$PAIRIST_FIREBASE_API_KEY" ]; then
+  echo "PAIRIST_FIREBASE_API_KEY is not set."
+  echo "This should be set to your Firebase API key."
   exit 1
 fi
 
 if [ -z "$PAIRIST_ALLOWED_EMAIL_DOMAINS" ]; then
   echo "WARNING: PAIRIST_ALLOWED_EMAIL_DOMAINS is not set."
-  echo "This allows signups from any email domains."
+  echo "This allows sign-ups from any email domains."
   echo "If provided, this should be a comma-separated list of domains: 'gmail.com,example.com'"
 fi
 
+echo "Deploying to project $PAIRIST_FIREBASE_PROJECT_ID..."
+
 set -x
 
-# Install project dependencies
-yarn
-
-# Build project for deployment
-yarn build --mode production
-
 # Configure function environment
-firebase functions:config:set pairist.allowed_email_domains=${PAIRIST_ALLOWED_EMAIL_DOMAINS}
-firebase functions:config:set pairist.history_cron_schedule=${PAIRIST_HISTORY_CRON_SCHEDULE}
-firebase functions:config:set pairist.history_cron_timezone=${PAIRIST_HISTORY_CRON_TIMEZONE}
-firebase functions:config:set pairist.history_entries_to_keep=${PAIRIST_HISTORY_ENTRIES_TO_KEEP}
+firebase functions:config:set \
+  pairist.allowed_email_domains=${PAIRIST_ALLOWED_EMAIL_DOMAINS} \
+  pairist.history_cron_schedule=${PAIRIST_HISTORY_CRON_SCHEDULE} \
+  pairist.history_cron_timezone=${PAIRIST_HISTORY_CRON_TIMEZONE} \
+  pairist.history_entries_to_keep=${PAIRIST_HISTORY_ENTRIES_TO_KEEP}
 
 # Deploy functions, hosting, database
-firebase deploy -P ${PAIRIST_PROJECT_ID}
+REACT_APP_FIREBASE_PROJECT_ID=${PAIRIST_FIREBASE_PROJECT_ID} \
+REACT_APP_FIREBASE_API_KEY=${PAIRIST_FIREBASE_API_KEY} \
+REACT_APP_FIREBASE_AUTH_DOMAIN="${PAIRIST_FIREBASE_PROJECT_ID}.firebaseapp.com" \
+REACT_APP_FIREBASE_URL="https://${PAIRIST_FIREBASE_PROJECT_ID}.firebaseio.com" \
+  firebase deploy -P ${PAIRIST_FIREBASE_PROJECT_ID}
