@@ -5,7 +5,6 @@ import { useModal } from '../hooks/useModal';
 import { useSession } from '../hooks/useSession';
 import { useTeamSettings } from '../hooks/useTeamSettings';
 import Button from './Button';
-import Checkbox from './Checkbox';
 import FormField from './FormField';
 import Input from './Input';
 import ModalBody from './ModalBody';

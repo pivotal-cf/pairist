@@ -7,6 +7,7 @@ interface Props {
   className?: string;
   label?: string;
   value?: boolean;
+  readOnly?: boolean;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -19,6 +20,7 @@ export default function Checkbox(props: Props) {
         id={props.id}
         checked={props.value}
         onChange={props.onChange}
+        readOnly={props.readOnly}
       />
       {props.label && (
         <label className={styles.label} htmlFor={props.id}>

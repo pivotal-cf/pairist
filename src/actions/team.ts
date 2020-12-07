@@ -21,12 +21,12 @@ export async function createTeam(team: Partial<TeamData>) {
   });
 }
 
-export async function updateTeam(team: Partial<TeamData>) {
+export async function updateTeam(newValues: Partial<TeamData>) {
   const opts: Partial<TeamData> = {};
 
-  if (team.hasOwnProperty('teamName')) opts.teamName = team.teamName;
+  if (newValues.hasOwnProperty('teamName')) opts.teamName = newValues.teamName;
 
-  await teamsRef.doc(team.teamId).set(
+  await teamsRef.doc(newValues.teamId).set(
     {
       ...opts,
     },
