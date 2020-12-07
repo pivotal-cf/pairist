@@ -1,5 +1,5 @@
 import { useDocumentData } from 'react-firebase-hooks/firestore';
-import { useParams, useHistory } from 'react-router';
+import { useParams } from 'react-router';
 import { db } from '../firebase';
 import { RouteParams } from '../types';
 

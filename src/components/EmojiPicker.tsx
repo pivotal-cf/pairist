@@ -1,14 +1,12 @@
 import { css } from 'astroturf';
 import React, { useState } from 'react';
-import { emojis } from '../emojis';
+import { emojis, emojiList } from '../emojis';
 import Button from './Button';
 
 interface Props {
   selected: string;
   onSelect: (emojiName: string) => void;
 }
-
-const emojiList = Object.entries(emojis);
 
 export default function EmojiPicker(props: Props) {
   const [expanded, setExpanded] = useState(false);
@@ -53,7 +51,9 @@ export default function EmojiPicker(props: Props) {
 
   return (
     <div className={styles.container}>
-      <Button onClick={() => setExpanded(!expanded)}>{emojis[props.selected]}</Button>
+      <Button className={styles.emojiBtn} onClick={() => setExpanded(!expanded)}>
+        {emojis[props.selected]}
+      </Button>
 
       {popup}
     </div>
@@ -104,6 +104,7 @@ const styles = css`
     background: none;
     cursor: pointer;
     border-radius: 4px;
+    text-align: center;
 
     &:hover {
       background: $color-border;

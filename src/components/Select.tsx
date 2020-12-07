@@ -16,8 +16,9 @@ export default function Select(props: Props) {
       className={cn(styles.select, props.className)}
       id={props.id}
       value={props.value}
-      onChange={props.onChange}>
-      {props.values.map(option => (
+      onChange={props.onChange}
+    >
+      {props.values.map((option) => (
         <option key={option.value} value={option.value}>
           {option.name}
         </option>
@@ -32,7 +33,7 @@ const styles = css`
   .select {
     padding: $unit;
     display: block;
-    font-size: inherit;
+    font-size: 1em;
     border: none;
     border-radius: $unit-half;
     width: 100%;

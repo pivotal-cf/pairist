@@ -1,5 +1,3 @@
-// AUTO-GENERATED
-
 export const emojis: { [name: string]: string } = {
   // Smileys & Emotion
   grinning: '😀',
@@ -1480,3 +1478,5 @@ export const emojis: { [name: string]: string } = {
   funeral_urn: '⚱️',
   moyai: '🗿',
 };
+
+export const emojiList = Object.entries(emojis);

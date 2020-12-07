@@ -14,6 +14,7 @@ interface Props {
   type?: 'submit' | 'button';
   children: React.ReactNode;
   submitting?: boolean;
+  className?: string;
   submittingText?: string;
   style?: object;
 }
@@ -28,18 +29,20 @@ export default function Button(props: Props) {
     type = 'button',
     submitting,
     submittingText,
+    className,
     ...restProps
   } = props;
 
-  const className = cn(
+  const fullClassName = cn(
     styles.button,
     props.bold && styles.bold,
-    props.flavor && styles[props.flavor]
+    props.flavor && styles[props.flavor],
+    className
   );
 
   if (href) {
     return (
-      <Link to={href} {...restProps} className={className}>
+      <Link to={href} {...restProps} className={fullClassName}>
         {submitting ? submittingText || 'Saving...' : children}
         {icon && (
           <div className={styles.icon} aria-hidden="true">
@@ -51,7 +54,7 @@ export default function Button(props: Props) {
   }
 
   return (
-    <button {...restProps} type={type} className={className}>
+    <button {...restProps} type={type} className={fullClassName}>
       {leftIcon && (
         <div className={styles.leftIcon} aria-hidden="true">
           {leftIcon}

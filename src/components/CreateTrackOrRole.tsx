@@ -1,15 +1,18 @@
 import { css } from 'astroturf';
 import 'emoji-mart/css/emoji-mart.css';
 import React, { FormEvent, useState } from 'react';
+import { Shuffle } from 'react-feather';
 import { useParams } from 'react-router';
 import * as roleActions from '../actions/role';
 import * as trackActions from '../actions/track';
 import { colors } from '../colors';
+import { emojiList } from '../emojis';
 import { useModal } from '../hooks/useModal';
 import { RouteParams } from '../types';
 import Button from './Button';
 import EmojiPicker from './EmojiPicker';
 import FormField from './FormField';
+import IconButton from './IconButton';
 import Input from './Input';
 import ModalBody from './ModalBody';
 import ModalFooter from './ModalFooter';
@@ -26,17 +29,30 @@ interface Props {
   initialColor?: string;
 }
 
+function getRandomEmoji() {
+  return emojiList[Math.floor(Math.random() * emojiList.length)][0];
+}
+
+function getRandomColor() {
+  return colors[Math.floor(Math.random() * colors.length)].value;
+}
+
 export default function CreateTrackOrRole(props: Props) {
   const { teamId = '-' } = useParams<RouteParams>();
   const [, setModalContent] = useModal();
   const [name, setName] = useState(props.initialName || 'Untitled');
-  const [emoji, setEmoji] = useState(props.initialEmoji || 'grinning');
-  const [color, setColor] = useState(props.initialColor || colors[0].value);
+  const [emoji, setEmoji] = useState(props.initialEmoji || getRandomEmoji());
+  const [color, setColor] = useState(props.initialColor || getRandomColor());
   const [error, setError] = useState('');
   const canSubmit = Boolean(!error);
 
   function cancel() {
     setModalContent(null);
+  }
+
+  function randomize() {
+    setEmoji(getRandomEmoji());
+    setColor(getRandomColor());
   }
 
   async function save(evt?: FormEvent) {
@@ -92,7 +108,7 @@ export default function CreateTrackOrRole(props: Props) {
             <EmojiPicker selected={emoji} onSelect={(selected) => setEmoji(selected)} />
           </FormField>
 
-          <FormField label="Color">
+          <FormField label="Color" grow>
             <Select
               id="create-edit-track-or-role-color"
               value={color}
@@ -101,6 +117,10 @@ export default function CreateTrackOrRole(props: Props) {
                 setColor(evt.target.value);
               }}
             />
+          </FormField>
+
+          <FormField label="&nbsp;">
+            <IconButton label="Randomize" icon={<Shuffle />} onClick={randomize} />
           </FormField>
         </div>
 
