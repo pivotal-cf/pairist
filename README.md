@@ -1,18 +1,20 @@
-# Pairist 2
+# Pairist v2
 
 This is a re-imagining of the Pairist project. Pairist is a web app for teams that pair. It helps you keep track of your pairs and pairing history, the work you have in progress, standup notes, and action items. It can recommend pairs each day based on who has context on what and how recently people have paired with one another.
 
 ## What's new?
 
-Pairist 2 makes several improvements and changes to original Pairist:
+Pairist v2 makes several improvements and changes to the original Pairist:
 
 ### 🔐 You log in as a _person_, not a team
 
-Previously, Pairist only supported basic authentication (username/password). Login information was shared for a whole team. Pairist 2 uses Google authentication, and you authenticate as yourself (rather than as your team).
+Previously, Pairist v1 only allowed a single username/password for a whole team. In Pairist v2 you authenticate as **yourself**, with your own credentials.
 
 Now that you're logged in as a _person_, not a team, you can be a member of multiple teams!
 
-A team's "people" are now real users who have been added to the team. Team members can be easily added to/removed from teams to support frequent team-switching.
+A team's "people" are now real users who have been added to the team. Team members can be easily added to/removed from teams to better support rotation between teams.
+
+Plus, since you own your own login, you can reset your password! The v1 implementation left us unable to leverage Firebase's password-reset feature.
 
 ### 🎨 New & improved UI
 
