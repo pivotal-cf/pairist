@@ -2,7 +2,7 @@ import { css } from 'astroturf';
 import React from 'react';
 import { Edit2 } from 'react-feather';
 import { emojis } from '../emojis';
-import { cn } from '../helpers';
+import { cn, hexToRgb, rgbToHsl } from '../helpers';
 import { useModal } from '../hooks/useModal';
 import CreateTrackOrRole from './CreateTrackOrRole';
 import IconButton from './IconButton';
@@ -17,6 +17,17 @@ interface Props {
   editable?: boolean;
 }
 
+function readableTextColor(bgHexColor: string) {
+  const [r, g, b] = hexToRgb(bgHexColor);
+  let [h, s, l] = rgbToHsl(+r, +g, +b);
+
+  h = (h + 0.5) % 1;
+  s = (s + 0.5) % 1;
+  l = (l + 0.5) % 1;
+
+  return `hsl(${h * 360}, ${s * 100}%, ${l * 100}%)`;
+}
+
 export default function TrackChip(props: Props) {
   const [, setModalContent] = useModal();
 
@@ -25,18 +36,13 @@ export default function TrackChip(props: Props) {
     evt.dataTransfer.setData('entityId', props.entityId);
   }
 
-  if (!styles[`color-${props.color}`]) {
-    return null;
-  }
-
   return (
     <div
-      className={cn(
-        styles.chip,
-        styles[props.flavor],
-        styles.draggable,
-        styles[`color-${props.color}`]
-      )}
+      className={cn(styles.chip, styles[props.flavor], styles.draggable)}
+      style={{
+        background: props.color,
+        color: readableTextColor(props.color),
+      }}
       draggable={props.draggable}
       onDragStart={onDragStart}
     >
@@ -118,60 +124,5 @@ const styles = css`
     line-height: 1em;
     font-size: 1.4em;
     margin-right: $unit;
-  }
-
-  .color-red {
-    background-color: #ee0000;
-    color: #fff;
-  }
-
-  .color-teal {
-    background-color: #00ddcc;
-    color: #000;
-  }
-
-  .color-pink {
-    background-color: #dd0099;
-    color: #fff;
-  }
-
-  .color-purple {
-    background-color: #770077;
-    color: #fff;
-  }
-
-  .color-indigo {
-    background-color: #5500ff;
-    color: #fff;
-  }
-
-  .color-blue {
-    background-color: #0077ee;
-    color: #fff;
-  }
-
-  .color-navy {
-    background-color: #000066;
-    color: #fff;
-  }
-
-  .color-green {
-    background-color: #009900;
-    color: #fff;
-  }
-
-  .color-lime {
-    background-color: #99ff00;
-    color: #000;
-  }
-
-  .color-orange {
-    background-color: #ee6600;
-    color: #fff;
-  }
-
-  .color-yellow {
-    background-color: #ffdd00;
-    color: #000;
   }
 `;
