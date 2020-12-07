@@ -73,6 +73,7 @@ const styles = css`
     height: 1em;
     margin-right: 8px;
     border-radius: 2px;
+    background-color: white;
   }
 
   .icon {

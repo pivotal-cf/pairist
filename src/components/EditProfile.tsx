@@ -33,8 +33,11 @@ export default function EditProfile() {
         photoURL: localPhotoURL,
       });
 
-      await auth.currentUser?.reload();
-      auth.currentUser?.getIdToken(true);
+      // HACK: for some reason I can't yet figure out, the user image/display name
+      // shown in the header won't update after editing user profile. The simplest thing
+      // that worked is to force a refresh. Hacky, but I don't expect users to be editing
+      // their profile too frequently, so it's okay for now.
+      window.location.reload();
     } finally {
       setSubmitting(false);
     }
@@ -48,8 +51,8 @@ export default function EditProfile() {
 
       <ModalBody row>
         <div className={styles.imageContainer}>
-          {photoURL ? (
-            <img className={styles.image} src={photoURL} alt="Profile" />
+          {localPhotoURL ? (
+            <img className={styles.image} src={localPhotoURL} alt="Profile" />
           ) : (
             <svg className={styles.image} width="80" height="80" data-jdenticon-value={userId} />
           )}

@@ -16,7 +16,7 @@ export const updateUserProfile = functions.https.onCall(async (data, context) =>
   // First, actually update the authenticated user's profile
   const updatedUser = await auth.updateUser(uid, {
     displayName: displayName || '',
-    photoURL: photoURL || '',
+    photoURL: photoURL || null,
   });
 
   // Then, we need to update the teamMembers collection to reflect the new displayName/photoURL.
