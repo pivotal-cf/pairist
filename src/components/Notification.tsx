@@ -30,9 +30,9 @@ const styles = css`
 
   .alert {
     z-index: 9999;
-    background: lighten($color-danger, 50);
-    color: $color-danger;
-    border: 2px solid $color-danger;
+    box-shadow: 0 0 $unit-2 0px rgba(0, 0, 0, 0.2);
+    background: $color-danger;
+    color: $color-light;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
