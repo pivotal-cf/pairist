@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Switch } from 'react-router';
 import { useModal } from '../hooks/useModal';
 import { useSession } from '../hooks/useSession';
@@ -10,6 +10,7 @@ import Modal from './Modal';
 import SignIn from './SignIn';
 import Team from './Team';
 import Notification from './Notification';
+import { db, auth } from '../firebase';
 
 export default function App() {
   const [modalContent] = useModal();
@@ -17,6 +18,25 @@ export default function App() {
   const { loaded, userId } = useSession();
 
   const notLoggedIn = loaded && !userId;
+
+  useEffect(() => {
+    // When a new user signs in for the first time, there will be a brief
+    // window where their email is not yet verified by the cloud function. Assuming
+    // their email is valid, once the function verifies this it will update the
+    // userRefresh collection. Here, we subscribe to changes there so we can refresh
+    // the token when the user's email is verified.
+    if (userId) {
+      const unsubscribe = db
+        .collection('userRefresh')
+        .doc(userId)
+        .onSnapshot(async () => {
+          await auth.currentUser?.reload();
+          auth.currentUser?.getIdToken(true);
+        });
+
+      return unsubscribe;
+    }
+  }, [userId]);
 
   return (
     <div className={styles.app}>

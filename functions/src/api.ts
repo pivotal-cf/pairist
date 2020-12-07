@@ -66,10 +66,10 @@ async function validateFirebaseAuthentication(
   }
 
   try {
-    const user = await admin.auth().verifyIdToken(idToken);
+    const token = await admin.auth().verifyIdToken(idToken);
 
-    if (user.email_verified) {
-      res.locals.userId = user.uid;
+    if (token.pairistValidEmail === true) {
+      res.locals.userId = token.uid;
       next();
     } else {
       res.send(403).send('Unverified');

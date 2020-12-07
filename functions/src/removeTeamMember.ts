@@ -1,18 +1,13 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
+import { ensureAuthenticated } from './helpers';
 
 const db = admin.firestore();
 
 export const removeTeamMember = functions.https.onCall(async (data, context) => {
-  if (!context.auth || !context.auth.uid) {
-    throw new functions.https.HttpsError('unauthenticated', 'Unauthenticated.');
-  }
+  ensureAuthenticated(context);
 
-  if (!context.auth.token.email_verified) {
-    throw new functions.https.HttpsError('unauthenticated', 'Unverified.');
-  }
-
-  const { uid } = context.auth;
+  const { uid } = context.auth!;
 
   const { teamId, userId } = data;
 

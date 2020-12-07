@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function authenticated() {
-      return request.auth.uid != null;
+      return request.auth.uid != null && request.auth.token.pairistValidEmail == true;
     }
 
     function isTeamMember(teamId) {
@@ -12,6 +12,11 @@ service cloud.firestore {
 
     match /{document=**} {
       allow read, write: if false;
+    }
+
+    match /userRefresh/{userId} {
+      allow read: if request.auth.uid != null && userId == request.auth.uid;
+      allow write: if false;
     }
 
     match /teamMembers/{teamId} {

@@ -1,19 +1,14 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
+import { ensureAuthenticated } from './helpers';
 
 const db = admin.firestore();
 const auth = admin.auth();
 
 export const addTeamMember = functions.https.onCall(async (data, context) => {
-  if (!context.auth || !context.auth.uid) {
-    throw new functions.https.HttpsError('unauthenticated', 'Unauthenticated.');
-  }
+  ensureAuthenticated(context);
 
-  if (!context.auth.token.email_verified) {
-    throw new functions.https.HttpsError('unauthenticated', 'Unverified.');
-  }
-
-  const { uid } = context.auth;
+  const { uid } = context.auth!;
 
   const { teamId, teamName, memberEmail } = data;
 
@@ -36,7 +31,7 @@ export const addTeamMember = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError('not-found', 'User not found.');
   }
 
-  if (!userToAdd.emailVerified) {
+  if (userToAdd.customClaims?.pairistValidEmail !== true) {
     throw new functions.https.HttpsError('failed-precondition', 'Cannot add unverified user.');
   }
 
