@@ -1,7 +1,6 @@
 import { css } from 'astroturf';
 import React, { FormEvent, useState } from 'react';
 import * as userActions from '../actions/user';
-import { auth } from '../firebase';
 import { useModal } from '../hooks/useModal';
 import { useSession } from '../hooks/useSession';
 import Button from './Button';
