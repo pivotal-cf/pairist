@@ -40,16 +40,24 @@ export const createTeam = functions.https.onCall(async (data, context) => {
     laneId: '',
   });
 
-  batch.set(db.collection('teamMembers').doc(teamId), {
-    [uid]: {
-      displayName: userDisplayName || '',
-      photoURL: userPhotoURL || '',
+  batch.set(
+    db.collection('teamMembers').doc(teamId),
+    {
+      [uid]: {
+        displayName: userDisplayName || '',
+        photoURL: userPhotoURL || '',
+      },
     },
-  });
+    { merge: true }
+  );
 
-  batch.set(db.collection('memberTeams').doc(uid), {
-    [teamId]: teamName,
-  });
+  batch.set(
+    db.collection('memberTeams').doc(uid),
+    {
+      [teamId]: teamName,
+    },
+    { merge: true }
+  );
 
   await batch.commit();
 });
