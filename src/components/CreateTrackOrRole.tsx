@@ -1,5 +1,4 @@
 import { css } from 'astroturf';
-import 'emoji-mart/css/emoji-mart.css';
 import React, { FormEvent, useState } from 'react';
 import { Shuffle } from 'react-feather';
 import { useParams } from 'react-router';
