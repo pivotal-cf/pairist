@@ -61,7 +61,6 @@ export const CreateTeam: React.FC = () => {
         <FormField label={`Team URL (/teams/${teamURL})`}>
           <Input
             id="create-team-url"
-            helpText="Team URLs cannot be changed."
             value={teamURL}
             onChange={(evt) => {
               setTeamURL(evt.target.value);

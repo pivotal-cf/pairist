@@ -5,7 +5,6 @@ import { cn } from '../helpers';
 interface Props {
   id?: string;
   className?: string;
-  helpText?: string;
   disabled?: boolean;
   value?: string;
   defaultValue?: string;
