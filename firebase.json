@@ -12,6 +12,7 @@
     }
   },
   "hosting": {
+    "predeploy": ["yarn install", "yarn build"],
     "public": "build",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
