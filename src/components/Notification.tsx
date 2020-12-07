@@ -40,7 +40,7 @@ const styles = css`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 400px;
+    width: 440px;
     padding: $unit-2;
     border-radius: $unit-half;
   }

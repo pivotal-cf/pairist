@@ -1,5 +1,5 @@
 import { useDocumentData } from 'react-firebase-hooks/firestore';
-import { useParams } from 'react-router';
+import { useParams, useHistory } from 'react-router';
 import { db } from '../firebase';
 import { RouteParams } from '../types';
 
@@ -13,8 +13,8 @@ export function useTeamSettings() {
 
   if (error || loading) {
     error && console.error(error);
-    return { loading: true, teamSettings: {} as TeamSettings };
+    return { loading, error, teamSettings: {} as TeamSettings };
   }
 
-  return { loading: false, teamSettings: data as TeamSettings };
+  return { loading, error, teamSettings: data as TeamSettings };
 }
