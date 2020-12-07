@@ -36,6 +36,7 @@ export default function Person(props: Props) {
     setModalContent(
       <ConfirmDelete
         action={`remove ${displayName || 'this user'} from this team`}
+        deletingText="Removing..."
         onConfirm={() => teamActions.removeTeamMember(teamId, userId)}
       />
     );
