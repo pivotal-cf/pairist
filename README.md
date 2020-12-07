@@ -27,3 +27,15 @@ A few long-standing UI bugs were addressed, especially around text editing for l
 The original version was written in Vue and regular JavaScript. Though this was working fine, in the spirit of experimentation we decided to migrate to React (for fun) and TypeScript (to benefit from static type-checking).
 
 The back-end previously used Firebase's Realtime Database. Pairist 2 still uses Firebase, but has switched to the newer Cloud Firestore offering. [Learn more about the difference.](https://firebase.google.com/docs/database/rtdb-vs-firestore)
+
+## Deployment
+
+See the [deployment doc](docs/deployment.md) for detailed instructions.
+
+## Development
+
+You'll need Node, NPM, and Yarn locally. Clone this repo. Check the [`package.json`](package.json) `scripts` section for all scripts, but some useful ones are:
+
+- `yarn start` to start the front-end locally
+
+- `yarn test` to run unit tests
