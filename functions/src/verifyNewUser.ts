@@ -30,10 +30,6 @@ export const verifyNewUser = functions.auth.user().onCreate(async (user) => {
 
     db.collection('userRefresh').doc(user.uid).set({ refreshTime: Date.now() });
   } else {
-    console.log(`User with email ${email} does NOT have allowed email domain; deleting`);
-
-    await auth.deleteUser(user.uid);
-
-    console.log(`User with email ${email} deleted`);
+    console.warn(`User with email ${email} does NOT have allowed email domain; NOT verifying`);
   }
 });
