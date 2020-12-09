@@ -2,7 +2,20 @@
 
 import bigInt from 'big-integer';
 import { combination, permutation } from 'js-combinatorics';
-import _ from 'lodash';
+import _clone from 'lodash/clone';
+import _difference from 'lodash/difference';
+import _flatten from 'lodash/flatten';
+import _groupBy from 'lodash/groupBy';
+import _head from 'lodash/head';
+import _map from 'lodash/map';
+import _mapValues from 'lodash/mapValues';
+import _without from 'lodash/without';
+import _tail from 'lodash/tail';
+import _remove from 'lodash/remove';
+import _last from 'lodash/last';
+import _shuffle from 'lodash/shuffle';
+import _some from 'lodash/some';
+import _concat from 'lodash/concat';
 import munkres from 'munkres-js';
 import { pairs } from './combinatorics';
 import constants from './constants';
@@ -54,12 +67,12 @@ export const scoreMatrix = (left, right, history, maxScore) => {
 };
 
 const applyAffinities = ({ peopleKeys, people, rawScores }) => {
-  let scores = _.clone(rawScores);
+  let scores = _clone(rawScores);
   for (let person of people) {
     if (person.affinities !== undefined) {
       if (person.affinities.none !== undefined) {
         const peopleToAvoid = people.filter((p) =>
-          _.some(
+          _some(
             person.affinities.none,
             (affinity) => p.tags !== undefined && p.tags.includes(affinity)
           )
@@ -96,18 +109,18 @@ const key = (e) => e['.key'];
 
 export const allPossibleAssignments = function* ({ current }) {
   const laneKeys = current.lanes.filter((l) => !l.locked).map(key);
-  const people = _.shuffle(
+  const people = _shuffle(
     current.entities.filter(
       (e) =>
         e.type === 'person' &&
         (e.location === constants.LOCATION.UNASSIGNED || laneKeys.includes(e.location))
     )
   );
-  const assignments = _.map(
-    _.mapValues(_.groupBy(people, 'location'), (v) => v.map(key)),
+  const assignments = _map(
+    _mapValues(_groupBy(people, 'location'), (v) => v.map(key)),
     (l, p) => [p, l]
   );
-  let unassigned = _.remove(assignments, (as) => as[0] === 'unassigned')[0];
+  let unassigned = _remove(assignments, (as) => as[0] === 'unassigned')[0];
   if (unassigned === undefined) {
     unassigned = [];
   } else {
@@ -118,7 +131,7 @@ export const allPossibleAssignments = function* ({ current }) {
   }
   const totalLanes = people.length % 2 === 1 ? (people.length + 1) / 2 : people.length / 2;
 
-  const emptyLanes = _.difference(
+  const emptyLanes = _difference(
     laneKeys,
     people.map((p) => p.location)
   );
@@ -182,7 +195,7 @@ export const allPossibleAssignments = function* ({ current }) {
                   results: assignment.results.concat([
                     [[person, unassignedPerson], currentAssignment[0]],
                   ]),
-                  unassigned: _.difference(assignment.unassigned, [unassignedPerson]),
+                  unassigned: _difference(assignment.unassigned, [unassignedPerson]),
                 },
               ],
             });
@@ -191,8 +204,8 @@ export const allPossibleAssignments = function* ({ current }) {
       };
 
       yield {
-        remainingAssignments: _.tail(remainingAssignments),
-        unassigned: _.concat(unassigned, newUnassigned),
+        remainingAssignments: _tail(remainingAssignments),
+        unassigned: _concat(unassigned, newUnassigned),
         remainingLaneCount: remainingLaneCount - 1,
         wrapUp: wrapUpThisLevel,
       };
@@ -225,7 +238,7 @@ export const allPossibleAssignments = function* ({ current }) {
                 tailAssignments: [
                   {
                     results: lanes.map((l, i) => [pairing[i], l]),
-                    unassigned: _.difference(unassigned, _.flatten(pairing)),
+                    unassigned: _difference(unassigned, _flatten(pairing)),
                   },
                 ],
               });
@@ -248,10 +261,10 @@ export const allPossibleAssignments = function* ({ current }) {
     remainingLaneCount,
   }) {
     if (remainingAssignments.length > 0) {
-      const currentAssignment = _.head(remainingAssignments);
+      const currentAssignment = _head(remainingAssignments);
       const currentLaneChoices = currentAssignment[1].map((person, i) => [
         person,
-        _.difference(currentAssignment[1], [person]),
+        _difference(currentAssignment[1], [person]),
         i,
       ]);
 
@@ -300,7 +313,7 @@ export const allPossibleAssignments = function* ({ current }) {
     wrapUp: function* ({ tailAssignments }) {
       while (tailAssignments.length > 0) {
         const nextAssignment = tailAssignments.pop();
-        yield nextAssignment.results.map((as) => [_.without(as[0], '<solo>'), as[1]]);
+        yield nextAssignment.results.map((as) => [_without(as[0], '<solo>'), as[1]]);
       }
     },
   });
@@ -325,8 +338,8 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
   }
   const lanes = Object.assign(
     ...laneKeys.map((key) => ({ [key]: [] })),
-    _.mapValues(
-      _.groupBy(
+    _mapValues(
+      _groupBy(
         people.filter((e) => laneKeys.includes(e.location)),
         'location'
       ),
@@ -341,10 +354,10 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
   let maxScore = 0;
 
   if (history && history.length > 0) {
-    maxScore = bigInt(parseInt(_.last(history)['.key']));
+    maxScore = bigInt(parseInt(_last(history)['.key']));
 
     optimizedHistory = history.map((h) => {
-      const groups = _.groupBy(
+      const groups = _groupBy(
         h.entities.filter(
           (e) =>
             e.type === 'person' &&
@@ -377,7 +390,7 @@ export const calculateMovesToBestPairing = ({ current, history }) => {
   const scores = applyAffinities({ peopleKeys, people, rawScores });
 
   // set pairing solos to lowest possible score
-  const solos = _.flatten(Object.values(lanes).filter((l) => l.length === 1)).map((p) =>
+  const solos = _flatten(Object.values(lanes).filter((l) => l.length === 1)).map((p) =>
     peopleKeys.indexOf(p)
   );
   pairs(solos).forEach((p) => {
@@ -456,10 +469,10 @@ export const calculateMovesToBestAssignment = ({ left, right, current, history }
   let maxScore = 0;
 
   if (history && history.length > 0) {
-    maxScore = parseInt(_.last(history)['.key']);
+    maxScore = parseInt(_last(history)['.key']);
 
     history = history.map((h) => {
-      const groups = _.groupBy(
+      const groups = _groupBy(
         h.entities.filter(
           (e) =>
             e.location !== constants.LOCATION.UNASSIGNED && e.location !== constants.LOCATION.OUT
@@ -485,7 +498,7 @@ export const calculateMovesToBestAssignment = ({ left, right, current, history }
 
   const scores = scoreMatrix(leftKeys, rightKeys, history, maxScore + 1);
   let pairs = Object.values(
-    _.groupBy(
+    _groupBy(
       leftEntities.filter((e) => e.location !== constants.LOCATION.OUT),
       'location'
     )
