@@ -11,7 +11,7 @@ const db = admin.firestore();
 export const verifyNewUser = functions.auth.user().onCreate(async (user) => {
   const email = user.email || '';
 
-  console.log(`Verifying new user with email ${email}`);
+  console.log(`Verifying new user with id ${user.uid}`);
   console.log(`Allowed email domains are ${JSON.stringify(allowedEmailDomains)}`);
 
   if (!allowedEmailDomains || !allowedEmailDomains.length) {
@@ -24,12 +24,12 @@ export const verifyNewUser = functions.auth.user().onCreate(async (user) => {
   const hasAllowedEmailDomain = allowedEmailDomains.includes(emailDomain);
 
   if (hasAllowedEmailDomain) {
-    console.log(`User with email ${email} has allowed email domain; verifying`);
+    console.log(`User with id ${user.uid} has allowed email domain; verifying`);
 
     await auth.setCustomUserClaims(user.uid, { pairistValidEmail: true });
 
     db.collection('userRefresh').doc(user.uid).set({ refreshTime: Date.now() });
   } else {
-    console.warn(`User with email ${email} does NOT have allowed email domain; NOT verifying`);
+    console.warn(`User with id ${user.uid} does NOT have allowed email domain; NOT verifying`);
   }
 });

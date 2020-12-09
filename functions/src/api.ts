@@ -52,14 +52,11 @@ async function validateFirebaseAuthentication(
   res: express.Response,
   next: express.NextFunction
 ) {
-  if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
-    res.status(403).send('Unauthorized');
-    return;
-  }
-
   let idToken;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
     idToken = req.headers.authorization.split('Bearer ')[1];
+  } else if (req.headers.authorization && req.headers.authorization.startsWith('bearer ')) {
+    idToken = req.headers.authorization.split('bearer ')[1];
   } else {
     res.status(403).send('Unauthorized');
     return;

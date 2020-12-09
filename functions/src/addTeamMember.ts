@@ -5,6 +5,12 @@ import { ensureAuthenticated } from './helpers';
 const db = admin.firestore();
 const auth = admin.auth();
 
+/**
+ * This function is called directly from the front-end when a user adds a team member to a
+ * team by email. It authenticates, looks up the user, and then (assuming this operation is
+ * valid) updates teamMembers to mark that this team has a new member and updates memberTeams
+ * to mark that this user is now a member of a new team.
+ */
 export const addTeamMember = functions.https.onCall(async (data, context) => {
   ensureAuthenticated(context);
 
