@@ -55,7 +55,6 @@ export const addTeamMember = functions.https.onCall(async (data, context) => {
     {
       [userToAdd.uid]: {
         displayName: userToAdd.displayName || '',
-        email: userToAdd.email || '',
         photoURL: userToAdd.photoURL || '',
       },
     },
