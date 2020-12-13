@@ -51,17 +51,20 @@ export default memo(function ListItem(props: Props) {
   const emojisButtons = Object.keys(props.reactions)
     .sort((a, b) => props.reactions[a].timestamp - props.reactions[b].timestamp)
     .map((emojiName) => {
-      if (props.reactions[emojiName].count < 1) return null;
+      const { count } = props.reactions[emojiName];
+
+      if (count < 1) return null;
 
       return (
         <button
           key={emojiName}
           className={styles.emojiDisplay}
-          title={`${emojiName}: click to remove`}
+          title={`${emojiName}: click to add, shift-click to remove`}
           aria-label={emojiName}
-          onClick={() => updateItemReactions(emojiName, -1)}
+          onClick={(evt) => updateItemReactions(emojiName, evt.shiftKey ? -1 : 1)}
         >
           {emojis[emojiName]}
+          {count > 1 ? <span className={styles.emojiCount}>{count}</span> : null}
         </button>
       );
     });
@@ -116,7 +119,7 @@ const styles = css`
   }
 
   .emojisWrapper {
-    max-width: 20%;
+    max-width: 33%;
     text-align: right;
   }
 
@@ -126,11 +129,19 @@ const styles = css`
     cursor: pointer;
     border-radius: $unit-half;
     font-size: inherit;
+    display: inline-flex;
+    align-items: center;
 
     &:hover,
     &:focus {
       background: rgba(0, 0, 0, 0.1);
     }
+  }
+
+  .emojiCount {
+    font-size: 0.7em;
+    line-height: 1em;
+    margin-left: 4px;
   }
 
   .dragIcon {
