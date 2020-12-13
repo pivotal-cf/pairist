@@ -18,7 +18,7 @@ export interface ListItemData {
   text: string;
   order: number;
   reactions: {
-    [name: string]: number;
+    [name: string]: { count: number; timestamp: number };
   };
 }
 

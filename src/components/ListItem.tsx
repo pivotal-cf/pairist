@@ -1,40 +1,99 @@
 import { css } from 'astroturf';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
-import { Move, Trash } from 'react-feather';
+import { Move, Smile, Trash } from 'react-feather';
 import { useParams } from 'react-router';
 import * as listItemActions from '../actions/list-item';
 import { RouteParams } from '../types';
+import { emojis } from '../emojis';
 import Editable from './Editable';
+import EmojiMenu from './EmojiMenu';
 import IconButton from './IconButton';
 
 interface Props {
   listId: string;
   itemId: string;
   text: string;
-  reactions: { [name: string]: number };
+  reactions: { [name: string]: { count: number; timestamp: number } };
   deleteItem: (id: string) => any;
   dragHandleProps: DraggableProvidedDragHandleProps | null;
 }
 
 export default memo(function ListItem(props: Props) {
   const { teamId = '-' } = useParams<RouteParams>();
+  const [emojisExpanded, setEmojisExpanded] = useState(false);
 
-  function updateItem(newText: string) {
-    listItemActions.updateListItem(teamId, props.listId, {
-      itemId: props.itemId,
+  function updateItemText(newText: string) {
+    listItemActions.updateListItem(teamId, props.listId, props.itemId, {
       text: newText,
     });
   }
+
+  function updateItemReactions(emojiName: string, incrementBy: number) {
+    const previous = (props.reactions as any)[emojiName] || {};
+
+    listItemActions.updateListItem(teamId, props.listId, props.itemId, {
+      reactions: {
+        ...props.reactions,
+        [emojiName]: {
+          timestamp: previous.timestamp || Date.now(),
+          count: (previous.count || 0) + incrementBy,
+        },
+      },
+    });
+  }
+
+  const emojisButtons = Object.keys(props.reactions)
+    .sort((a, b) => props.reactions[a].timestamp - props.reactions[b].timestamp)
+    .map((emojiName) => {
+      if (props.reactions[emojiName].count < 1) return null;
+
+      return (
+        <button
+          key={emojiName}
+          className={styles.emojiDisplay}
+          title={`${emojiName}: click to remove`}
+          aria-label={emojiName}
+          onClick={() => updateItemReactions(emojiName, -1)}
+        >
+          {emojis[emojiName]}
+        </button>
+      );
+    });
 
   return (
     <>
       <div className={styles.dragIcon} {...props.dragHandleProps}>
         <Move />
       </div>
+
       <div className={styles.itemWrapper}>
-        <Editable markdown value={props.text} onChange={(evt) => updateItem(evt.target.value)} />
+        <Editable
+          markdown
+          value={props.text}
+          onChange={(evt) => updateItemText(evt.target.value)}
+        />
       </div>
+
+      <div className={styles.emojisWrapper}>{emojisButtons}</div>
+
+      <div style={{ position: 'relative', overflow: 'visible' }}>
+        <IconButton
+          label="Add emoji reaction"
+          icon={<Smile />}
+          onClick={() => setEmojisExpanded(true)}
+        />
+
+        {emojisExpanded ? (
+          <EmojiMenu
+            onSelect={(name) => {
+              name && updateItemReactions(name, 1);
+              setEmojisExpanded(false);
+            }}
+          />
+        ) : null}
+      </div>
+
       <IconButton
         label="Delete item"
         icon={<Trash />}
@@ -49,6 +108,23 @@ const styles = css`
 
   .itemWrapper {
     flex: 1;
+  }
+
+  .emojisWrapper {
+    max-width: 20%;
+    text-align: right;
+  }
+
+  .emojiDisplay {
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: $unit-half;
+
+    &:hover,
+    &:focus {
+      background: rgba(0, 0, 0, 0.1);
+    }
   }
 
   .dragIcon {

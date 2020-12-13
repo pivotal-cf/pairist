@@ -12,15 +12,20 @@ export async function createListItem(teamId: string, listId: string, item: Parti
   });
 }
 
-export async function updateListItem(teamId: string, listId: string, item: Partial<ListItemData>) {
+export async function updateListItem(
+  teamId: string,
+  listId: string,
+  itemId: string,
+  newValues: Partial<ListItemData>
+) {
   await teamsRef
     .doc(teamId)
     .collection('lists')
     .doc(listId)
     .collection('items')
-    .doc(item.itemId)
-    .update({
-      text: item.text,
+    .doc(itemId)
+    .set(newValues, {
+      merge: true,
     });
 }
 

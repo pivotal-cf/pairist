@@ -18,7 +18,6 @@ export const emojis: { [name: string]: string } = {
   'star-struck': '🤩',
   kissing_heart: '😘',
   kissing: '😗',
-  relaxed: '☺️',
   kissing_closed_eyes: '😚',
   kissing_smiling_eyes: '😙',
   yum: '😋',
