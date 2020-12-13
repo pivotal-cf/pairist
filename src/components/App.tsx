@@ -6,6 +6,7 @@ import { useSession } from '../hooks/useSession';
 import { useNotification } from '../hooks/useNotification';
 import ChooseTeam from './ChooseTeam';
 import Header from './Header';
+import Footer from './Footer';
 import Modal from './Modal';
 import SignIn from './SignIn';
 import Team from './Team';
@@ -50,6 +51,7 @@ export default function App() {
         <Route path="/">
           <Header />
           {notLoggedIn ? <SignIn /> : <ChooseTeam />}
+          <Footer />
           {modalContent && <Modal>{modalContent}</Modal>}
         </Route>
       </Switch>
