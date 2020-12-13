@@ -2,6 +2,7 @@ import { css } from 'astroturf';
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import logo from '../assets/pairist.svg';
+import { pairistVersion } from '../config';
 import { useSession } from '../hooks/useSession';
 import { RouteParams } from '../types';
 import TeamDropdown from './TeamDropdown';
@@ -16,7 +17,12 @@ export default function Header() {
       <div className={styles.spacerLeft}>{userId && <TeamDropdown teamId={teamId} />}</div>
 
       <Link to="/">
-        <img className={styles.logo} src={logo} alt="Pairist logo" />
+        <img
+          className={styles.logo}
+          src={logo}
+          alt="Pairist logo"
+          title={`version ${pairistVersion}`}
+        />
       </Link>
 
       <div className={styles.spacerRight}>{userId && <UserDropdown />}</div>
