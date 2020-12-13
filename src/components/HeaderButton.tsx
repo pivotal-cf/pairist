@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React, { ReactNode } from 'react';
+import { forwardRef, MouseEventHandler, ReactElement, ReactNode } from 'react';
 import { cn } from '../helpers';
 
 interface Props {
@@ -7,12 +7,12 @@ interface Props {
   imageURL?: string;
   imageHash?: string;
   disabled?: boolean;
-  icon?: React.ReactElement;
-  onClick?: React.MouseEventHandler;
+  icon?: ReactElement;
+  onClick?: MouseEventHandler;
   content: ReactNode;
 }
 
-export default React.forwardRef<HTMLButtonElement, Props>((props, ref) => {
+export default forwardRef<HTMLButtonElement, Props>((props, ref) => {
   const { bold, imageURL, imageHash, content, icon, ...restProps } = props;
   const className = cn(styles.headerButton, props.bold && styles.bold);
 

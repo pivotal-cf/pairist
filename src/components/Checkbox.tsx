@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React from 'react';
+import { ChangeEventHandler } from 'react';
 import { cn } from '../helpers';
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
   label?: string;
   value?: boolean;
   readOnly?: boolean;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
 }
 
 export default function Checkbox(props: Props) {

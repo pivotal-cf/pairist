@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import * as teamActions from '../actions/team';
 import { validateTeamSettings } from '../helpers';
 import { useModal } from '../hooks/useModal';

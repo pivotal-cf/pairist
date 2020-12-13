@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import { FC, FormEvent, useState } from 'react';
 import { useHistory } from 'react-router';
 import * as teamActions from '../actions/team';
 import { validateTeamSettings } from '../helpers';
@@ -11,7 +11,7 @@ import ModalBody from './ModalBody';
 import ModalFooter from './ModalFooter';
 import ModalHeader from './ModalHeader';
 
-export const CreateTeam: React.FC = () => {
+export const CreateTeam: FC = () => {
   const history = useHistory();
   const { userId, loaded } = useSession();
   const [, setModalContent] = useModal();

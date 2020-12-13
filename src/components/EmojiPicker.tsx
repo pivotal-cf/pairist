@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { emojis, emojiList } from '../emojis';
 import Button from './Button';
 

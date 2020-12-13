@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React from 'react';
+import { MouseEventHandler, ReactElement, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '../helpers';
 
@@ -7,12 +7,12 @@ interface Props {
   bold?: boolean;
   disabled?: boolean;
   href?: string;
-  icon?: React.ReactElement;
-  leftIcon?: React.ReactElement;
-  onClick?: React.MouseEventHandler;
+  icon?: ReactElement;
+  leftIcon?: ReactElement;
+  onClick?: MouseEventHandler;
   flavor?: 'confirm' | 'danger';
   type?: 'submit' | 'button';
-  children: React.ReactNode;
+  children: ReactNode;
   submitting?: boolean;
   className?: string;
   submittingText?: string;

@@ -1,12 +1,12 @@
 import { css } from 'astroturf';
-import React from 'react';
+import { MouseEventHandler, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 interface Props {
   href?: string;
-  leftIcon?: React.ReactNode;
-  onClick?: React.MouseEventHandler;
-  children?: React.ReactNode;
+  leftIcon?: ReactNode;
+  onClick?: MouseEventHandler;
+  children?: ReactNode;
 }
 
 export default function DropdownItem(props: Props) {

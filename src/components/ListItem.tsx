@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React from 'react';
+import { memo } from 'react';
 import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
 import { Move, Trash } from 'react-feather';
 import { useParams } from 'react-router';
@@ -17,7 +17,7 @@ interface Props {
   dragHandleProps: DraggableProvidedDragHandleProps | null;
 }
 
-export default React.memo(function ListItem(props: Props) {
+export default memo(function ListItem(props: Props) {
   const { teamId = '-' } = useParams<RouteParams>();
 
   function updateItem(newText: string) {

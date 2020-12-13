@@ -1,10 +1,10 @@
 import { css } from 'astroturf';
-import React from 'react';
+import { ReactNode } from 'react';
 import { cn } from '../helpers';
 
 interface Props {
   row?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function ModalBody(props: Props) {

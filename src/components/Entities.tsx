@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React from 'react';
+import { DragEvent } from 'react';
 import { Plus } from 'react-feather';
 import * as personActions from '../actions/person';
 import * as roleActions from '../actions/role';
@@ -39,11 +39,11 @@ export default function Entities(props: Props) {
     {}
   );
 
-  function onDragOver(evt: React.DragEvent<HTMLDivElement>) {
+  function onDragOver(evt: DragEvent<HTMLDivElement>) {
     evt.preventDefault();
   }
 
-  function onDrop(evt: React.DragEvent<HTMLDivElement>) {
+  function onDrop(evt: DragEvent<HTMLDivElement>) {
     const entityType = evt.dataTransfer.getData('entityType');
     const entityId = evt.dataTransfer.getData('entityId');
     if (!entityType || !entityId) return;

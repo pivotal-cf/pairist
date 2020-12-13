@@ -1,5 +1,4 @@
 import { css } from 'astroturf';
-import React from 'react';
 
 interface Props {
   text: string;

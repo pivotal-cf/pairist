@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import * as teamActions from '../actions/team';
 import { useModal } from '../hooks/useModal';

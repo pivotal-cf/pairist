@@ -1,9 +1,9 @@
 import { css } from 'astroturf';
-import React from 'react';
+import { ReactNode } from 'react';
 
 interface Props {
   error?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function ModalFooter(props: Props) {

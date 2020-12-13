@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React, { useState } from 'react';
+import { DragEvent, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import * as laneActions from '../actions/lane';
 import * as personActions from '../actions/person';
@@ -18,7 +18,7 @@ export default function CreateLane(props: Props) {
     setIsDraggingOver(true);
   }
 
-  function onDragOver(evt: React.DragEvent<HTMLDivElement>) {
+  function onDragOver(evt: DragEvent<HTMLDivElement>) {
     evt.preventDefault();
   }
 
@@ -26,7 +26,7 @@ export default function CreateLane(props: Props) {
     setIsDraggingOver(false);
   }
 
-  async function onDrop(evt: React.DragEvent<HTMLDivElement>) {
+  async function onDrop(evt: DragEvent<HTMLDivElement>) {
     setIsDraggingOver(false);
 
     const entityType = evt.dataTransfer.getData('entityType');

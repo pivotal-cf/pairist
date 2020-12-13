@@ -1,11 +1,11 @@
 import { css } from 'astroturf';
-import React, { useEffect, useRef, useState } from 'react';
+import { cloneElement, ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
 import { cn } from '../helpers';
 
 interface Props {
   align?: 'left' | 'right';
-  trigger: React.ReactElement;
-  children: React.ReactNode;
+  trigger: ReactElement;
+  children: ReactNode;
 }
 
 export default function Dropdown(props: Props) {
@@ -16,7 +16,7 @@ export default function Dropdown(props: Props) {
 
   const menuClass = cn(styles.menu, styles[align]);
 
-  const trigger = React.cloneElement(props.trigger, {
+  const trigger = cloneElement(props.trigger, {
     'aria-haspopup': true,
     'aria-expanded': expanded,
     ref: triggerRef,

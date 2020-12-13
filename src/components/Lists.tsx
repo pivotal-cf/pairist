@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React, { useRef } from 'react';
+import { ReactNode, useRef } from 'react';
 import { Plus } from 'react-feather';
 import { useParams } from 'react-router';
 import * as listActions from '../actions/list';
@@ -55,7 +55,7 @@ export default function Lists() {
     ]);
   }
 
-  let content: React.ReactNode = null;
+  let content: ReactNode = null;
   if (lists.length) {
     content = lists.map((list, index) => (
       <List

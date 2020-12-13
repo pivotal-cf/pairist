@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Check, ChevronDown, Plus, Settings } from 'react-feather';
 import { useMemberTeams } from '../hooks/useMemberTeams';
 import { useModal } from '../hooks/useModal';

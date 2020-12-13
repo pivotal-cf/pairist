@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React from 'react';
+import { ChangeEventHandler, FocusEventHandler } from 'react';
 import { cn } from '../helpers';
 
 interface Props {
@@ -8,8 +8,8 @@ interface Props {
   disabled?: boolean;
   value?: string;
   defaultValue?: string;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  onBlur?: React.FocusEventHandler<HTMLInputElement>;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+  onBlur?: FocusEventHandler<HTMLInputElement>;
   readOnly?: boolean;
   placeholder?: string;
   type?: string;

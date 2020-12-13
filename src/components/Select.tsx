@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React from 'react';
+import { ChangeEventHandler } from 'react';
 import { cn } from '../helpers';
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
   className?: string;
   value: string;
   values: { name: string; value: string }[];
-  onChange: React.ChangeEventHandler<HTMLSelectElement>;
+  onChange: ChangeEventHandler<HTMLSelectElement>;
 }
 
 export default function Select(props: Props) {

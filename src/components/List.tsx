@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React, { FormEvent, useCallback, useRef, useState } from 'react';
+import { FC, FormEvent, memo, useCallback, useRef, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { ArrowDown, ArrowUp, Trash2 } from 'react-feather';
 import { useParams } from 'react-router';
@@ -24,11 +24,11 @@ interface Props {
   moveUp: (index: number) => any;
 }
 
-const ListItems: React.FC<{
+const ListItems: FC<{
   listId: string;
   items: ListItemData[];
   deleteItem: (itemId: string) => void;
-}> = React.memo((props) => {
+}> = memo((props) => {
   return (
     <>
       {props.items.map((item, index) => (

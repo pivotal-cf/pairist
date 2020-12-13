@@ -1,5 +1,4 @@
 import { css } from 'astroturf';
-import React from 'react';
 import { Plus } from 'react-feather';
 import { useMemberTeams } from '../hooks/useMemberTeams';
 import { useModal } from '../hooks/useModal';

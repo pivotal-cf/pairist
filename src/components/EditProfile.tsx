@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React, { FormEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import * as userActions from '../actions/user';
 import { useModal } from '../hooks/useModal';
 import { useSession } from '../hooks/useSession';

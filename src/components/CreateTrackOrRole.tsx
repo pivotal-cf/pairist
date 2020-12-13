@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React, { FormEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { Shuffle } from 'react-feather';
 import { useParams } from 'react-router';
 import * as roleActions from '../actions/role';

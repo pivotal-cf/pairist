@@ -1,4 +1,3 @@
-import React from 'react';
 import { ChevronDown, Lock, LogOut, User } from 'react-feather';
 import { useHistory } from 'react-router-dom';
 import * as userActions from '../actions/user';

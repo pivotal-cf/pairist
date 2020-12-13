@@ -1,5 +1,4 @@
 import { css } from 'astroturf';
-import React from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 import { useNotification } from '../hooks/useNotification';
 import { useTeamSettings } from '../hooks/useTeamSettings';

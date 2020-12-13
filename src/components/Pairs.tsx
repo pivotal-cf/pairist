@@ -1,5 +1,4 @@
 import { css } from 'astroturf';
-import React from 'react';
 import { Shuffle } from 'react-feather';
 import { useParams } from 'react-router-dom';
 import * as pairingActions from '../actions/pairing';

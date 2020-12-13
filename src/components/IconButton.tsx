@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React from 'react';
+import { forwardRef, MouseEventHandler, ReactElement, ReactNode } from 'react';
 import { cn } from '../helpers';
 
 interface Props {
@@ -7,12 +7,12 @@ interface Props {
   disabled?: boolean;
   dark?: boolean;
   className?: string;
-  icon?: React.ReactElement;
-  onClick?: React.MouseEventHandler;
-  children?: React.ReactNode;
+  icon?: ReactElement;
+  onClick?: MouseEventHandler;
+  children?: ReactNode;
 }
 
-export default React.forwardRef<HTMLButtonElement, Props>((props, ref) => {
+export default forwardRef<HTMLButtonElement, Props>((props, ref) => {
   const { icon, children, label, dark, className, ...restProps } = props;
 
   const classes = cn(styles.button, dark && styles.dark, className);

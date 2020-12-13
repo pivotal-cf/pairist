@@ -1,5 +1,11 @@
 import { css } from 'astroturf';
-import React, { useLayoutEffect, useRef } from 'react';
+import {
+  ChangeEventHandler,
+  FocusEventHandler,
+  KeyboardEvent,
+  useLayoutEffect,
+  useRef,
+} from 'react';
 import { cn } from '../helpers';
 
 interface Props {
@@ -10,11 +16,11 @@ interface Props {
   disabled?: boolean;
   value?: string;
   defaultValue?: string;
-  onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
+  onChange?: ChangeEventHandler<HTMLTextAreaElement>;
   readOnly?: boolean;
   placeholder?: string;
   onEnter?: () => any;
-  onBlur?: React.FocusEventHandler;
+  onBlur?: FocusEventHandler;
 }
 
 function calculateRows(node: HTMLTextAreaElement | null) {
@@ -37,7 +43,7 @@ export default function Textarea(props: Props) {
     }
   }, [props.autofocus]);
 
-  function onKeyPress(evt: React.KeyboardEvent) {
+  function onKeyPress(evt: KeyboardEvent) {
     if (evt.key === 'Enter' && props.onEnter) {
       evt.preventDefault();
       props.onEnter();

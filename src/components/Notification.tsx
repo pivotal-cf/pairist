@@ -1,10 +1,10 @@
 import { css } from 'astroturf';
-import React, { useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useNotification } from '../hooks/useNotification';
 
 interface Props {
   flavor: 'error';
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function Notification(props: Props) {

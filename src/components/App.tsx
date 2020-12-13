@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Route, Switch } from 'react-router';
 import { useModal } from '../hooks/useModal';
 import { useSession } from '../hooks/useSession';

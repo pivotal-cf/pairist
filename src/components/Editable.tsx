@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React, { useState } from 'react';
+import { ChangeEventHandler, FocusEvent, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { cn } from '../helpers';
 import Textarea from './Textarea';
@@ -8,7 +8,7 @@ interface Props {
   id?: string;
   className?: string;
   value: string;
-  onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
+  onChange?: ChangeEventHandler<HTMLTextAreaElement>;
   placeholder?: string;
   markdown?: boolean;
 }
@@ -24,7 +24,7 @@ export default function Editable(props: Props) {
     setEditing(false);
   }
 
-  function onTextFocus(evt: React.FocusEvent) {
+  function onTextFocus(evt: FocusEvent) {
     if (evt.target !== evt.currentTarget) return;
     setEditing(true);
   }
@@ -58,7 +58,7 @@ export default function Editable(props: Props) {
                 'list',
                 'listItem',
                 'inlineCode',
-                'heading'
+                'heading',
               ]}
             />
           ) : (

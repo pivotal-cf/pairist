@@ -1,9 +1,9 @@
 import { css } from 'astroturf';
-import React, { useEffect, useRef } from 'react';
+import { KeyboardEventHandler, MouseEventHandler, ReactNode, useEffect, useRef } from 'react';
 import { useModal } from '../hooks/useModal';
 
 interface Props {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function Modal(props: Props) {
@@ -28,7 +28,7 @@ export default function Modal(props: Props) {
     };
   }, []);
 
-  const handleKeyDown: React.KeyboardEventHandler = (evt) => {
+  const handleKeyDown: KeyboardEventHandler = (evt) => {
     if (evt.key === 'Tab') {
       const tabbables = findTabbableElements(dialogRef.current as Element);
       const activeElement = document.activeElement;
@@ -49,7 +49,7 @@ export default function Modal(props: Props) {
     }
   };
 
-  const handleClick: React.MouseEventHandler = (evt) => {
+  const handleClick: MouseEventHandler = (evt) => {
     if (dialogRef.current && !dialogRef.current.contains(evt.target as Node)) {
       setModalContent(null);
     }

@@ -1,11 +1,11 @@
 import { css } from 'astroturf';
-import React from 'react';
+import { ReactElement } from 'react';
 import { cn } from '../helpers';
 
 interface Props {
   label?: string;
   helpText?: string;
-  children: React.ReactElement;
+  children: ReactElement;
   grow?: boolean;
 }
 

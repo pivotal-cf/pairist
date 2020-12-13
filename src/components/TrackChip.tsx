@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React from 'react';
+import { DragEvent } from 'react';
 import { Edit2 } from 'react-feather';
 import { emojis } from '../emojis';
 import { cn, hexToRgb, rgbToHsl } from '../helpers';
@@ -31,7 +31,7 @@ function readableTextColor(bgHexColor: string) {
 export default function TrackChip(props: Props) {
   const [, setModalContent] = useModal();
 
-  function onDragStart(evt: React.DragEvent<HTMLDivElement>) {
+  function onDragStart(evt: DragEvent<HTMLDivElement>) {
     evt.dataTransfer.setData('entityType', props.flavor);
     evt.dataTransfer.setData('entityId', props.entityId);
   }

@@ -1,5 +1,4 @@
 import { css } from 'astroturf';
-import React from 'react';
 import { cn } from '../helpers';
 import IconButton from './IconButton';
 import ConfirmDelete from './ConfirmDelete';
@@ -7,6 +6,7 @@ import { Lock, Trash, Unlock } from 'react-feather';
 import * as personActions from '../actions/person';
 import * as teamActions from '../actions/team';
 import { useModal } from '../hooks/useModal';
+import { DragEvent } from 'react';
 
 interface Props {
   userId: string;
@@ -42,7 +42,7 @@ export default function Person(props: Props) {
     );
   }
 
-  function onDragStart(evt: React.DragEvent<HTMLDivElement>) {
+  function onDragStart(evt: DragEvent<HTMLDivElement>) {
     if (isLocked) return;
     evt.dataTransfer.setData('entityType', 'person');
     evt.dataTransfer.setData('entityId', props.userId);

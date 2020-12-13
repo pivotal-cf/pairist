@@ -1,5 +1,4 @@
 import { css } from 'astroturf';
-import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import logo from '../assets/pairist.svg';
 import { pairistVersion } from '../config';

@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import React, { useState } from 'react';
+import { DragEvent, useState } from 'react';
 import { Lock, Trash, Unlock } from 'react-feather';
 import * as laneActions from '../actions/lane';
 import * as personActions from '../actions/person';
@@ -48,7 +48,7 @@ export default function Lane(props: Props) {
     laneActions.deleteLane(teamId, laneId);
   }
 
-  function onDragOver(evt: React.DragEvent<HTMLDivElement>) {
+  function onDragOver(evt: DragEvent<HTMLDivElement>) {
     if (isLocked) return;
     evt.preventDefault();
     setIsDraggingOver(true);
@@ -58,7 +58,7 @@ export default function Lane(props: Props) {
     setIsDraggingOver(false);
   }
 
-  function onDrop(evt: React.DragEvent<HTMLDivElement>) {
+  function onDrop(evt: DragEvent<HTMLDivElement>) {
     setIsDraggingOver(false);
 
     const entityType = evt.dataTransfer.getData('entityType');
