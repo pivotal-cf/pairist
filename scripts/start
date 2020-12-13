@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "$PAIRIST_FIREBASE_PROJECT_ID" ]; then
+  echo "PAIRIST_FIREBASE_PROJECT_ID is not set."
+  echo "This should be set to your Firebase project ID."
+  exit 1
+fi
+
+if [ -z "$PAIRIST_FIREBASE_API_KEY" ]; then
+  echo "PAIRIST_FIREBASE_API_KEY is not set."
+  echo "This should be set to your Firebase API key."
+  exit 1
+fi
+
+set -x
+
+# Start dev server
+REACT_APP_FIREBASE_PROJECT_ID=${PAIRIST_FIREBASE_PROJECT_ID} \
+REACT_APP_FIREBASE_API_KEY=${PAIRIST_FIREBASE_API_KEY} \
+REACT_APP_FIREBASE_AUTH_DOMAIN="${PAIRIST_FIREBASE_PROJECT_ID}.firebaseapp.com" \
+REACT_APP_FIREBASE_URL="https://${PAIRIST_FIREBASE_PROJECT_ID}.firebaseio.com" \
+  yarn run craco start

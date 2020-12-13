@@ -38,6 +38,8 @@ See the [deployment doc](docs/deployment.md) for detailed instructions.
 
 You'll need Node, NPM, and Yarn locally. Clone this repo. Check the [`package.json`](package.json) `scripts` section for all scripts, but some useful ones are:
 
-- `yarn start` to start the front-end locally
+- `PAIRIST_FIREBASE_PROJECT_ID=... PAIRIST_FIREBASE_API_KEY=... yarn start` to start the front-end locally, using the specified Firebase project as the back-end
+
+- `PAIRIST_FIREBASE_PROJECT_ID=... PAIRIST_FIREBASE_API_KEY=... yarn build` to compile the front-end for production, using the specified Firebase project as the back-end
 
 - `yarn test` to run unit tests
