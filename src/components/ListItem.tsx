@@ -9,6 +9,7 @@ import { emojis } from '../emojis';
 import Editable from './Editable';
 import EmojiMenu from './EmojiMenu';
 import IconButton from './IconButton';
+import { fieldValue } from '../firebase';
 
 interface Props {
   listId: string;
@@ -31,14 +32,18 @@ export default memo(function ListItem(props: Props) {
 
   function updateItemReactions(emojiName: string, incrementBy: number) {
     const previous = (props.reactions as any)[emojiName] || {};
+    const newCount = (previous.count || 0) + incrementBy;
 
     listItemActions.updateListItem(teamId, props.listId, props.itemId, {
       reactions: {
         ...props.reactions,
-        [emojiName]: {
-          timestamp: previous.timestamp || Date.now(),
-          count: (previous.count || 0) + incrementBy,
-        },
+        [emojiName]:
+          newCount < 1
+            ? fieldValue.delete()
+            : {
+                timestamp: previous.timestamp || Date.now(),
+                count: newCount,
+              },
       },
     });
   }

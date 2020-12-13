@@ -1,3 +1,5 @@
+import firebase from 'firebase/app';
+
 export interface RouteParams {
   teamId?: string;
 }
@@ -18,7 +20,7 @@ export interface ListItemData {
   text: string;
   order: number;
   reactions: {
-    [name: string]: { count: number; timestamp: number };
+    [name: string]: { count: number; timestamp: number } | firebase.firestore.FieldValue;
   };
 }
 
