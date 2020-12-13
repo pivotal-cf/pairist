@@ -24,6 +24,9 @@ echo "Deploying to project $PAIRIST_FIREBASE_PROJECT_ID..."
 
 set -x
 
+# Target project
+firebase use ${PAIRIST_FIREBASE_PROJECT_ID}
+
 # Configure function environment
 firebase functions:config:set \
   pairist.allowed_email_domains=${PAIRIST_ALLOWED_EMAIL_DOMAINS} \
