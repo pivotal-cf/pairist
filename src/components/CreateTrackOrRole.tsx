@@ -45,6 +45,16 @@ export default function CreateTrackOrRole(props: Props) {
   const [error, setError] = useState('');
   const canSubmit = Boolean(!error);
 
+  async function deleteTrackOrRole() {
+    if (props.flavor === 'track') {
+      await trackActions.deleteTrack(teamId, props.entityId || '');
+    } else {
+      await roleActions.deleteRole(teamId, props.entityId || '');
+    }
+
+    setModalContent(null);
+  }
+
   function cancel() {
     setModalContent(null);
   }
@@ -136,6 +146,10 @@ export default function CreateTrackOrRole(props: Props) {
       </ModalBody>
 
       <ModalFooter error={error}>
+        <Button flavor="danger" bold onClick={deleteTrackOrRole}>
+          Delete
+        </Button>
+        <div style={{ flex: 1 }} />
         <Button onClick={cancel}>Cancel</Button>
         <Button disabled={!canSubmit} type="submit" bold flavor="confirm">
           Save
