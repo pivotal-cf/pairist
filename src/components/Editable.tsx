@@ -55,6 +55,7 @@ export default function Editable(props: Props) {
                 'emphasis',
                 'strong',
                 'link',
+                'linkReference',
                 'list',
                 'listItem',
                 'inlineCode',
