@@ -6,7 +6,7 @@ run(async () => {
   const [email] = process.argv.slice(2);
 
   if (!email) {
-    throw 'Usage: ./scripts/verify-user <email>';
+    throw 'Usage: ./scripts/unverify-user <email>';
   }
 
   console.log(`Manually verifying email address for user: ${email}`);
@@ -15,7 +15,13 @@ run(async () => {
 
   const user = await auth.getUserByEmail(email);
 
-  await auth.setCustomUserClaims(user.uid, { pairistValidEmail: false });
+  const customClaims = user.customClaims || {};
+
+  if (customClaims.pairistValidEmail === true) {
+    console.warn('User email is already verified.');
+  } else {
+    await auth.setCustomUserClaims(user.uid, { pairistValidEmail: true });
+  }
 
   console.log('Done!');
 });
