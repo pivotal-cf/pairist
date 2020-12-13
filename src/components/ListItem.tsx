@@ -125,6 +125,7 @@ const styles = css`
     border: none;
     cursor: pointer;
     border-radius: $unit-half;
+    font-size: inherit;
 
     &:hover,
     &:focus {

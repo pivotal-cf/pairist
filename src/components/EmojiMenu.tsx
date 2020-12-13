@@ -11,6 +11,7 @@ export default function EmojiMenu(props: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { onSelect } = props;
+  const searchTerms = search.split(/\s+/);
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
@@ -43,7 +44,7 @@ export default function EmojiMenu(props: Props) {
 
       <div className={styles.emojiList}>
         {emojiList.map(([name, char]) => {
-          if (!name.includes(search)) return null;
+          if (!searchTerms.every((term) => name.includes(term))) return null;
 
           return (
             <button
