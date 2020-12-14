@@ -1,0 +1,37 @@
+{
+  "current": {
+    "entities": [
+      {
+        ".key": "p-2996",
+        "type": "person",
+        "location": "l-2993"
+      },
+      {
+        ".key": "p-2994",
+        "type": "person",
+        "location": "unassigned"
+      },
+      {
+        ".key": "p-2997",
+        "type": "person",
+        "location": "unassigned"
+      },
+      {
+        ".key": "p-2995",
+        "type": "person",
+        "location": "out"
+      },
+      {
+        ".key": "p-2998",
+        "type": "person",
+        "location": "out"
+      }
+    ],
+    "lanes": [
+      {
+        ".key": "l-2993"
+      }
+    ]
+  },
+  "history": []
+}

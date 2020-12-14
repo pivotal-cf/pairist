@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+import { run, initializeFirebase } from './helpers';
+
+run(async () => {
+  const [email] = process.argv.slice(2);
+
+  if (!email) {
+    throw 'Usage: ./scripts/verify-user <email>';
+  }
+
+  console.log(`Manually verifying email address for user: ${email}`);
+
+  const { auth } = await initializeFirebase();
+
+  const user = await auth.getUserByEmail(email);
+
+  await auth.setCustomUserClaims(user.uid, { pairistValidEmail: false });
+
+  console.log('Done!');
+});

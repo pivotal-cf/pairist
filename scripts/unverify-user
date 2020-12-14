@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+import { run, initializeFirebase } from './helpers';
+
+run(async () => {
+  const [email] = process.argv.slice(2);
+
+  if (!email) {
+    throw 'Usage: ./scripts/unverify-user <email>';
+  }
+
+  console.log(`Manually verifying email address for user: ${email}`);
+
+  const { auth } = await initializeFirebase();
+
+  const user = await auth.getUserByEmail(email);
+
+  const customClaims = user.customClaims || {};
+
+  if (customClaims.pairistValidEmail === true) {
+    console.warn('User email is already verified.');
+  } else {
+    await auth.setCustomUserClaims(user.uid, { pairistValidEmail: true });
+  }
+
+  console.log('Done!');
+});

@@ -1,0 +1,69 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function authenticated() {
+      return request.auth.uid != null && request.auth.token.pairistValidEmail == true;
+    }
+
+    function isTeamMember(teamId) {
+      return request.auth.uid in get(/databases/$(database)/documents/teamMembers/$(teamId)).data;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /userRefresh/{userId} {
+      allow read: if request.auth.uid != null && userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /teamMembers/{teamId} {
+      allow read: if authenticated() && isTeamMember(teamId);
+      allow write: if false;
+    }
+
+    match /memberTeams/{userId} {
+      allow read: if authenticated() && userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /teamHistories/{teamId} {
+      allow read: if authenticated() && isTeamMember(teamId);
+      allow write: if false;
+    }
+
+    match /teams/{teamId} {
+      allow read: if authenticated() && isTeamMember(teamId);
+      allow create: if false;
+      allow update: if authenticated() && isTeamMember(teamId);
+      allow delete: if false;
+    }
+
+    match /teams/{teamId}/lists/{document=**} {
+      allow read: if authenticated() && isTeamMember(teamId);
+      allow write: if authenticated() && isTeamMember(teamId);
+    }
+
+    match /teams/{teamId}/tracks/{document=**} {
+      allow read: if authenticated() && isTeamMember(teamId);
+      allow write: if authenticated() && isTeamMember(teamId);
+    }
+
+    match /teams/{teamId}/roles/{document=**} {
+      allow read: if authenticated() && isTeamMember(teamId);
+      allow write: if authenticated() && isTeamMember(teamId);
+    }
+
+    match /teams/{teamId}/people/{document=**} {
+      allow read: if authenticated() && isTeamMember(teamId);
+      allow write: if authenticated() && isTeamMember(teamId);
+    }
+
+    match /teams/{teamId}/lanes/{document=**} {
+      allow read: if authenticated() && isTeamMember(teamId);
+      allow write: if authenticated() && isTeamMember(teamId);
+    }
+  }
+}
