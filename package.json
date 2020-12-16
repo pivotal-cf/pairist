@@ -1,7 +1,12 @@
 {
-  "name": "pairist-2.0",
-  "version": "2.0.0",
+  "name": "pairist",
+  "version": "2.0.0-beta",
   "private": true,
+  "description": "Pairing board for the modern era.",
+  "contributors": [
+    "Luan Santos <cfcluan@gmail.com>",
+    "Reid Mitchell <reidmitchell1@gmail.com>"
+  ],
   "dependencies": {
     "big-integer": "^1.6.48",
     "firebase": "^8.1.1",
