@@ -1,11 +1,27 @@
 import { css } from 'astroturf';
 import { FormEvent, useState } from 'react';
 import * as userActions from '../actions/user';
+import { allowedEmailDomains } from '../config';
 import Button from './Button';
 import FormField from './FormField';
 import Input from './Input';
 
 interface Props {}
+
+function checkEmailDomain(givenEmail: string) {
+  if (allowedEmailDomains) {
+    const givenEmailDomain = givenEmail.split('@').pop();
+    const allowDomainsList = allowedEmailDomains.split(',');
+
+    if (!givenEmailDomain || !allowDomainsList.includes(givenEmailDomain)) {
+      throw new Error(
+        `Email not valid. Your administrator only allows accounts with emails from these domains: ${allowDomainsList.join(
+          ', '
+        )}`
+      );
+    }
+  }
+}
 
 export default function SignIn(props: Props) {
   const [email, setEmail] = useState('');
@@ -29,6 +45,8 @@ export default function SignIn(props: Props) {
 
   async function signUp() {
     try {
+      checkEmailDomain(email);
+
       await userActions.signUp(email, password);
     } catch (err) {
       setError(err.message);
