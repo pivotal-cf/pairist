@@ -1,8 +1,8 @@
-# 👥 Pairist v2
+# 👥 Pairist
 
 Pairist is a web app for teams that pair program. It helps you keep track of your pairs and pairing history, the work you have in progress, standup notes, and action items. It can recommend pairs each day based on who has context on what and how recently people have paired with one another.
 
-Pairist v2 is a re-imagining of the Pairist project. The original Pairist can be found on the `v1` branch.
+Pairist v2 is a re-imagining of the Pairist project. The original Pairist can be found on the [`v1` branch](https://github.com/pivotal-cf/pairist/tree/v1).
 
 ## ✨ What's new in v2?
 
