@@ -11,16 +11,16 @@ export async function run(func) {
 }
 
 export async function initializeFirebase() {
-  const projectId = process.env.PAIRIST_PROJECT_ID;
-  const serviceAccountPath = process.env.PAIRIST_SERVICE_ACCOUNT_PATH;
+  const projectId = process.env.PAIRIST_FIREBASE_PROJECT_ID;
+  const serviceAccountPath = process.env.PAIRIST_FIREBASE_SERVICE_ACCOUNT_PATH;
 
   if (!projectId) {
-    console.error('PAIRIST_PROJECT_ID is not set.');
+    console.error('PAIRIST_FIREBASE_PROJECT_ID is not set.');
     process.exit(1);
   }
 
   if (!serviceAccountPath) {
-    console.error('PAIRIST_SERVICE_ACCOUNT_PATH is not set.');
+    console.error('PAIRIST_FIREBASE_SERVICE_ACCOUNT_PATH is not set.');
     process.exit(1);
   }
 

@@ -33,10 +33,11 @@ To do so, follow the steps below. It should only take 10-15 minutes.
 
 1. **Run the deploy script.**
 
-   1. Run `yarn deploy` from the repo directory with the following environment variables set:
+   1. Run `yarn deploy` from the repo directory with the following required environment variables set:
 
       - `PAIRIST_FIREBASE_PROJECT_ID`: this is your project ID (the one you used for `firebase use <your-project-id>`)
       - `PAIRIST_FIREBASE_API_KEY`: can be found in the Firebase console, under project settings
+      - any other optional variables, as described in the [configuration docs](./configuration.md)
 
 ## Troubleshooting
 
