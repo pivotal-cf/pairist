@@ -16,7 +16,8 @@ export const verifyNewUser = functions.auth.user().onCreate(async (user) => {
 
   if (!allowedEmailDomains || !allowedEmailDomains.length) {
     console.log(`No allowed email domains set; verifying`);
-    await auth.setCustomUserClaims(user.uid, { pairistValidEmail: true });
+
+    await setUserVerified(user.uid);
     return;
   }
 
@@ -26,10 +27,14 @@ export const verifyNewUser = functions.auth.user().onCreate(async (user) => {
   if (hasAllowedEmailDomain) {
     console.log(`User with id ${user.uid} has allowed email domain; verifying`);
 
-    await auth.setCustomUserClaims(user.uid, { pairistValidEmail: true });
-
-    db.collection('userRefresh').doc(user.uid).set({ refreshTime: Date.now() });
+    await setUserVerified(user.uid);
   } else {
     console.warn(`User with id ${user.uid} does NOT have allowed email domain; NOT verifying`);
   }
 });
+
+async function setUserVerified(userId: string) {
+  await auth.setCustomUserClaims(userId, { pairistValidEmail: true });
+
+  await db.collection('userRefresh').doc(userId).set({ refreshTime: Date.now() });
+}

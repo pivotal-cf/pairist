@@ -39,5 +39,5 @@ export const updateUserProfile = functions.https.onCall(async (data, context) =>
     );
   }
 
-  batch.commit();
+  await batch.commit();
 });

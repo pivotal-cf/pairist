@@ -46,5 +46,5 @@ export const updateTeamSettings = functions.firestore
       );
     }
 
-    batch.commit();
+    await batch.commit();
   });
