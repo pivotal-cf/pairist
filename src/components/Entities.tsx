@@ -140,7 +140,7 @@ export default function Entities(props: Props) {
 
         <div className={styles.content}>
           {Object.keys(members).map((userId) => {
-            const { laneId, isLocked } = peopleLocations[userId];
+            const { laneId, isLocked } = peopleLocations[userId] || {};
 
             if (laneId) return null;
 

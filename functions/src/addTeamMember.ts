@@ -69,5 +69,9 @@ export const addTeamMember = functions.https.onCall(async (data, context) => {
     { merge: true }
   );
 
+  batch.set(db.collection('teams').doc(teamId).collection('people').doc(userToAdd.uid), {
+    laneId: '',
+  });
+
   await batch.commit();
 });

@@ -48,5 +48,7 @@ export const removeTeamMember = functions.https.onCall(async (data, context) => 
     { merge: true }
   );
 
+  batch.delete(db.collection('teams').doc(teamId).collection('people').doc(userId));
+
   await batch.commit();
 });
