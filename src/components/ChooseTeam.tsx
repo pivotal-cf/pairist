@@ -37,6 +37,11 @@ export default function ChooseTeam(props: Props) {
       >
         Create a new team
       </Button>
+
+      <p className={styles.small}>
+        To join an existing team, ask
+        <br />a team member to add you.
+      </p>
     </div>
   );
 }
@@ -59,5 +64,9 @@ const styles = css`
       margin-bottom: $unit-2;
       list-style-type: none;
     }
+  }
+
+  .small {
+    font-size: 0.8em;
   }
 `;
