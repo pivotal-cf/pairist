@@ -46,7 +46,8 @@ export const CreateTeam: FC = () => {
 
       setModalContent(null);
       setSubmitting(false);
-      history.push(`/teams/${teamURL}`);
+
+      history.push('/');
     } catch (err) {
       setError('Failed to create team. The given URL may be taken or invalid.');
       setSubmitting(false);
