@@ -16,18 +16,23 @@ export default function ChooseTeam(props: Props) {
   for (const teamId in memberTeams) {
     const teamName = memberTeams[teamId];
 
-    teams.push(
-      <li key={teamId}>
-        <Button href={`/teams/${teamId}`}>{teamName}</Button>
-      </li>
-    );
+    teams.push({
+      name: teamName,
+      content: (
+        <li key={teamId}>
+          <Button href={`/teams/${teamId}`}>{teamName}</Button>
+        </li>
+      ),
+    });
   }
+
+  teams.sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className={styles.chooseTeam}>
       <h3>My teams</h3>
 
-      {teams.length > 0 && <ul className={styles.teamList}>{teams}</ul>}
+      {teams.length > 0 && <ul className={styles.teamList}>{teams.map((item) => item.content)}</ul>}
 
       <Button
         bold
