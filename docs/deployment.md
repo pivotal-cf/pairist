@@ -7,11 +7,11 @@ To do so, follow the steps below. It should only take 10-15 minutes.
 1. **Set up a Firebase project for your Pairist instance.**
 
    1. Go to the [Firebase console](https://console.firebase.google.com/) and add a new project.
+        1. If you're using an existing GCP project, follow the prompts to select that project and add Firebase to it.
    1. From the console, create a new Firestore database for your project.
-   1. Find the authentication page, click "Get started", and enable the "Email/Password" sign-in method.
+   1. Find the authentication page, click "Get started", and enable the "Email/Password" sign-in method. Don't enable the "passwordless log-in".
    1. Find the billing page and upgrade your project to the **"Blaze - pay as you go"** plan.
    1. Under project settings, set a "Public-facing name" for your project (e.g. "MyOrg's Pairist").
-   1. From the project settings > service accounts tab, generate a new service account key and save the JSON file somewhere secure. You will need this for deploying!
 
 1. **Clone the Pairist repo & checkout version tag.**
 
