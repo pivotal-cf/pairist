@@ -2,6 +2,15 @@
 
 set -e
 
+if [ -f ".env.pairist" ]; then
+  echo "Loading env vars from .env.pairist file"
+  set -a
+  source ".env.pairist"
+  set +a
+else
+  echo "No .env.pairist file found"
+fi
+
 if [ -z "$PAIRIST_FIREBASE_PROJECT_ID" ]; then
   echo "PAIRIST_FIREBASE_PROJECT_ID is not set."
   echo "This should be set to your Firebase project ID."

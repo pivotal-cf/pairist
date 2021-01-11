@@ -12,6 +12,7 @@ node_modules
 .firebase
 
 # misc
+.env.pairist
 .DS_Store
 .env.local
 .env.development.local
