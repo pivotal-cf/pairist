@@ -30,5 +30,8 @@ export const onUserDelete = functions.auth.user().onDelete(async (user) => {
   // And also, delete all entries under this userId in memberTeams
   batch.delete(db.collection('memberTeams').doc(userId));
 
+  // And also, delete entry for this userId in userRefresh
+  batch.delete(db.collection('userRefresh').doc(userId));
+
   await batch.commit();
 });
