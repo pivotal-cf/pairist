@@ -18,7 +18,7 @@ const styles = css`
   @import '../variables.scss';
 
   .footer {
-    position: absolute;
+    position: fixed;
     left: 0;
     bottom: 0;
     display: flex;
