@@ -22,7 +22,7 @@ This is the Firebase auth domain for this Firebase app. This is usually `<projec
 
 If unset, the default is `${PAIRIST_FIREBASE_PROJECT_ID}.firebaseapp.com`.
 
-## `REACT_APP_FIREBASE_URL` (required)
+## `REACT_APP_FIREBASE_URL` (optional)
 
 This is the Firebase database URL for this app. This is usually `https://<project-id>.firebaseio.com`. You'll only need to set this explicitly if your database URL is different from the default.
 
