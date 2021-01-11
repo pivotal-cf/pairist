@@ -9,7 +9,7 @@ run(async () => {
     throw 'Usage: ./scripts/unverify-user <email>';
   }
 
-  console.log(`Manually verifying email address for user: ${email}`);
+  console.log(`Manually unverifying email address for user: ${email}`);
 
   const { auth } = await initializeFirebase();
 

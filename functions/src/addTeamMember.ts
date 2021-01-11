@@ -37,7 +37,7 @@ export const addTeamMember = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError('not-found', 'User not found.');
   }
 
-  if (userToAdd.customClaims?.pairistValidEmail !== true) {
+  if (!userToAdd.emailVerified || userToAdd.customClaims?.pairistValidEmail !== true) {
     throw new functions.https.HttpsError('failed-precondition', 'Cannot add unverified user.');
   }
 

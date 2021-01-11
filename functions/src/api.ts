@@ -65,7 +65,7 @@ async function validateFirebaseAuthentication(
   try {
     const token = await admin.auth().verifyIdToken(idToken);
 
-    if (token.pairistValidEmail === true) {
+    if (token.pairistValidEmail === true && token.email_verified === true) {
       res.locals.userId = token.uid;
       next();
     } else {

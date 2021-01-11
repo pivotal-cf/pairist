@@ -7,7 +7,11 @@ export async function logIn(email: string, password: string) {
 }
 
 export async function signUp(email: string, password: string) {
-  await auth.createUserWithEmailAndPassword(email, password);
+  const credential = await auth.createUserWithEmailAndPassword(email, password);
+
+  if (credential) {
+    credential.user?.sendEmailVerification();
+  }
 }
 
 export async function resetPassword(email: string) {

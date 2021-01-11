@@ -11,6 +11,7 @@ import Modal from './Modal';
 import SignIn from './SignIn';
 import Team from './Team';
 import Notification from './Notification';
+import NewUser from './NewUser';
 import { db, auth } from '../firebase';
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
   const { loaded, userId } = useSession();
 
   const notLoggedIn = loaded && !userId;
+  const verified = Boolean(auth?.currentUser?.emailVerified);
 
   useEffect(() => {
     // When a new user signs in for the first time, there will be a brief
@@ -50,7 +52,7 @@ export default function App() {
 
         <Route path="/">
           <Header />
-          {notLoggedIn ? <SignIn /> : <ChooseTeam />}
+          {notLoggedIn ? <SignIn /> : verified ? <ChooseTeam /> : <NewUser />}
           <Footer />
           {modalContent && <Modal>{modalContent}</Modal>}
         </Route>

@@ -5,7 +5,7 @@ export function ensureAuthenticated(context: functions.https.CallableContext) {
     throw new functions.https.HttpsError('unauthenticated', 'Unauthenticated.');
   }
 
-  if (context.auth.token.pairistValidEmail !== true) {
+  if (context.auth.token.pairistValidEmail !== true || context.auth.token.email_verified !== true) {
     throw new functions.https.HttpsError('unauthenticated', 'Unverified.');
   }
 }
