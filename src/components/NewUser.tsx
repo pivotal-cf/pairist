@@ -10,7 +10,7 @@ export default function NewUser(props: Props) {
 
       <p>
         We've sent you an email to verify your account. Please click the link in the email, then
-        continue below.
+        continue below. <b>Note: it may be in your spam folder.</b>
       </p>
 
       <Button bold flavor="confirm" onClick={() => window.location.reload()}>
