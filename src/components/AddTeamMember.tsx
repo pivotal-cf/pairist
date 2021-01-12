@@ -35,7 +35,7 @@ export default function AddTeamMember() {
       setModalContent(null);
     } catch (err) {
       console.error(err);
-      setError('Failed to add member. Is this email address correct?');
+      setError(`Failed to add member. ${err.message}`);
     } finally {
       setSubmitting(false);
     }
