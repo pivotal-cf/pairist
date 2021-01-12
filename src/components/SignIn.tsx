@@ -8,18 +8,15 @@ import Input from './Input';
 
 interface Props {}
 
-function checkEmailDomain(givenEmail: string) {
-  if (allowedEmailDomains) {
-    const givenEmailDomain = givenEmail.split('@').pop();
-    const allowDomainsList = allowedEmailDomains.split(',');
+function checkEmailDomain(givenEmail: string, allowdDomains: string[]) {
+  const givenEmailDomain = givenEmail.split('@').pop();
 
-    if (!givenEmailDomain || !allowDomainsList.includes(givenEmailDomain)) {
-      throw new Error(
-        `Email not valid. Your administrator only allows accounts with emails from these domains: ${allowDomainsList.join(
-          ', '
-        )}`
-      );
-    }
+  if (!givenEmailDomain || !allowdDomains.includes(givenEmailDomain)) {
+    throw new Error(
+      `Email not valid. Your administrator only allows accounts with emails from these domains: ${allowdDomains.join(
+        ', '
+      )}`
+    );
   }
 }
 
@@ -27,6 +24,8 @@ export default function SignIn(props: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  const validDomains = allowedEmailDomains?.split(',') || [];
 
   async function logIn(evt: FormEvent) {
     evt.preventDefault();
@@ -45,7 +44,7 @@ export default function SignIn(props: Props) {
 
   async function signUp() {
     try {
-      checkEmailDomain(email);
+      checkEmailDomain(email, validDomains);
 
       await userActions.signUp(email, password);
     } catch (err) {
@@ -63,7 +62,7 @@ export default function SignIn(props: Props) {
           value={email}
           onChange={(evt) => setEmail(evt.target.value)}
           type="email"
-          placeholder="me@company.com"
+          placeholder={`you@${validDomains[0] || 'company.com'}`}
         />
       </FormField>
 
@@ -74,7 +73,7 @@ export default function SignIn(props: Props) {
           onChange={(evt) => setPassword(evt.target.value)}
           type="password"
           placeholder="your password here"
-        ></Input>
+        />
       </FormField>
 
       {error && (
