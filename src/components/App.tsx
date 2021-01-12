@@ -20,7 +20,7 @@ export default function App() {
   const { loaded, userId } = useSession();
 
   const notLoggedIn = loaded && !userId;
-  const verified = Boolean(auth?.currentUser?.emailVerified);
+  const unverified = Boolean(auth.currentUser && !auth.currentUser.emailVerified);
 
   useEffect(() => {
     // When a new user signs in for the first time, there will be a brief
@@ -52,7 +52,7 @@ export default function App() {
 
         <Route path="/">
           <Header />
-          {notLoggedIn ? <SignIn /> : verified ? <ChooseTeam /> : <NewUser />}
+          {notLoggedIn ? <SignIn /> : unverified ? <NewUser /> : <ChooseTeam />}
           <Footer />
           {modalContent && <Modal>{modalContent}</Modal>}
         </Route>
