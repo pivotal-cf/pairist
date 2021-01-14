@@ -123,6 +123,7 @@ const styles = css`
     height: inherit;
     line-height: 1em;
     font-size: 1.4em;
+    font-family: initial;
     margin-right: $unit;
   }
 `;
