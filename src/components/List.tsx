@@ -43,6 +43,7 @@ const ListItems: FC<{
                 listId={props.listId}
                 itemId={item.itemId}
                 text={item.text}
+                checked={item.checked}
                 reactions={item.reactions}
                 deleteItem={props.deleteItem}
                 dragHandleProps={draggableProvided.dragHandleProps}

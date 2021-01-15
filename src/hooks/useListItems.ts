@@ -6,6 +6,7 @@ import { RouteParams } from '../types';
 export interface ListItemData {
   itemId: string;
   text: string;
+  checked: boolean;
   order: number;
   reactions: {};
 }

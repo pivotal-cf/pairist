@@ -11,6 +11,7 @@ interface Props {
   onChange?: ChangeEventHandler<HTMLTextAreaElement>;
   placeholder?: string;
   markdown?: boolean;
+  strikethrough?: boolean;
 }
 
 export default function Editable(props: Props) {
@@ -42,7 +43,7 @@ export default function Editable(props: Props) {
           onEnter={stopEditing}
         />
       ) : (
-        <div tabIndex={0} onFocus={onTextFocus} className={styles.rendered}>
+        <div tabIndex={0} onFocus={onTextFocus} className={cn(styles.rendered, props.strikethrough && styles.strikethrough)}>
           {props.markdown ? (
             <ReactMarkdown
               source={props.value}
@@ -92,5 +93,9 @@ const styles = css`
     p {
       margin: 0;
     }
+  }
+
+  .strikethrough {
+    text-decoration: line-through;
   }
 `;

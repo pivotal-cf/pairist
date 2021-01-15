@@ -1,7 +1,7 @@
 import { css } from 'astroturf';
 import { memo, useState } from 'react';
 import { DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
-import { Move, Smile, Trash } from 'react-feather';
+import { CheckSquare, Move, Smile, Square, Trash } from 'react-feather';
 import { useParams } from 'react-router';
 import * as listItemActions from '../actions/list-item';
 import { RouteParams } from '../types';
@@ -15,6 +15,7 @@ interface Props {
   listId: string;
   itemId: string;
   text: string;
+  checked: boolean;
   reactions: { [name: string]: { count: number; timestamp: number } };
   deleteItem: (id: string) => any;
   dragHandleProps: DraggableProvidedDragHandleProps | null;
@@ -23,6 +24,12 @@ interface Props {
 export default memo(function ListItem(props: Props) {
   const { teamId = '-' } = useParams<RouteParams>();
   const [emojisExpanded, setEmojisExpanded] = useState(false);
+
+  function toggleItemChecked() {
+    listItemActions.updateListItem(teamId, props.listId, props.itemId, {
+      checked: !props.checked,
+    });
+  }
 
   function updateItemText(newText: string) {
     listItemActions.updateListItem(teamId, props.listId, props.itemId, {
@@ -75,11 +82,18 @@ export default memo(function ListItem(props: Props) {
         <Move />
       </div>
 
+      <IconButton
+        label={`Mark item as ${props.checked ? 'not done' : 'done'}`}
+        icon={props.checked ? <CheckSquare/> : <Square/>}
+        onClick={toggleItemChecked}
+      />
+
       <div className={styles.itemWrapper}>
         <Editable
           markdown
           value={props.text}
           onChange={(evt) => updateItemText(evt.target.value)}
+          strikethrough={props.checked}
         />
       </div>
 

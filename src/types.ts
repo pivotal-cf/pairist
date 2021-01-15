@@ -18,6 +18,7 @@ export interface ListData {
 export interface ListItemData {
   itemId: string;
   text: string;
+  checked: boolean;
   order: number;
   reactions: {
     [name: string]: { count: number; timestamp: number } | firebase.firestore.FieldValue;
