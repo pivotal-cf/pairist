@@ -153,7 +153,7 @@ History entries are keyed by timestamp. The max number of history entries stored
 ### Sample `curl`
 
 ```
-curl 'https://us-central1-my-firebase-project.cloudfunctions.net/api/current/my-team' -H 'Authorization: Bearer some-token'
+curl 'https://us-central1-my-firebase-project.cloudfunctions.net/api/history/my-team' -H 'Authorization: Bearer some-token'
 ```
 
 ### Sample response
