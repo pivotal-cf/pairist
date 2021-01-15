@@ -50,7 +50,6 @@ export default function Editable(props: Props) {
               skipHtml
               allowedTypes={[
                 'paragraph',
-                'root',
                 'text',
                 'emphasis',
                 'strong',
