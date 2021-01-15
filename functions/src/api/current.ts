@@ -6,7 +6,7 @@ interface PairsResponse {
   pairs: PairResponse[];
 }
 
-interface PairResponse {
+export interface PairResponse {
   roles: {
     id: string;
     name: string;

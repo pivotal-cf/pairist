@@ -141,3 +141,95 @@ curl 'https://us-central1-my-firebase-project.cloudfunctions.net/api/lists/my-te
   ]
 }
 ```
+
+## `GET /api/history/:teamId`
+
+This endpoint requires an `Authorization` header containing a valid Firebase ID token. The provided token must be valid and must belong to a member of the team in question.
+
+A team ID is just the team URL slug: if your team lives at `<pairist-URL>/teams/my-team`, then your team ID is `my-team`.
+
+History entries are keyed by timestamp. The max number of history entries stored per team, and the schedule by which history is saved, are [configurable](./configuration.md) per deployment.
+
+### Sample `curl`
+
+```
+curl 'https://us-central1-my-firebase-project.cloudfunctions.net/api/current/my-team' -H 'Authorization: Bearer some-token'
+```
+
+### Sample response
+
+```json
+{
+  "1610524804113": {
+    "pairs": [
+      {
+        "people": [
+          {
+            "id": "user-id-1",
+            "displayName": "Person 1"
+          },
+          {
+            "id": "user-id-2",
+            "displayName": ""
+          }
+        ],
+        "roles": [
+          {
+            "id": "role-id-1",
+            "name": "Role 1"
+          }
+        ],
+        "tracks": []
+      },
+      {
+        "people": [
+          {
+            "id": "user-id-3",
+            "displayName": "Person 3"
+          }
+        ],
+        "roles": [],
+        "tracks": [
+          {
+            "id": "track-id-1",
+            "name": "Track 1"
+          }
+        ]
+      }
+    ]
+  },
+  "1610438407529": {
+    "pairs": [
+      {
+        "people": [
+          {
+            "id": "user-id-1",
+            "displayName": "Person 1"
+          }
+        ],
+        "roles": [],
+        "tracks": [
+          {
+            "id": "track-id-1",
+            "name": "Track 1"
+          }
+        ]
+      },
+      {
+        "people": [
+          {
+            "id": "user-id-3",
+            "displayName": "Person 3"
+          },
+          {
+            "id": "user-id-2",
+            "displayName": ""
+          }
+        ],
+        "roles": [],
+        "tracks": []
+      }
+    ]
+  }
+}
+```
