@@ -6,6 +6,7 @@ import { useSession } from '../hooks/useSession';
 import Dropdown from './Dropdown';
 import DropdownItem from './DropdownItem';
 import EditProfile from './EditProfile';
+import ResetPasswordDialog from './ResetPasswordDialog';
 import HeaderButton from './HeaderButton';
 
 export default function UserDropdown() {
@@ -47,10 +48,7 @@ export default function UserDropdown() {
       </DropdownItem>
       <DropdownItem
         leftIcon={<Lock />}
-        onClick={() => {
-          userActions.resetPassword(session.email || '');
-          logOut();
-        }}
+        onClick={() => setModalContent(<ResetPasswordDialog />)}
       >
         Reset password
       </DropdownItem>

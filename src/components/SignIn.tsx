@@ -2,6 +2,8 @@ import { css } from 'astroturf';
 import { FormEvent, useState } from 'react';
 import * as userActions from '../actions/user';
 import { allowedEmailDomains } from '../config';
+import { useModal } from '../hooks/useModal';
+import ResetPasswordDialog from './ResetPasswordDialog';
 import Button from './Button';
 import FormField from './FormField';
 import Input from './Input';
@@ -21,9 +23,16 @@ function checkEmailDomain(givenEmail: string, allowdDomains: string[]) {
 }
 
 export default function SignIn(props: Props) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [, setModalContent] = useModal();
+
+  const [signUpEmail, setSignUpEmail] = useState('');
+  const [signUpDisplayName, setSignUpDisplayName] = useState('');
+  const [signUpPassword, setSignUpPassword] = useState('');
+  const [signUpError, setSignUpError] = useState('');
+
+  const [logInEmail, setLogInEmail] = useState('');
+  const [logInPassword, setLogInPassword] = useState('');
+  const [logInError, setLogInError] = useState('');
 
   const validDomains = allowedEmailDomains?.split(',') || [];
 
@@ -31,83 +40,150 @@ export default function SignIn(props: Props) {
     evt.preventDefault();
 
     try {
-      await userActions.logIn(email, password);
+      await userActions.logIn(logInEmail, logInPassword);
     } catch (err) {
       if (err.code === 'auth/user-not-found') {
-        setError('No user found with this email. Did you mean to sign up?');
+        setLogInError('No user found with this email. Did you mean to sign up?');
         return;
       }
 
-      setError(err.message);
+      setLogInError(err.message);
     }
   }
 
   async function signUp() {
     try {
-      checkEmailDomain(email, validDomains);
+      checkEmailDomain(signUpEmail, validDomains);
 
-      await userActions.signUp(email, password);
+      await userActions.signUp(signUpEmail, signUpDisplayName, signUpPassword);
     } catch (err) {
-      setError(err.message);
+      setSignUpError(err.message);
     }
   }
 
   return (
-    <form className={styles.signIn} onSubmit={logIn}>
-      <h2>Welcome to Pairist! 👋</h2>
+    <div className={styles.welcomeContainer}>
+      <h2 className={styles.formHeader}>Welcome to Pairist! 👋</h2>
+      <div className={styles.formContainer}>
+      <form className={styles.welcomeForm} onSubmit={logIn}>
+        <FormField label="Email">
+          <Input
+            id="sign-in-email"
+            value={signUpEmail}
+            onChange={(evt) => setSignUpEmail(evt.target.value)}
+            type="email"
+            placeholder={`you@${validDomains[0] || 'company.com'}`}
+          />
+        </FormField>
 
-      <FormField label="Email">
-        <Input
-          id="sign-in-email"
-          value={email}
-          onChange={(evt) => setEmail(evt.target.value)}
-          type="email"
-          placeholder={`you@${validDomains[0] || 'company.com'}`}
-        />
-      </FormField>
+        <FormField label="Display Name">
+          <Input
+            id="sign-in-display-name"
+            value={signUpDisplayName}
+            onChange={(evt) => setSignUpDisplayName(evt.target.value)}
+            placeholder={'your name'}
+          />
+        </FormField>
 
-      <FormField label="Password">
-        <Input
-          id="sign-in-password"
-          value={password}
-          onChange={(evt) => setPassword(evt.target.value)}
-          type="password"
-          placeholder="your password here"
-        />
-      </FormField>
+        <FormField label="Password">
+          <Input
+            id="sign-in-password"
+            value={signUpPassword}
+            onChange={(evt) => setSignUpPassword(evt.target.value)}
+            type="password"
+            placeholder="your password here"
+          />
+        </FormField>
 
-      {error && (
-        <div className={styles.error} role="alert">
-          {error}
+        {signUpError && (
+          <div className={styles.error} role="alert">
+            {signUpError}
+          </div>
+        )}
+
+        <div className={styles.buttons}>
+          <Button bold flavor="confirm" onClick={signUp}>Sign up</Button>
         </div>
-      )}
+      </form>
+      <form className={styles.welcomeForm} onSubmit={logIn}>
+        <FormField label="Email">
+          <Input
+            id="log-in-email"
+            value={logInEmail}
+            onChange={(evt) => setLogInEmail(evt.target.value)}
+            type="email"
+            placeholder={`you@${validDomains[0] || 'company.com'}`}
+          />
+        </FormField>
 
-      <div className={styles.buttons}>
-        <Button onClick={signUp}>Sign up</Button>
-        <div style={{ flexGrow: 1 }} />
-        <Button bold flavor="confirm" type="submit" onClick={logIn}>
-          Log in
-        </Button>
-      </div>
+        <FormField label="Password">
+          <Input
+            id="log-in-password"
+            value={logInPassword}
+            onChange={(evt) => setLogInPassword(evt.target.value)}
+            type="password"
+            placeholder="your password here"
+          />
+        </FormField>
 
-      <hr className={styles.divider} />
+        {logInError && (
+          <div className={styles.error} role="alert">
+            {logInError}
+          </div>
+        )}
 
-      <p>To get started, create an account or log in.</p>
+        <div className="flex-grow" />
 
-      <p>
-        In Pairist 2, you log in as yourself, not your team. You'll be able to create and join teams
-        once you've logged in.
-      </p>
-    </form>
+        <div className={styles.buttons}>
+          <Button onClick={() => setModalContent(<ResetPasswordDialog />)}>
+            Forgot Password
+          </Button>
+          <div className="flex-grow" />
+          <Button bold flavor="confirm" type="submit" onClick={logIn}>
+            Log in
+          </Button>
+        </div>
+      </form>
+    </div>
+
+    <hr className={styles.divider} />
+
+    <blockquote>To get started, create an account or log in.</blockquote>
+
+    <blockquote>
+      In Pairist 2, you log in as yourself, not your team. You'll be able to create and join teams
+      once you've logged in.
+    </blockquote>
+  </div>
   );
 }
 
 const styles = css`
   @import '../variables.scss';
 
-  .signIn {
-    width: 320px;
-    margin: 20vh auto;
+  .welcomeContainer {
+    margin: auto;
+  }
+
+  .formContainer, .formHeader {
+    display: flex;
+    justify-content: center;
+  }
+
+  .welcomeForm {
+    margin: 30px;
+    padding: 30px;
+    max-width: 300px;
+    border-radius: 15px;
+    border: 1px solid #d7d9d9;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .verticalFiller {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
   }
 
   .divider {

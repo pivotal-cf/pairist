@@ -6,10 +6,11 @@ export async function logIn(email: string, password: string) {
   await auth.signInWithEmailAndPassword(email, password);
 }
 
-export async function signUp(email: string, password: string) {
+export async function signUp(email: string, displayName: string, password: string) {
   const credential = await auth.createUserWithEmailAndPassword(email, password);
 
   if (credential) {
+    credential.user?.updateProfile({displayName})
     credential.user?.sendEmailVerification();
   }
 }
