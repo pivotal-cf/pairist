@@ -64,97 +64,101 @@ export default function SignIn(props: Props) {
   return (
     <div className={styles.welcomeContainer}>
       <h2 className={styles.formHeader}>Welcome to Pairist! 👋</h2>
+
       <div className={styles.formContainer}>
-      <form className={styles.welcomeForm} onSubmit={logIn}>
-        <FormField label="Email">
-          <Input
-            id="sign-in-email"
-            value={signUpEmail}
-            onChange={(evt) => setSignUpEmail(evt.target.value)}
-            type="email"
-            placeholder={`you@${validDomains[0] || 'company.com'}`}
-          />
-        </FormField>
+        <form className={styles.welcomeForm} onSubmit={logIn}>
+          <FormField label="Email">
+            <Input
+              id="sign-in-email"
+              value={signUpEmail}
+              onChange={(evt) => setSignUpEmail(evt.target.value)}
+              type="email"
+              placeholder={`you@${validDomains[0] || 'company.com'}`}
+            />
+          </FormField>
 
-        <FormField label="Display Name">
-          <Input
-            id="sign-in-display-name"
-            value={signUpDisplayName}
-            onChange={(evt) => setSignUpDisplayName(evt.target.value)}
-            placeholder={'your name'}
-          />
-        </FormField>
+          <FormField label="Display name">
+            <Input
+              id="sign-in-display-name"
+              value={signUpDisplayName}
+              onChange={(evt) => setSignUpDisplayName(evt.target.value)}
+              placeholder={'your name'}
+            />
+          </FormField>
 
-        <FormField label="Password">
-          <Input
-            id="sign-in-password"
-            value={signUpPassword}
-            onChange={(evt) => setSignUpPassword(evt.target.value)}
-            type="password"
-            placeholder="your password here"
-          />
-        </FormField>
+          <FormField label="Password">
+            <Input
+              id="sign-in-password"
+              value={signUpPassword}
+              onChange={(evt) => setSignUpPassword(evt.target.value)}
+              type="password"
+              placeholder="your password here"
+            />
+          </FormField>
 
-        {signUpError && (
-          <div className={styles.error} role="alert">
-            {signUpError}
+          {signUpError && (
+            <div className={styles.error} role="alert">
+              {signUpError}
+            </div>
+          )}
+
+          <div className={styles.buttons}>
+            <div className="flex-grow" />
+
+            <Button bold flavor="confirm" onClick={signUp}>
+              Sign up
+            </Button>
           </div>
-        )}
+        </form>
 
-        <div className={styles.buttons}>
-          <Button bold flavor="confirm" onClick={signUp}>Sign up</Button>
-        </div>
-      </form>
-      <form className={styles.welcomeForm} onSubmit={logIn}>
-        <FormField label="Email">
-          <Input
-            id="log-in-email"
-            value={logInEmail}
-            onChange={(evt) => setLogInEmail(evt.target.value)}
-            type="email"
-            placeholder={`you@${validDomains[0] || 'company.com'}`}
-          />
-        </FormField>
+        <form className={styles.welcomeForm} onSubmit={logIn}>
+          <FormField label="Email">
+            <Input
+              id="log-in-email"
+              value={logInEmail}
+              onChange={(evt) => setLogInEmail(evt.target.value)}
+              type="email"
+              placeholder={`you@${validDomains[0] || 'company.com'}`}
+            />
+          </FormField>
 
-        <FormField label="Password">
-          <Input
-            id="log-in-password"
-            value={logInPassword}
-            onChange={(evt) => setLogInPassword(evt.target.value)}
-            type="password"
-            placeholder="your password here"
-          />
-        </FormField>
+          <FormField label="Password">
+            <Input
+              id="log-in-password"
+              value={logInPassword}
+              onChange={(evt) => setLogInPassword(evt.target.value)}
+              type="password"
+              placeholder="your password here"
+            />
+          </FormField>
 
-        {logInError && (
-          <div className={styles.error} role="alert">
-            {logInError}
-          </div>
-        )}
+          {logInError && (
+            <div className={styles.error} role="alert">
+              {logInError}
+            </div>
+          )}
 
-        <div className="flex-grow" />
-
-        <div className={styles.buttons}>
-          <Button onClick={() => setModalContent(<ResetPasswordDialog />)}>
-            Forgot Password
-          </Button>
           <div className="flex-grow" />
-          <Button bold flavor="confirm" type="submit" onClick={logIn}>
-            Log in
-          </Button>
-        </div>
-      </form>
+
+          <div className={styles.buttons}>
+            <Button onClick={() => setModalContent(<ResetPasswordDialog />)}>
+              Forgot password
+            </Button>
+            <div className="flex-grow" />
+            <Button bold flavor="confirm" type="submit" onClick={logIn}>
+              Log in
+            </Button>
+          </div>
+        </form>
+      </div>
+
+      <blockquote>To get started, create an account or log in.</blockquote>
+
+      <blockquote>
+        In Pairist 2, you log in as yourself, not your team. You'll be able to create and join teams
+        once you've logged in.
+      </blockquote>
     </div>
-
-    <hr className={styles.divider} />
-
-    <blockquote>To get started, create an account or log in.</blockquote>
-
-    <blockquote>
-      In Pairist 2, you log in as yourself, not your team. You'll be able to create and join teams
-      once you've logged in.
-    </blockquote>
-  </div>
   );
 }
 
@@ -163,32 +167,30 @@ const styles = css`
 
   .welcomeContainer {
     margin: auto;
+    max-width: $unit * 76;
   }
 
-  .formContainer, .formHeader {
+  .formContainer,
+  .formHeader {
     display: flex;
     justify-content: center;
   }
 
   .welcomeForm {
-    margin: 30px;
-    padding: 30px;
-    max-width: 300px;
-    border-radius: 15px;
-    border: 1px solid #d7d9d9;
+    padding: $unit * 3;
+    max-width: $unit * 40;
     display: flex;
     flex-direction: column;
+
+    + .welcomeForm {
+      border-left: 1px solid $color-border;
+    }
   }
 
   .verticalFiller {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-  }
-
-  .divider {
-    border-top: 1px solid $color-border;
-    margin: $unit-3 0;
   }
 
   .error {

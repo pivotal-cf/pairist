@@ -10,7 +10,6 @@ import ModalBody from './ModalBody';
 import ModalFooter from './ModalFooter';
 import ModalHeader from './ModalHeader';
 
-
 export default function ResetPasswordDialog() {
   const history = useHistory();
   const { loaded, email } = useSession();
@@ -38,25 +37,28 @@ export default function ResetPasswordDialog() {
       <ModalHeader text="Reset password" />
 
       <ModalBody row>
-        {email
-          ? <div>
-              An email will be sent to <b>{email}</b> to reset your password.
-              <br/><br/>
-              <i>Note: it may go to your spam folder.</i>
-            </div>
-            : <div>
-              Enter your email below to receive a reset password email.
-              <br/><br/>
-              <i>Note: it may go to your spam folder.</i>
-              <FormField label="Email">
-                <Input
-                  id="account-email"
-                  value={emailInput || ''}
-                  onChange={(evt) => setEmailInput(evt.target.value)}
-                />
-              </FormField>
-            </div>
-        }
+        {email ? (
+          <div>
+            An email will be sent to <b>{email}</b> to reset your password.
+            <br />
+            <br />
+            <i>Note: it may go to your spam folder.</i>
+          </div>
+        ) : (
+          <div>
+            Enter your email below to receive a reset password email.
+            <br />
+            <br />
+            <i>Note: it may go to your spam folder.</i>
+            <FormField label="Email">
+              <Input
+                id="account-email"
+                value={emailInput || ''}
+                onChange={(evt) => setEmailInput(evt.target.value)}
+              />
+            </FormField>
+          </div>
+        )}
       </ModalBody>
 
       <ModalFooter>
@@ -71,7 +73,7 @@ export default function ResetPasswordDialog() {
           bold
           flavor="confirm"
         >
-          Reset Password
+          Reset password
         </Button>
       </ModalFooter>
     </form>
