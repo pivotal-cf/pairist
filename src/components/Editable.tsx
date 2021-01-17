@@ -3,6 +3,7 @@ import { ChangeEventHandler, FocusEvent, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { cn } from '../helpers';
 import Textarea from './Textarea';
+import gfm from 'remark-gfm'
 
 interface Props {
   id?: string;
@@ -49,6 +50,7 @@ export default function Editable(props: Props) {
               source={props.value}
               unwrapDisallowed
               skipHtml
+              plugins={[gfm]}
               allowedTypes={[
                 'paragraph',
                 'text',
