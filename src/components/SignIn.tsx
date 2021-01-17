@@ -10,12 +10,14 @@ import Input from './Input';
 
 interface Props {}
 
-function checkEmailDomain(givenEmail: string, allowdDomains: string[]) {
+function checkEmailDomain(givenEmail: string, allowedDomains: string[]) {
+  if (!allowedDomains.length) return;
+
   const givenEmailDomain = givenEmail.split('@').pop();
 
-  if (!givenEmailDomain || !allowdDomains.includes(givenEmailDomain)) {
+  if (!givenEmailDomain || !allowedDomains.includes(givenEmailDomain)) {
     throw new Error(
-      `Email not valid. Your administrator only allows accounts with emails from these domains: ${allowdDomains.join(
+      `Email not valid. Your administrator only allows accounts with emails from these domains: ${allowedDomains.join(
         ', '
       )}`
     );
@@ -34,7 +36,7 @@ export default function SignIn(props: Props) {
   const [logInPassword, setLogInPassword] = useState('');
   const [logInError, setLogInError] = useState('');
 
-  const validDomains = allowedEmailDomains?.split(',') || [];
+  const validDomains = allowedEmailDomains?.split(',').filter(Boolean) || [];
 
   async function logIn(evt: FormEvent) {
     evt.preventDefault();
