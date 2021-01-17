@@ -62,7 +62,8 @@ export default function Editable(props: Props) {
                 'listItem',
                 'inlineCode',
                 'heading',
-              ]}
+                'delete',
+              ] as any}
             />
           ) : (
             props.value
