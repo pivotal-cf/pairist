@@ -19,6 +19,11 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /additionalUserInfo/{userId} {
+      allow read: if authenticated()
+      allow write: if request.auth.uid != null && userId == request.auth.uid;
+    }
+
     match /teamMembers/{teamId} {
       allow read: if authenticated() && isTeamMember(teamId);
       allow write: if false;

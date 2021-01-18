@@ -1,21 +1,32 @@
 import { css } from 'astroturf';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import * as userActions from '../actions/user';
 import { useModal } from '../hooks/useModal';
 import { useSession } from '../hooks/useSession';
+import { useAdditionalUserInfo } from '../hooks/useAdditionalUserInfo';
+import { cn } from '../helpers';
+import { Triangle } from 'react-feather';
 import Button from './Button';
 import FormField from './FormField';
 import Input from './Input';
 import ModalBody from './ModalBody';
 import ModalFooter from './ModalFooter';
 import ModalHeader from './ModalHeader';
+import IconButton from './IconButton';
 
 export default function EditProfile() {
   const { loaded, userId, email, displayName, photoURL } = useSession();
+  const { identiconString } = useAdditionalUserInfo(userId);
   const [, setModalContent] = useModal();
   const [localDisplayName, setLocalDisplayName] = useState(displayName || '');
   const [localPhotoURL, setLocalPhotoURL] = useState(photoURL || '');
+  const [localIdenticonString, setLocalIdenticonString] = useState(identiconString || '');
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    setLocalIdenticonString(identiconString);
+  }, [identiconString]);
 
   function cancel() {
     setModalContent(null);
@@ -30,6 +41,8 @@ export default function EditProfile() {
       await userActions.updateProfile({
         displayName: localDisplayName,
         photoURL: localPhotoURL,
+      }, {
+        identiconString: localIdenticonString,
       });
 
       // HACK: for some reason I can't yet figure out, the user image/display name
@@ -53,7 +66,8 @@ export default function EditProfile() {
           {localPhotoURL ? (
             <img className={styles.image} src={localPhotoURL} alt="Profile" />
           ) : (
-            <svg className={styles.image} width="80" height="80" data-jdenticon-value={userId} />
+            <svg className={styles.image} width="80" height="80"
+              data-jdenticon-value={localIdenticonString ? localIdenticonString : userId} />
           )}
         </div>
         <div>
@@ -76,6 +90,22 @@ export default function EditProfile() {
               onChange={(evt) => setLocalPhotoURL(evt.target.value)}
             />
           </FormField>
+        <div className={styles.advancedOptionsSection}>
+          <IconButton
+            label="Advanced options"
+            icon={<Triangle fill="dark-gray" className={cn(styles.optionsIcon, showAdvancedOptions && styles.optionsIconClicked)} />}
+            onClick={() => setShowAdvancedOptions(!showAdvancedOptions)} />
+          <span className={styles.advancedOptionsHeader}><b>Advanced Options</b></span>
+        </div>
+          {showAdvancedOptions &&
+            <FormField label="Identicon string">
+              <Input
+                id="edit-identicon-string"
+                value={localIdenticonString}
+                onChange={(evt) => setLocalIdenticonString(evt.target.value)}
+              />
+            </FormField>
+          }
         </div>
       </ModalBody>
 
@@ -99,6 +129,8 @@ export default function EditProfile() {
 }
 
 const styles = css`
+  @import '../variables.scss';
+
   .heading {
     margin-top: 0;
     margin-bottom: 16px;
@@ -114,5 +146,24 @@ const styles = css`
   .image {
     width: 192px;
     height: 192px;
+  }
+
+  .advancedOptionsSection {
+    display: flex;
+    margin-top: $unit;
+  }
+
+  .advancedOptionsHeader {
+    margin-left: $unit-half;
+    padding-top: $unit;
+  }
+
+  .optionsIcon {
+    transition: 0.9s;
+    transform: rotate(90deg);
+  }
+
+  .optionsIconClicked {
+    transform: rotate(180deg);
   }
 `;

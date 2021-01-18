@@ -6,6 +6,7 @@ import { Lock, Trash, Unlock } from 'react-feather';
 import * as personActions from '../actions/person';
 import * as teamActions from '../actions/team';
 import { useModal } from '../hooks/useModal';
+import { useAdditionalUserInfo } from '../hooks/useAdditionalUserInfo';
 import { DragEvent } from 'react';
 
 interface Props {
@@ -20,6 +21,7 @@ interface Props {
 
 export default function Person(props: Props) {
   const { displayName, teamId, isLocked, userId } = props;
+  const { identiconString } = useAdditionalUserInfo(userId);
   const [, setModalContent] = useModal();
 
   const name = displayName || '(no display name)';
@@ -58,7 +60,8 @@ export default function Person(props: Props) {
         {props.photoURL ? (
           <img className={styles.img} src={props.photoURL} alt={name} draggable={false} />
         ) : (
-          <svg className={styles.img} width="80" height="80" data-jdenticon-value={props.userId} />
+          <svg className={styles.img} width="80" height="80"
+            data-jdenticon-value={identiconString ? identiconString : props.userId} />
         )}
       </div>
 

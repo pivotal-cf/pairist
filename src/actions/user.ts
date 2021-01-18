@@ -1,4 +1,4 @@
-import { auth, funcs } from '../firebase';
+import { auth, funcs, db } from '../firebase';
 
 const updateUserProfileFunc = funcs.httpsCallable('updateUserProfile');
 
@@ -20,9 +20,13 @@ export async function resetPassword(email: string) {
   await auth.sendPasswordResetEmail(email);
 }
 
-export async function updateProfile(profile: { displayName?: string; photoURL?: string }) {
+export async function updateProfile(profile: { displayName?: string; photoURL?: string }, additionalOptions: { identiconString?: string }) {
   if (!auth.currentUser) return;
   await updateUserProfileFunc(profile);
+  await db.collection('additionalUserInfo').doc(auth.currentUser.uid).set(
+    additionalOptions,
+    {merge: true}
+  );
 }
 
 export async function logOut() {

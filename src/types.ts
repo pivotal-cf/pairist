@@ -4,6 +4,10 @@ export interface RouteParams {
   teamId?: string;
 }
 
+export interface AdditionalUserInfo {
+  identiconString: string;
+};
+
 export interface TeamData {
   teamId: string;
   teamName: string;

@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import * as userActions from '../actions/user';
 import { useModal } from '../hooks/useModal';
 import { useSession } from '../hooks/useSession';
+import { useAdditionalUserInfo } from '../hooks/useAdditionalUserInfo';
 import Dropdown from './Dropdown';
 import DropdownItem from './DropdownItem';
 import EditProfile from './EditProfile';
@@ -12,6 +13,7 @@ import HeaderButton from './HeaderButton';
 export default function UserDropdown() {
   const session = useSession();
   const history = useHistory();
+  const { identiconString } = useAdditionalUserInfo(session.userId);
   const [, setModalContent] = useModal();
 
   if (!session.loaded) {
@@ -24,7 +26,7 @@ export default function UserDropdown() {
 
   const displayName = session.displayName || session.email || '';
   const imageURL = session.photoURL || '';
-  const imageHash = session.userId || '';
+  const imageHash = identiconString ? identiconString : session.userId || '';
 
   async function logOut() {
     await userActions.logOut();
