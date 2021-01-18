@@ -72,7 +72,7 @@ const styles = css`
     right: 0;
     top: 0;
     background: $color-light;
-    border-radius: 4px;
+    border-radius: $unit-half;
     box-shadow: 0 0 8px 0px rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(0, 0, 0, 0.2);
     padding: $unit;
@@ -103,7 +103,7 @@ const styles = css`
     border: none;
     background: none;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: $unit-half;
     text-align: center;
 
     &:hover {

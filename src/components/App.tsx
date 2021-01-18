@@ -68,5 +68,6 @@ const styles = css`
     height: 100%;
     display: flex;
     flex-direction: column;
+    background-color: #f2f2f2
   }
 `;

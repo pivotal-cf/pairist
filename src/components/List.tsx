@@ -183,16 +183,22 @@ const styles = css`
     background: $color-light;
 
     + .wrapper {
-      border-top: 1px solid $color-border;
+      border-top: 2px solid $color-border;
     }
   }
 
   .title {
+    top: 0;
     margin: 0;
+    z-index: 1;
+    width: 100%;
+    position: sticky;
     padding: $unit;
     font-size: inherit;
     display: flex;
     align-items: center;
+    background-color: $color-light;
+    box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.1);
   }
 
   .list {

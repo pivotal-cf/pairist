@@ -4,7 +4,6 @@ import { Plus } from 'react-feather';
 import * as personActions from '../actions/person';
 import * as roleActions from '../actions/role';
 import * as trackActions from '../actions/track';
-import { cn } from '../helpers';
 import { useModal } from '../hooks/useModal';
 import { usePeople } from '../hooks/usePeople';
 import { useRoles } from '../hooks/useRoles';
@@ -68,12 +67,14 @@ export default function Entities(props: Props) {
 
   return (
     <div className={styles.entities} onDragOver={onDragOver} onDrop={onDrop}>
-      <section>
+      <div className={styles.transparencyBar} />
+      <section className={styles.entitySection}>
         <header className={styles.header}>
           <h1 className={styles.heading}>Tracks</h1>
           <IconButton
             label="New track"
             icon={<Plus />}
+            headerButton={true}
             onClick={() => setModalContent(<CreateTrackOrRole mode="create" flavor="track" />)}
           />
         </header>
@@ -98,12 +99,13 @@ export default function Entities(props: Props) {
         </div>
       </section>
 
-      <section>
-        <header className={cn(styles.header, styles.borderTop)}>
+      <section className={styles.entitySection}>
+        <header className={styles.header}>
           <h1 className={styles.heading}>Roles</h1>
           <IconButton
             label="New role"
             icon={<Plus />}
+            headerButton={true}
             onClick={() => setModalContent(<CreateTrackOrRole mode="create" flavor="role" />)}
           />
         </header>
@@ -128,12 +130,13 @@ export default function Entities(props: Props) {
         </div>
       </section>
 
-      <section>
-        <header className={cn(styles.header, styles.borderTop)}>
+      <section className={styles.entitySection}>
+        <header className={styles.header}>
           <h1 className={styles.heading}>People</h1>
           <IconButton
             label="Invite person"
             icon={<Plus />}
+            headerButton={true}
             onClick={() => setModalContent(<AddTeamMember />)}
           />
         </header>
@@ -170,10 +173,10 @@ const styles = css`
 
   .entities {
     flex: 1;
-    height: 100%;
     display: flex;
+    margin: $unit-2 0;
     flex-direction: column;
-    border-left: 1px solid $color-border;
+    overflow-y: auto;
 
     @media screen and (max-width: $breakpoint) {
       height: initial;
@@ -181,22 +184,44 @@ const styles = css`
     }
   }
 
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: $unit;
-    padding-left: $unit-2;
-    border-bottom: 1px solid $color-border;
-    flex: 0;
+  .entitySection {
+    margin: 0 $unit-2 $unit-2 $unit-2;
+    background-color: $color-light;
+    border: 1px solid $color-border;
+    border-radius: 6px;
+    box-shadow: 0 0 $unit 0 rgba(0, 0, 0, 0.2);
   }
 
-  .borderTop {
-    border-top: 1px solid $color-border;
+  .header {
+    flex: 0;
+    display: flex;
+    top: 0;
+    position: -webkit-sticky;
+    position: sticky;
+    z-index: 2;
+    padding: $unit;
+    padding-left: $unit-2;
+    align-items: center;
+    border-radius: 6px 6px 0 0;
+    justify-content: space-between;
+    border-bottom: 1px solid $color-border;
+    background-color: $color-secondary !important;
+    color: $color-light;
+  }
+
+  .transparencyBar {
+    z-index: 1;
+    width: 100%;
+    height: $unit;
+    margin: 0 $unit;
+    position: fixed;
+    background-color: #f2f2f2;
   }
 
   .heading {
     margin: 0;
+    width: 100%;
+    height: 100%;
     font-size: inherit;
   }
 

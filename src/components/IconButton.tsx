@@ -7,15 +7,16 @@ interface Props {
   disabled?: boolean;
   dark?: boolean;
   className?: string;
+  headerButton?: boolean;
   icon?: ReactElement;
   onClick?: MouseEventHandler;
   children?: ReactNode;
 }
 
 export default forwardRef<HTMLButtonElement, Props>((props, ref) => {
-  const { icon, children, label, dark, className, ...restProps } = props;
+  const { icon, children, label, dark, headerButton, className, ...restProps } = props;
 
-  const classes = cn(styles.button, dark && styles.dark, className);
+  const classes = cn(styles.button, dark && styles.dark, headerButton && styles.headerButton, className);
 
   return (
     <button
@@ -57,6 +58,20 @@ const styles = css`
 
     &.dark {
       background: $color-border;
+    }
+
+    &.headerButton svg {
+      stroke-width: 3px;
+      color: $color-light;
+    }
+
+    &.headerButton:hover,
+    &.headerButton:focus {
+      background: rgb(239, 246, 245);
+
+      svg {
+      color: $color-primary;
+      }
     }
 
     svg {

@@ -104,7 +104,7 @@ export default function Pairs() {
     <section className={styles.pairs}>
       <header className={styles.header}>
         <h1 className={styles.heading}>Pairs</h1>
-        <IconButton label="Recommend pairs" icon={<Shuffle />} onClick={recommendPairs} />
+        <IconButton label="Recommend pairs" icon={<Shuffle />} headerButton={true} onClick={recommendPairs} />
       </header>
 
       <div className={styles.lanes}>
@@ -131,9 +131,13 @@ const styles = css`
 
   .pairs {
     flex: 1;
-    height: 100%;
     display: flex;
+    margin: $unit-2 0;
     flex-direction: column;
+    background-color: $color-light;
+    border: 1px solid $color-border;
+    border-radius: 6px;
+    box-shadow: 0 0 $unit 0 rgba(0, 0, 0, 0.2);
 
     @media screen and (max-width: $breakpoint) {
       order: 99;
@@ -146,7 +150,10 @@ const styles = css`
     align-items: center;
     padding: $unit;
     padding-left: $unit-2;
+    border-radius: 6px 6px 0 0;
     border-bottom: 1px solid $color-border;
+    background-color: $color-secondary !important;
+    color: $color-light;
     flex: 0;
   }
 
