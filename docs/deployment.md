@@ -43,3 +43,5 @@ To do so, follow the steps below. It should only take 10-15 minutes.
 
 - **Problem:** You get an error when deploying like: `Error: HTTP Error: 400, Billing account for project '___' is not found. Billing must be enabled for activation of service(s) 'cloudbuild.googleapis.com,containerregistry.googleapis.com' to proceed.`
   - **Solution:** In the Firebase console, make sure your project is set to the "Blaze - pay as you go" plan, not the free plan.
+- **Problem:** You get an error when deploying like: `functions[onUserDelete(us-central1)]: Deployment error. Failed to configure trigger providers/firebase.auth/eventTypes/user.delete@firebaseauth.googleapis.com (__gcf__.us-central1.onUserDelete)`
+  - **Solution:** In the Firebase console, under Authentication, make sure you have "Email/Password" sign-in method enabled (as mentioned in step 1 above).
