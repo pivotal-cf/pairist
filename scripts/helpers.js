@@ -1,6 +1,6 @@
 const admin = require('firebase-admin');
 
-export async function run(func) {
+module.exports.run = async function run(func) {
   try {
     await func();
     process.exit(0);
@@ -10,7 +10,7 @@ export async function run(func) {
   }
 }
 
-export async function initializeFirebase() {
+module.exports.initializeFirebase = async function initializeFirebase() {
   const projectId = process.env.PAIRIST_FIREBASE_PROJECT_ID;
   const serviceAccountPath = process.env.PAIRIST_FIREBASE_SERVICE_ACCOUNT_PATH;
 
