@@ -1,6 +1,8 @@
 import { css } from 'astroturf';
 import { DragEvent, useState } from 'react';
 import { Lock, Trash, Unlock } from 'react-feather';
+import { Icon } from '@iconify/react';
+import broomIcon from '@iconify-icons/la/broom'
 import * as laneActions from '../actions/lane';
 import * as personActions from '../actions/person';
 import * as roleActions from '../actions/role';
@@ -137,7 +139,10 @@ export default function Lane(props: Props) {
           onClick={toggleLock}
           dark={isLocked}
         />
-        <IconButton icon={<Trash />} label="Clear lane" onClick={clearLane} />
+        <IconButton
+          className={styles.broomIconButton}
+          icon={<Icon icon={broomIcon} />} label="Clear lane" onClick={clearLane}
+        />
       </div>
     </div>
   );
@@ -182,5 +187,10 @@ const styles = css`
   .buttons {
     display: flex;
     flex-direction: column;
+  }
+
+  .broomIconButton svg {
+    width: 1.3em;
+    height: 1.3em;
   }
 `;

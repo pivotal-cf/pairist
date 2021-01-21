@@ -133,6 +133,7 @@ const styles = css`
     flex: 1;
     display: flex;
     margin: $unit-2 0;
+    padding-bottom: $unit-2;
     flex-direction: column;
     background-color: $color-light;
     border: 1px solid $color-border;
