@@ -121,7 +121,7 @@ export default function CreateTrackOrRole(props: Props) {
             <Select
               id="create-edit-track-or-role-color"
               value={color}
-              values={colors}
+              values={colors.sort((a, b) => (a.name > b.name) ? 1 : -1)}
               onChange={(evt) => {
                 setColor(evt.target.value);
               }}
