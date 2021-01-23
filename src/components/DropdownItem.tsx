@@ -40,6 +40,7 @@ const styles = css`
   }
 
   .button {
+    color: var(--color-text);
     display: inline-block;
     text-decoration: none;
     background: none;

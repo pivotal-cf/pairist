@@ -25,7 +25,7 @@ const styles = css`
 
   .name {
     font-weight: bold;
-    color: initial;
+    color: var(--color-text);
     padding: $unit;
   }
 `;

@@ -79,7 +79,7 @@ const styles = css`
 
   .backdrop {
     z-index: 999;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(var(--color-box-shadow), 0.4);
     position: absolute;
     left: 0;
     top: 0;
@@ -91,7 +91,7 @@ const styles = css`
   }
 
   .dialog {
-    background: white;
+    background: var(--color-theme);
     border-radius: $unit-half;
     box-shadow: 0 0 $unit-2 0px rgba(0, 0, 0, 0.2);
     min-width: 400px;

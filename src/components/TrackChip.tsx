@@ -107,6 +107,10 @@ const styles = css`
     &:focus {
       background: rgba(255, 255, 255, 0.9);
     }
+
+    svg {
+      stroke: var(--color-theme);
+    }
   }
 
   .track {

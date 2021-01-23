@@ -36,6 +36,7 @@ const styles = css`
   @import '../variables.scss';
 
   .input {
+    color: var(--color-text);
     padding: $unit;
     display: block;
     font-size: inherit;
@@ -45,6 +46,6 @@ const styles = css`
     width: 100%;
     width: stretch;
     min-width: $unit * 30;
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(var(--color-box-shadow), 0.05);
   }
 `;

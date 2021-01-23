@@ -186,10 +186,10 @@ const styles = css`
 
   .entitySection {
     margin: 0 $unit-2 $unit-2 $unit-2;
-    background-color: $color-light;
-    border: 1px solid $color-border;
+    background-color: var(--color-theme);
+    border: 1px solid var(--color-border);
     border-radius: 6px;
-    box-shadow: 0 0 $unit 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 $unit 0 rgba(var(--color-box-shadow), 0.2);
   }
 
   .header {
@@ -204,9 +204,9 @@ const styles = css`
     align-items: center;
     border-radius: 6px 6px 0 0;
     justify-content: space-between;
-    border-bottom: 1px solid $color-border;
-    background-color: $color-secondary !important;
-    color: $color-light;
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-secondary) !important;
+    color: white;
   }
 
   .transparencyBar {
@@ -215,7 +215,7 @@ const styles = css`
     height: $unit;
     margin: 0 $unit;
     position: fixed;
-    background-color: #f2f2f2;
+    background-color: var(--color-app-background);
   }
 
   .heading {

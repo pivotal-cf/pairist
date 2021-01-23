@@ -135,10 +135,10 @@ const styles = css`
     margin: $unit-2 0;
     padding-bottom: $unit-2;
     flex-direction: column;
-    background-color: $color-light;
-    border: 1px solid $color-border;
+    background-color: var(--color-theme);
+    border: 1px solid var(--color-border);
     border-radius: 6px;
-    box-shadow: 0 0 $unit 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 $unit 0 rgba(var(--color-box-shadow), 0.2);
 
     @media screen and (max-width: $breakpoint) {
       order: 99;
@@ -152,9 +152,9 @@ const styles = css`
     padding: $unit;
     padding-left: $unit-2;
     border-radius: 6px 6px 0 0;
-    border-bottom: 1px solid $color-border;
-    background-color: $color-secondary !important;
-    color: $color-light;
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-secondary) !important;
+    color: white;
     flex: 0;
   }
 

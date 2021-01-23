@@ -20,7 +20,7 @@ export async function resetPassword(email: string) {
   await auth.sendPasswordResetEmail(email);
 }
 
-export async function updateProfile(profile: { displayName?: string; photoURL?: string }, additionalOptions: { identiconString?: string }) {
+export async function updateProfile(profile: { displayName?: string; photoURL?: string }, additionalOptions: { identiconString?: string, theme?: string }) {
   if (!auth.currentUser) return;
   await updateUserProfileFunc(profile);
   await db.collection('additionalUserInfo').doc(auth.currentUser.uid).set(

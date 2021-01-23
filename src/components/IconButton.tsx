@@ -42,7 +42,7 @@ const styles = css`
     border: none;
     padding: $unit-half;
     display: inline-block;
-    color: $color-primary;
+    color: var(--color-primary);
     transition: background 0.1s ease-in-out;
     border-radius: $unit-half;
     position: relative;
@@ -53,24 +53,27 @@ const styles = css`
 
     &:hover,
     &:focus {
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(var(--color-box-shadow), 0.1);
     }
 
     &.dark {
-      background: $color-border;
+      background: var(--color-border);
     }
 
     &.headerButton svg {
       stroke-width: 3px;
-      color: $color-light;
+      stroke: var(--color-tertiary);
+
+      ::hover, ::focus {
+      }
     }
 
     &.headerButton:hover,
     &.headerButton:focus {
-      background: rgb(239, 246, 245);
+      background: var(--color-header-button);
 
       svg {
-      color: $color-primary;
+        stroke: var(--color-primary);
       }
     }
 

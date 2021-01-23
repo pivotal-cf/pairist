@@ -1,6 +1,6 @@
 import { css } from 'astroturf';
 import { DragEvent, useState } from 'react';
-import { Lock, Trash, Unlock } from 'react-feather';
+import { Lock, Unlock } from 'react-feather';
 import { Icon } from '@iconify/react';
 import broomIcon from '@iconify-icons/la/broom'
 import * as laneActions from '../actions/lane';
@@ -155,14 +155,14 @@ const styles = css`
     padding: $unit;
     display: flex;
     font-size: inherit;
-    border-bottom: 1px solid $color-border;
+    border-bottom: 1px solid var(--color-border);
     width: 100%;
     width: stretch;
     min-width: $unit * 30;
     align-items: center;
 
     &.isDraggingOver {
-      background: $color-border;
+      background: var(--color-border);
     }
   }
 
@@ -190,6 +190,8 @@ const styles = css`
   }
 
   .broomIconButton svg {
+    color: var(--color-text);
+    stroke: none;
     width: 1.3em;
     height: 1.3em;
   }

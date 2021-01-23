@@ -86,8 +86,8 @@ const styles = css`
   @import '../variables.scss';
 
   .person {
-    background: $color-light;
-    border: 1px solid $color-border;
+    background: var(--color-theme);
+    border: 1px solid var(--color-border);
     display: inline-flex;
     color: inherit;
     transition: background 0.1s ease-in-out;
@@ -104,6 +104,10 @@ const styles = css`
 
   .photo {
     height: 3em;
+
+    svg {
+      stroke: none;
+    }
   }
 
   .img {

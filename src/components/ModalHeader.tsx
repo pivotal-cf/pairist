@@ -16,8 +16,8 @@ const styles = css`
   @import '../variables.scss';
 
   .header {
-    background: $color-primary;
-    color: $color-light;
+    background: var(--color-primary);
+    color: var(--color-tertiary);
     border-top-left-radius: $unit-half;
     border-top-right-radius: $unit-half;
     padding: $unit-2;

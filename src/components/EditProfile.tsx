@@ -4,11 +4,13 @@ import * as userActions from '../actions/user';
 import { useModal } from '../hooks/useModal';
 import { useSession } from '../hooks/useSession';
 import { useAdditionalUserInfo } from '../hooks/useAdditionalUserInfo';
+import { setTheme } from '../actions/app';
 import { cn } from '../helpers';
 import { Triangle } from 'react-feather';
 import Button from './Button';
 import FormField from './FormField';
 import Input from './Input';
+import Select from './Select';
 import ModalBody from './ModalBody';
 import ModalFooter from './ModalFooter';
 import ModalHeader from './ModalHeader';
@@ -16,17 +18,19 @@ import IconButton from './IconButton';
 
 export default function EditProfile() {
   const { loaded, userId, email, displayName, photoURL } = useSession();
-  const { identiconString } = useAdditionalUserInfo(userId);
+  const { identiconString, theme } = useAdditionalUserInfo(userId);
   const [, setModalContent] = useModal();
   const [localDisplayName, setLocalDisplayName] = useState(displayName || '');
   const [localPhotoURL, setLocalPhotoURL] = useState(photoURL || '');
   const [localIdenticonString, setLocalIdenticonString] = useState(identiconString || '');
+  const [localTheme, setLocalTheme] = useState(theme || 'light');
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     setLocalIdenticonString(identiconString);
-  }, [identiconString]);
+    setLocalTheme(theme);
+  }, [identiconString, theme]);
 
   function cancel() {
     setModalContent(null);
@@ -43,7 +47,9 @@ export default function EditProfile() {
         photoURL: localPhotoURL,
       }, {
         identiconString: localIdenticonString,
+        theme: localTheme,
       });
+      setTheme(localTheme);
 
       // HACK: for some reason I can't yet figure out, the user image/display name
       // shown in the header won't update after editing user profile. The simplest thing
@@ -93,18 +99,33 @@ export default function EditProfile() {
         <div className={styles.advancedOptionsSection}>
           <IconButton
             label="Advanced options"
-            icon={<Triangle fill="dark-gray" className={cn(styles.optionsIcon, showAdvancedOptions && styles.optionsIconClicked)} />}
+            icon={<Triangle className={cn(styles.optionsIcon, showAdvancedOptions && styles.optionsIconClicked)} />}
             onClick={() => setShowAdvancedOptions(!showAdvancedOptions)} />
           <span className={styles.advancedOptionsHeader}><b>Advanced Options</b></span>
         </div>
           {showAdvancedOptions &&
-            <FormField label="Identicon string">
-              <Input
-                id="edit-identicon-string"
-                value={localIdenticonString}
-                onChange={(evt) => setLocalIdenticonString(evt.target.value)}
-              />
-            </FormField>
+            <div>
+              <FormField label="Identicon string">
+                <Input
+                  id="edit-identicon-string"
+                  value={localIdenticonString}
+                  onChange={(evt) => setLocalIdenticonString(evt.target.value)}
+                />
+              </FormField>
+              <FormField label="Theme">
+                <Select
+                  id="theme-selector"
+                  value={localTheme}
+                  values={[
+                    { name: 'Light', value: 'light' },
+                    { name: 'Dark', value: 'dark' }
+                  ]}
+                  onChange={(evt) => {
+                    setLocalTheme(evt.target.value);
+                  }}
+                />
+              </FormField>
+            </div>
           }
         </div>
       </ModalBody>
@@ -146,11 +167,12 @@ const styles = css`
   .image {
     width: 192px;
     height: 192px;
+    stroke: none;
   }
 
   .advancedOptionsSection {
     display: flex;
-    margin-top: $unit;
+    margin: $unit 0 $unit-2 0;
   }
 
   .advancedOptionsHeader {
@@ -161,6 +183,7 @@ const styles = css`
   .optionsIcon {
     transition: 0.9s;
     transform: rotate(90deg);
+    fill: var(--color-border);
   }
 
   .optionsIconClicked {

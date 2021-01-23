@@ -1,5 +1,18 @@
 @import './variables.scss';
 
+:root {
+  --color-text: #000;
+  --color-primary: #243640;
+  --color-secondary: #23807a;
+  --color-tertiary: #ebf4f7;
+  --color-danger: #992916;
+  --color-theme: #fff;
+  --color-border: rgb(212, 212, 212);
+  --color-box-shadow: '0, 0, 0';
+  --color-header-button: rgb(239, 246, 245);
+  --color-app-background: #f2f2f2;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
@@ -7,6 +20,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
+  color: var(--color-text);
 }
 
 html,
@@ -34,5 +48,5 @@ code {
 
 a,
 a:visited {
-  color: $color-primary;
+  color: var(--color-secondary);
 }

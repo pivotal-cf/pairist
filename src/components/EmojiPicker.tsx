@@ -59,7 +59,7 @@ const styles = css`
     justify-content: center;
 
     &:hover {
-      background: $color-border;
+      background: var(--color-border);
     }
   }
 `;

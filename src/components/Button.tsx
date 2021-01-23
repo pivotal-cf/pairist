@@ -74,7 +74,7 @@ const styles = css`
   @import '../variables.scss';
 
   .button {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(var(--color-box-shadow), 0.05);
     border: none;
     padding: $unit;
     display: inline-flex;
@@ -93,7 +93,7 @@ const styles = css`
 
     &:hover,
     &:focus {
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(var(--color-box-shadow), 0.1);
     }
 
     &.bold {
@@ -101,22 +101,32 @@ const styles = css`
     }
 
     &.confirm {
-      background: transparentize($color-secondary, 0.95);
-      color: $color-secondary;
+      color: var(--color-secondary);
 
-      &:hover,
-      &:focus {
-        background: transparentize($color-secondary, 0.9);
+      ::before {
+        background: var(--color-secondary);
+        opacity: 0.05;
+      }
+
+      &:hover::before,
+      &:focus::before {
+        background: var(--color-secondary);
+        opacity: 0.1;
       }
     }
 
     &.danger {
-      background: transparentize($color-danger, 0.95);
-      color: $color-danger;
+      color: var(--color-danger);
 
-      &:hover,
-      &:focus {
-        background: transparentize($color-danger, 0.9);
+      ::before {
+        background: var(--color-danger);
+        opacity: 0.05;
+      }
+
+      &:hover::before,
+      &:focus::before {
+        background: var(--color-danger);
+        opacity: 0.1;
       }
     }
   }
@@ -125,6 +135,7 @@ const styles = css`
     height: 0.8em;
     width: 0.8em;
     vertical-align: -0.1em;
+    stroke: var(--color-text);
   }
 
   .image {
@@ -148,7 +159,7 @@ const styles = css`
     border-radius: $unit-half;
     color: initial;
     padding: $unit;
-    box-shadow: 0 0 $unit rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 $unit rgba(var(--color-box-shadow), 0.2);
 
     &.leftMenu {
       left: $unit;

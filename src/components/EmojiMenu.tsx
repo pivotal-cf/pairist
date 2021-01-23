@@ -71,10 +71,10 @@ const styles = css`
     z-index: 9999;
     right: 0;
     top: 0;
-    background: $color-light;
+    background: var(--color-theme);
     border-radius: $unit-half;
-    box-shadow: 0 0 8px 0px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 8px 0px rgba(var(--color-box-shadow), 0.2);
+    border: 1px solid rgba(var(--color-box-shadow), 0.2);
     padding: $unit;
   }
 
@@ -83,7 +83,9 @@ const styles = css`
     padding: $unit;
     font-size: 0.8em;
     border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    color: var(--color-text);
+    background-color: var(--color-theme);
+    border-bottom: 1px solid rgba(var(--color-box-shadow), 0.2);
   }
 
   .emojiList {
@@ -107,7 +109,7 @@ const styles = css`
     text-align: center;
 
     &:hover {
-      background: $color-border;
+      background: var(--color-border);
     }
   }
 `;

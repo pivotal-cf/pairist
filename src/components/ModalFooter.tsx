@@ -33,10 +33,14 @@ const styles = css`
 
   .error {
     border-radius: $unit-half;
-    background: transparentize($color-danger, 0.9);
     padding: $unit;
-    color: $color-danger;
-    margin-bottom: $unit-2;
+    color: var(--color-danger);
+    margin-bottom: $unit-2
+
+    ::before {
+      background: var(--color-danger);
+      opacity: 0.9;
+    }
   }
 
   .buttons {

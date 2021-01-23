@@ -1,11 +1,23 @@
 import firebase from 'firebase/app';
 
+export interface JdenticonConfigMap {
+  [themeName: string]: {
+    replaceMode: string;
+    lightness: {grayscale: [number, number]}
+  }
+};
+
+export interface ThemeMap {
+  [variableName: string]: string;
+};
+
 export interface RouteParams {
   teamId?: string;
 }
 
 export interface AdditionalUserInfo {
   identiconString: string;
+  theme: string;
 };
 
 export interface TeamData {

@@ -185,7 +185,7 @@ const styles = css`
     flex-direction: column;
 
     + .welcomeForm {
-      border-left: 1px solid $color-border;
+      border-left: 1px solid var(--color-border);
     }
   }
 
@@ -197,9 +197,10 @@ const styles = css`
 
   .error {
     border-radius: $unit-half;
-    background: transparentize($color-danger, 0.9);
+    background: --color-danger;
+    opacity: 0.9;
     padding: $unit;
-    color: $color-danger;
+    color: var(--color-danger);
     margin-top: $unit-3;
   }
 

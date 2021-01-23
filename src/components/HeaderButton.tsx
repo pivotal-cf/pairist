@@ -54,11 +54,15 @@ const styles = css`
 
     &:hover,
     &:focus {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(var(--color-theme), 0.1);
     }
 
     &.bold {
       font-weight: bold;
+    }
+
+    svg {
+      stroke: var(--color-tertiary);
     }
   }
 
@@ -73,7 +77,7 @@ const styles = css`
     height: 1em;
     margin-right: 8px;
     border-radius: 2px;
-    background-color: white;
+    background-color: var(--color-theme);
   }
 
   .icon {

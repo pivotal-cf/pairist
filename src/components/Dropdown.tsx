@@ -75,7 +75,7 @@ const styles = css`
     position: absolute;
     z-index: 999;
     top: calc(100% - 2px);
-    background: white;
+    background: var(--color-theme);
     border-radius: $unit-half;
     box-shadow: 0 0 8px 0px rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(0, 0, 0, 0.2);

@@ -3,7 +3,10 @@ import { db } from '../firebase';
 import { AdditionalUserInfo } from '../types';
 
 export function useAdditionalUserInfo(userId: string) {
-  const [value = {identiconString: ''}, loading, error] = useDocumentData<AdditionalUserInfo>(
+  const localStorageTheme = localStorage.getItem('pairist-theme-selection');
+  const themeDefault = localStorageTheme ? localStorageTheme : 'light';
+
+  const [value = {identiconString: '', theme: themeDefault}, loading, error] = useDocumentData<AdditionalUserInfo>(
     db.collection('additionalUserInfo').doc(userId || '-')
   );
 
@@ -13,6 +16,7 @@ export function useAdditionalUserInfo(userId: string) {
   }
 
   return {
-    identiconString: value.identiconString
+    identiconString: value.identiconString,
+    theme: value.theme,
   };
 }

@@ -31,6 +31,7 @@ const styles = css`
   @import '../variables.scss';
 
   .select {
+    color: var(--color-text);
     padding: $unit;
     display: block;
     font-size: 1em;
@@ -40,6 +41,6 @@ const styles = css`
     width: stretch;
     min-width: $unit * 30;
     appearance: none;
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(var(--color-box-shadow), 0.05);
   }
 `;

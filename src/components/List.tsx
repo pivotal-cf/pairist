@@ -180,10 +180,10 @@ const styles = css`
   @import '../variables.scss';
 
   .wrapper {
-    background: $color-light;
+    background: var(--color-theme);
 
     + .wrapper {
-      border-top: 2px solid $color-border;
+      border-top: 2px solid var(--color-border);
     }
   }
 
@@ -197,32 +197,36 @@ const styles = css`
     font-size: inherit;
     display: flex;
     align-items: center;
-    background-color: $color-light;
-    box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.1);
+    background-color: var(--color-theme);
+    box-shadow: 0 2px 4px 0px rgba(var(--color-box-shadow), 0.1);
   }
 
   .list {
     padding: 0;
     margin: 0;
-    background: $color-border;
+    background: var(--color-border);
   }
 
   .item {
-    background: $color-light;
+    background: var(--color-theme);
     list-style-type: none;
     padding: $unit;
     display: flex;
     align-items: center;
 
     &.dragging {
-      box-shadow: 0 4px 8px 0px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 8px 0px rgba(var(--color-box-shadow), 0.2);
     }
   }
 
   .inputItem {
-    background: $color-light;
+    background: var(--color-theme);
     list-style-type: none;
     padding: $unit;
+
+    textarea {
+      color: var(--color-text);
+    }
   }
 
   .itemWrapper {

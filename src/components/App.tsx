@@ -1,9 +1,11 @@
 import { css } from 'astroturf';
 import { useEffect } from 'react';
 import { Route, Switch } from 'react-router';
+import { setTheme } from '../actions/app';
 import { useModal } from '../hooks/useModal';
 import { useSession } from '../hooks/useSession';
 import { useNotification } from '../hooks/useNotification';
+import { useAdditionalUserInfo } from '../hooks/useAdditionalUserInfo';
 import ChooseTeam from './ChooseTeam';
 import Header from './Header';
 import Footer from './Footer';
@@ -18,6 +20,7 @@ export default function App() {
   const [modalContent] = useModal();
   const [notification] = useNotification();
   const { loaded, userId } = useSession();
+  const { theme } = useAdditionalUserInfo(userId);
 
   const notLoggedIn = loaded && !userId;
   const unverified = Boolean(auth.currentUser && !auth.currentUser.emailVerified);
@@ -40,6 +43,10 @@ export default function App() {
       return unsubscribe;
     }
   }, [userId]);
+
+  useEffect(() => {
+    setTheme(theme);
+  }, [theme]);
 
   return (
     <div className={styles.app}>
@@ -68,6 +75,6 @@ const styles = css`
     height: 100%;
     display: flex;
     flex-direction: column;
-    background-color: #f2f2f2
+    background-color: var(--color-app-background);
   }
 `;

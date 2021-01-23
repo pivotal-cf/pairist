@@ -135,6 +135,10 @@ const styles = css`
   .emojisWrapper {
     max-width: 33%;
     text-align: right;
+
+    button {
+      color: var(--color-text);
+    }
   }
 
   .emojiDisplay {

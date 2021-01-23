@@ -26,7 +26,7 @@ export default function Header() {
 const styles = css`
   .header {
     color: white;
-    background: #243640;
+    background: var(--color-primary);
     flex-shrink: 0;
     flex-grow: 0;
     display: flex;

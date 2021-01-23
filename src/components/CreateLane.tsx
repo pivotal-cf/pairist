@@ -77,7 +77,7 @@ const styles = css`
     justify-content: center;
 
     &.isDraggingOver {
-      background: $color-border;
+      background: var(--color-border);
     }
   }
 `;
