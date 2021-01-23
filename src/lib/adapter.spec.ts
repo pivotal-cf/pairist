@@ -31,9 +31,9 @@ describe('adaptCurrentDataForRecommendationEngine', () => {
         { '.key': 'l2', locked: false },
       ]),
       entities: expect.arrayContaining([
-        { '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED },
-        { '.key': 'p2', type: 'person', location: 'l2' },
-        { '.key': 'p3', type: 'person', location: constants.LOCATION.OUT },
+        { '.key': 'p1', type: 'person', locked: false, location: constants.LOCATION.UNASSIGNED },
+        { '.key': 'p2', type: 'person', locked: false, location: 'l2' },
+        { '.key': 'p3', type: 'person', locked: true, location: constants.LOCATION.UNASSIGNED },
         { '.key': 'r1', type: 'role', location: 'l1' },
         { '.key': 'r2', type: 'role', location: constants.LOCATION.UNASSIGNED },
         { '.key': 't1', type: 'track', location: constants.LOCATION.UNASSIGNED },
@@ -66,7 +66,7 @@ describe('adaptHistoryDataForRecommendationEngine', () => {
       time2: {
         lanes: {},
         people: {
-          p1: { laneId: '' },
+          p1: { laneId: '', isLocked: false },
         },
         roles: {
           r2: { laneId: '' },
@@ -83,19 +83,19 @@ describe('adaptHistoryDataForRecommendationEngine', () => {
           { '.key': 'l2', locked: false },
         ]),
         entities: expect.arrayContaining([
-          { '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED },
-          { '.key': 'p2', type: 'person', location: 'l2' },
-          { '.key': 'p3', type: 'person', location: constants.LOCATION.OUT },
           { '.key': 'r1', type: 'role', location: 'l1' },
           { '.key': 'r2', type: 'role', location: constants.LOCATION.UNASSIGNED },
           { '.key': 't1', type: 'track', location: constants.LOCATION.UNASSIGNED },
+          { '.key': 'p1', type: 'person', locked: false, location: constants.LOCATION.UNASSIGNED },
+          { '.key': 'p2', type: 'person', locked: false, location: 'l2' },
+          { '.key': 'p3', type: 'person', locked: true, location: constants.LOCATION.UNASSIGNED },
         ]),
       },
       {
         '.key': 'time2',
         lanes: expect.arrayContaining([]),
         entities: expect.arrayContaining([
-          { '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED },
+          { '.key': 'p1', type: 'person', locked: false, location: constants.LOCATION.UNASSIGNED },
           { '.key': 'r2', type: 'role', location: constants.LOCATION.UNASSIGNED },
         ]),
       },

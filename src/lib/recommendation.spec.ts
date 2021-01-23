@@ -2,7 +2,7 @@
 
 import assert from 'assert';
 import fs from 'fs';
-import { combination } from 'js-combinatorics';
+import {combination} from 'js-combinatorics';
 import _ from 'lodash/fp';
 import mkdirp from 'mkdirp';
 import constants from './constants';
@@ -16,7 +16,7 @@ describe('Recommendation', () => {
       const allPossibleAssignments = Array.from(
         Recommendation.allPossibleAssignments({
           current: {
-            entities: [{ '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED }],
+            entities: [{'.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED}],
             lanes: [],
           },
         })
@@ -29,8 +29,8 @@ describe('Recommendation', () => {
       const allPossibleAssignments = Array.from(
         Recommendation.allPossibleAssignments({
           current: {
-            entities: [{ '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED }],
-            lanes: [{ '.key': 'l1' }],
+            entities: [{'.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED}],
+            lanes: [{'.key': 'l1'}],
           },
         })
       );
@@ -43,10 +43,10 @@ describe('Recommendation', () => {
         Recommendation.allPossibleAssignments({
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: 'l1' },
-              { '.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED },
+              {'.key': 'p1', type: 'person', location: 'l1'},
+              {'.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED},
             ],
-            lanes: [{ '.key': 'l1', locked: true }],
+            lanes: [{'.key': 'l1', locked: true}],
           },
         })
       );
@@ -59,11 +59,11 @@ describe('Recommendation', () => {
         Recommendation.allPossibleAssignments({
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'p3', type: 'person', location: constants.LOCATION.UNASSIGNED },
+              {'.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'p3', type: 'person', location: constants.LOCATION.UNASSIGNED},
             ],
-            lanes: [{ '.key': 'l1' }, { '.key': 'l2' }],
+            lanes: [{'.key': 'l1'}, {'.key': 'l2'}],
           },
         })
       );
@@ -101,12 +101,12 @@ describe('Recommendation', () => {
         const nextRecommendation = Recommendation.allPossibleAssignments({
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: 'l1' },
-              { '.key': 'p2', type: 'person', location: 'l1' },
-              { '.key': 'p3', type: 'person', location: 'l2' },
-              { '.key': 'p4', type: 'person', location: 'l2' },
+              {'.key': 'p1', type: 'person', location: 'l1'},
+              {'.key': 'p2', type: 'person', location: 'l1'},
+              {'.key': 'p3', type: 'person', location: 'l2'},
+              {'.key': 'p4', type: 'person', location: 'l2'},
             ],
-            lanes: [{ '.key': 'l1' }, { '.key': 'l2' }],
+            lanes: [{'.key': 'l1'}, {'.key': 'l2'}],
           },
         });
 
@@ -131,13 +131,13 @@ describe('Recommendation', () => {
         Recommendation.allPossibleAssignments({
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: 'l1' },
-              { '.key': 'p2', type: 'person', location: 'l1' },
-              { '.key': 'p3', type: 'person', location: 'l2' },
-              { '.key': 'p4', type: 'person', location: 'l2' },
-              { '.key': 'p5', type: 'person', location: constants.LOCATION.UNASSIGNED },
+              {'.key': 'p1', type: 'person', location: 'l1'},
+              {'.key': 'p2', type: 'person', location: 'l1'},
+              {'.key': 'p3', type: 'person', location: 'l2'},
+              {'.key': 'p4', type: 'person', location: 'l2'},
+              {'.key': 'p5', type: 'person', location: constants.LOCATION.UNASSIGNED},
             ],
-            lanes: [{ '.key': 'l1' }, { '.key': 'l2' }],
+            lanes: [{'.key': 'l1'}, {'.key': 'l2'}],
           },
         })
       );
@@ -224,8 +224,8 @@ describe('Recommendation', () => {
     it('does not blow up if history is not set', () => {
       const bestPairing = Recommendation.calculateMovesToBestPairing({
         current: {
-          entities: [{ '.key': 'p1', type: 'person', location: 'l1' }],
-          lanes: [{ '.key': 'l1' }],
+          entities: [{'.key': 'p1', type: 'person', location: 'l1'}],
+          lanes: [{'.key': 'l1'}],
         },
       });
 
@@ -236,10 +236,10 @@ describe('Recommendation', () => {
       const bestPairing = Recommendation.calculateMovesToBestPairing({
         current: {
           entities: [
-            { '.key': 'p1', type: 'person', location: 'l1' },
-            { '.key': 'p2', type: 'person', location: 'l1' },
+            {'.key': 'p1', type: 'person', location: 'l1'},
+            {'.key': 'p2', type: 'person', location: 'l1'},
           ],
-          lanes: [{ '.key': 'l1' }],
+          lanes: [{'.key': 'l1'}],
         },
         history: [],
       });
@@ -251,43 +251,43 @@ describe('Recommendation', () => {
       const bestPairing = Recommendation.calculateMovesToBestPairing({
         current: {
           entities: [
-            { '.key': 'p1', type: 'person', location: 'l1' },
-            { '.key': 'p2', type: 'person', location: 'l1' },
-            { '.key': 'p3', type: 'person', location: constants.LOCATION.UNASSIGNED },
-            { '.key': 'p4', type: 'person', location: constants.LOCATION.UNASSIGNED },
-            { '.key': 'p5', type: 'person', location: constants.LOCATION.UNASSIGNED },
+            {'.key': 'p1', type: 'person', location: 'l1'},
+            {'.key': 'p2', type: 'person', location: 'l1'},
+            {'.key': 'p3', type: 'person', location: constants.LOCATION.UNASSIGNED},
+            {'.key': 'p4', type: 'person', location: constants.LOCATION.UNASSIGNED},
+            {'.key': 'p5', type: 'person', location: constants.LOCATION.UNASSIGNED},
           ],
-          lanes: [{ '.key': 'l1' }, { '.key': 'l2' }],
+          lanes: [{'.key': 'l1'}, {'.key': 'l2'}],
         },
         history: [
           {
             '.key': '' + previousScore(3),
             entities: [
-              { '.key': 'p1', type: 'person', location: 'l1' },
-              { '.key': 'p2', type: 'person', location: 'l3' },
-              { '.key': 'p3', type: 'person', location: 'l1' },
-              { '.key': 'p4', type: 'person', location: 'l2' },
-              { '.key': 'p5', type: 'person', location: 'l2' },
+              {'.key': 'p1', type: 'person', location: 'l1'},
+              {'.key': 'p2', type: 'person', location: 'l3'},
+              {'.key': 'p3', type: 'person', location: 'l1'},
+              {'.key': 'p4', type: 'person', location: 'l2'},
+              {'.key': 'p5', type: 'person', location: 'l2'},
             ],
           },
           {
             '.key': '' + previousScore(2),
             entities: [
-              { '.key': 'p1', type: 'person', location: 'l1' },
-              { '.key': 'p2', type: 'person', location: 'l2' },
-              { '.key': 'p3', type: 'person', location: 'l3' },
-              { '.key': 'p4', type: 'person', location: 'l1' },
-              { '.key': 'p5', type: 'person', location: 'l2' },
+              {'.key': 'p1', type: 'person', location: 'l1'},
+              {'.key': 'p2', type: 'person', location: 'l2'},
+              {'.key': 'p3', type: 'person', location: 'l3'},
+              {'.key': 'p4', type: 'person', location: 'l1'},
+              {'.key': 'p5', type: 'person', location: 'l2'},
             ],
           },
           {
             '.key': '' + previousScore(1),
             entities: [
-              { '.key': 'p1', type: 'person', location: 'l1' },
-              { '.key': 'p2', type: 'person', location: 'l1' },
-              { '.key': 'p3', type: 'person', location: 'l2' },
-              { '.key': 'p4', type: 'person', location: 'l2' },
-              { '.key': 'p5', type: 'person', location: 'l3' },
+              {'.key': 'p1', type: 'person', location: 'l1'},
+              {'.key': 'p2', type: 'person', location: 'l1'},
+              {'.key': 'p3', type: 'person', location: 'l2'},
+              {'.key': 'p4', type: 'person', location: 'l2'},
+              {'.key': 'p5', type: 'person', location: 'l3'},
             ],
           },
         ],
@@ -312,9 +312,9 @@ describe('Recommendation', () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing({
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'p3', type: 'person', location: constants.LOCATION.UNASSIGNED },
+              {'.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'p3', type: 'person', location: constants.LOCATION.UNASSIGNED},
             ],
             lanes: [],
           },
@@ -326,17 +326,17 @@ describe('Recommendation', () => {
             {
               '.key': '' + previousScore(2),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l1' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l1'},
               ],
             },
             {
               '.key': '' + previousScore(1),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l1' },
-                { '.key': 'p3', type: 'person', location: 'l2' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l1'},
+                {'.key': 'p3', type: 'person', location: 'l2'},
               ],
             },
           ],
@@ -356,6 +356,132 @@ describe('Recommendation', () => {
         );
       });
 
+      it("will not move people that are locked", () => {
+        const bestPairing = Recommendation.calculateMovesToBestPairing({
+          current: {
+            entities: [
+              {'.key': 'p1', type: 'person', location: 'l1'},
+              {'.key': 'p2', type: 'person', location: 'l1', locked: true},
+              {'.key': 'p3', type: 'person', location: 'l2'},
+            ],
+            lanes: [
+              {'.key': 'l1', locked: false},
+              {'.key': 'l2', locked: false},
+            ]
+          },
+          history: [
+            {
+              '.key': '' + previousScore(1),
+              entities: [
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l1'},
+                {'.key': 'p3', type: 'person', location: 'l2'},
+              ],
+            },
+            {
+              '.key': '' + previousScore(2),
+              entities: [
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l1'},
+              ],
+            },
+          ],
+        });
+
+        expect(normalizePairing(bestPairing)).toEqual(
+          expect.arrayContaining([
+            {
+              lane: 'l2',
+              entities: ['p1'],
+            },
+          ])
+        );
+      })
+
+      it("will not move people that are both locked", () => {
+        const bestPairing = Recommendation.calculateMovesToBestPairing({
+          current: {
+            entities: [
+              {'.key': 'p1', type: 'person', location: 'l1', locked: true},
+              {'.key': 'p2', type: 'person', location: 'l1', locked: true},
+              {'.key': 'p3', type: 'person', location: 'l2'},
+            ],
+            lanes: [
+              {'.key': 'l1', locked: false},
+              {'.key': 'l2', locked: false},
+            ]
+          },
+          history: [
+            {
+              '.key': '' + previousScore(1),
+              entities: [
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l1'},
+                {'.key': 'p3', type: 'person', location: 'l2'},
+              ],
+            },
+            {
+              '.key': '' + previousScore(2),
+              entities: [
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l1'},
+              ],
+            },
+          ],
+        });
+
+        expect(normalizePairing(bestPairing)).toEqual(
+          expect.arrayContaining([])
+        );
+      })
+
+      it("will still move people from out when everyone in a lane is locked", () => {
+        const bestPairing = Recommendation.calculateMovesToBestPairing({
+          current: {
+            entities: [
+              {'.key': 'p1', type: 'person', location: 'l1', locked: true},
+              {'.key': 'p2', type: 'person', location: 'l1', locked: true},
+              {'.key': 'p3', type: 'person', location: constants.LOCATION.UNASSIGNED},
+            ],
+            lanes: [
+              {'.key': 'l1', locked: false},
+              {'.key': 'l2', locked: false},
+            ]
+          },
+          history: [],
+        });
+
+        expect(normalizePairing(bestPairing)).toEqual(
+          expect.arrayContaining([
+            {lane: 'l2', entities: ['p3']},
+          ])
+        );
+      })
+
+      it("will still move people from the lane when everyone else in a lane is locked", () => {
+        const bestPairing = Recommendation.calculateMovesToBestPairing({
+          current: {
+            entities: [
+              {'.key': 'p1', type: 'person', location: 'l1', locked: true},
+              {'.key': 'p2', type: 'person', location: 'l1', locked: true},
+              {'.key': 'p3', type: 'person', location: 'l1', locked: false},
+            ],
+            lanes: [
+              {'.key': 'l1', locked: false},
+            ]
+          },
+          history: [],
+        });
+
+        expect(normalizePairing(bestPairing)).toEqual(
+          expect.arrayContaining([
+            {lane: 'new-lane', entities: ['p3']},
+          ])
+        );
+      })
+
       it('when scores are tied, it does not always pair the same people', () => {
         const bestPairings = [];
         while (bestPairings.length < 20) {
@@ -363,9 +489,9 @@ describe('Recommendation', () => {
             Recommendation.calculateMovesToBestPairing({
               current: {
                 entities: [
-                  { '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED },
-                  { '.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED },
-                  { '.key': 'p3', type: 'person', location: constants.LOCATION.UNASSIGNED },
+                  {'.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED},
+                  {'.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED},
+                  {'.key': 'p3', type: 'person', location: constants.LOCATION.UNASSIGNED},
                 ],
                 lanes: [],
               },
@@ -381,16 +507,16 @@ describe('Recommendation', () => {
         expect(uniquePairings).toEqual(
           expect.arrayContaining([
             expect.arrayContaining([
-              { lane: 'new-lane', entities: ['p1'] },
-              { lane: 'new-lane', entities: ['p2', 'p3'] },
+              {lane: 'new-lane', entities: ['p1']},
+              {lane: 'new-lane', entities: ['p2', 'p3']},
             ]),
             expect.arrayContaining([
-              { lane: 'new-lane', entities: ['p2'] },
-              { lane: 'new-lane', entities: ['p1', 'p3'] },
+              {lane: 'new-lane', entities: ['p2']},
+              {lane: 'new-lane', entities: ['p1', 'p3']},
             ]),
             expect.arrayContaining([
-              { lane: 'new-lane', entities: ['p3'] },
-              { lane: 'new-lane', entities: ['p1', 'p2'] },
+              {lane: 'new-lane', entities: ['p3']},
+              {lane: 'new-lane', entities: ['p1', 'p2']},
             ]),
           ])
         );
@@ -400,7 +526,7 @@ describe('Recommendation', () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing({
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED },
+              {'.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED},
               {
                 '.key': 'p2',
                 type: 'person',
@@ -426,17 +552,17 @@ describe('Recommendation', () => {
             {
               '.key': '' + previousScore(2),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l1' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l1'},
               ],
             },
             {
               '.key': '' + previousScore(1),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l1' },
-                { '.key': 'p3', type: 'person', location: 'l2' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l1'},
+                {'.key': 'p3', type: 'person', location: 'l2'},
               ],
             },
           ],
@@ -462,9 +588,9 @@ describe('Recommendation', () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing({
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'p3', type: 'person', location: constants.LOCATION.OUT },
+              {'.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'p3', type: 'person', location: constants.LOCATION.OUT},
             ],
             lanes: [],
           },
@@ -472,17 +598,17 @@ describe('Recommendation', () => {
             {
               '.key': '' + previousScore(2),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l1' },
-                { '.key': 'p3', type: 'person', location: 'l2' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l1'},
+                {'.key': 'p3', type: 'person', location: 'l2'},
               ],
             },
             {
               '.key': '' + previousScore(1),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l1' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l1'},
               ],
             },
           ],
@@ -502,30 +628,30 @@ describe('Recommendation', () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing({
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: 'l1' },
-              { '.key': 'p2', type: 'person', location: 'l1' },
-              { '.key': 'p3', type: 'person', location: 'l2' },
+              {'.key': 'p1', type: 'person', location: 'l1'},
+              {'.key': 'p2', type: 'person', location: 'l1'},
+              {'.key': 'p3', type: 'person', location: 'l2'},
             ],
             lanes: [
-              { '.key': 'l1', locked: true },
-              { '.key': 'l2', locked: false },
+              {'.key': 'l1', locked: true},
+              {'.key': 'l2', locked: false},
             ],
           },
           history: [
             {
               '.key': '' + previousScore(2),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l1' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l1'},
               ],
             },
             {
               '.key': '' + previousScore(1),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l1' },
-                { '.key': 'p3', type: 'person', location: 'l2' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l1'},
+                {'.key': 'p3', type: 'person', location: 'l2'},
               ],
             },
           ],
@@ -538,30 +664,30 @@ describe('Recommendation', () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing({
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'p3', type: 'person', location: 'l2' },
+              {'.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'p3', type: 'person', location: 'l2'},
             ],
             lanes: [
-              { '.key': 'l1', locked: true },
-              { '.key': 'l2', locked: false },
+              {'.key': 'l1', locked: true},
+              {'.key': 'l2', locked: false},
             ],
           },
           history: [
             {
               '.key': '' + previousScore(2),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l1' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l1'},
               ],
             },
             {
               '.key': '' + previousScore(1),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l1' },
-                { '.key': 'p3', type: 'person', location: 'l2' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l1'},
+                {'.key': 'p3', type: 'person', location: 'l2'},
               ],
             },
           ],
@@ -587,48 +713,48 @@ describe('Recommendation', () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing({
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: 'l1' },
-              { '.key': 'p2', type: 'person', location: 'l2' },
-              { '.key': 'p3', type: 'person', location: 'l3' },
-              { '.key': 'p4', type: 'person', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'p5', type: 'person', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'p6', type: 'person', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'role', type: 'role', location: constants.LOCATION.UNASSIGNED },
+              {'.key': 'p1', type: 'person', location: 'l1'},
+              {'.key': 'p2', type: 'person', location: 'l2'},
+              {'.key': 'p3', type: 'person', location: 'l3'},
+              {'.key': 'p4', type: 'person', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'p5', type: 'person', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'p6', type: 'person', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'role', type: 'role', location: constants.LOCATION.UNASSIGNED},
             ],
-            lanes: [{ '.key': 'l1' }, { '.key': 'l2' }, { '.key': 'l3' }],
+            lanes: [{'.key': 'l1'}, {'.key': 'l2'}, {'.key': 'l3'}],
           },
           history: [
             {
               '.key': '' + previousScore(3),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l3' },
-                { '.key': 'p4', type: 'person', location: 'l3' },
-                { '.key': 'p5', type: 'person', location: 'l1' },
-                { '.key': 'p6', type: 'person', location: 'l2' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l3'},
+                {'.key': 'p4', type: 'person', location: 'l3'},
+                {'.key': 'p5', type: 'person', location: 'l1'},
+                {'.key': 'p6', type: 'person', location: 'l2'},
               ],
             },
             {
               '.key': '' + previousScore(2),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l3' },
-                { '.key': 'p4', type: 'person', location: 'l1' },
-                { '.key': 'p5', type: 'person', location: 'l2' },
-                { '.key': 'p6', type: 'person', location: 'l3' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l3'},
+                {'.key': 'p4', type: 'person', location: 'l1'},
+                {'.key': 'p5', type: 'person', location: 'l2'},
+                {'.key': 'p6', type: 'person', location: 'l3'},
               ],
             },
             {
               '.key': '' + previousScore(1),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l3' },
-                { '.key': 'p4', type: 'person', location: 'l2' },
-                { '.key': 'p5', type: 'person', location: 'l3' },
-                { '.key': 'p6', type: 'person', location: 'l1' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l3'},
+                {'.key': 'p4', type: 'person', location: 'l2'},
+                {'.key': 'p5', type: 'person', location: 'l3'},
+                {'.key': 'p6', type: 'person', location: 'l1'},
               ],
             },
           ],
@@ -737,19 +863,57 @@ describe('Recommendation', () => {
           ).length
         );
       });
+
+      it('fuzz 11', () => {
+        const board = require('./fixtures/board-from-fuzz-11.json');
+        const bestPairing = Recommendation.calculateMovesToBestPairing(board);
+        expect(bestPairing).toBeTruthy();
+        expect(_.flatten(bestPairing.map((p) => p.entities)).length).toBeGreaterThanOrEqual(
+          board.current.entities.filter(
+            (e) => e.type === 'person' && e.location === constants.LOCATION.UNASSIGNED
+          ).length
+        );
+        const people = board.current.entities.filter((e) => e.type === 'person');
+        const lockedPeople = people.filter((p) => p.locked).map((p) => p['.key']);
+        expect(bestPairing.every((move) => move.entities.every((entity) => !lockedPeople.includes(entity)))).toBeTruthy();
+      })
+
+      it('fuzz 12', () => {
+        const board = require('./fixtures/board-from-fuzz-12.json');
+        const bestPairing = Recommendation.calculateMovesToBestPairing(board);
+        expect(bestPairing).toBeTruthy();
+        expect(_.flatten(bestPairing.map((p) => p.entities)).length).toBeGreaterThanOrEqual(
+          board.current.entities.filter(
+            (e) => e.type === 'person' && e.location === constants.LOCATION.UNASSIGNED
+          ).length
+        );
+        const people = board.current.entities.filter((e) => e.type === 'person');
+        const lockedPeople = people.filter((p) => p.locked).map((p) => p['.key']);
+        expect(bestPairing.every((move) => move.entities.every((entity) => !lockedPeople.includes(entity)))).toBeTruthy();
+      })
+
+      it('fuzz 13', () => {
+        const board = require('./fixtures/board-from-fuzz-13.json');
+        const bestPairing = Recommendation.calculateMovesToBestPairing(board);
+        expect(bestPairing).toBeFalsy();
+      })
     });
 
     describe('fuzz pairing', () => {
       for (let i = 0; i < 500; i++) {
         it(`fuzz #${i}`, () => {
           const peopleCount = randomInt(10);
+          const lockedPeopleCount = randomInt(3);
           const outCount = randomInt(4);
+          const lockedOutCount = randomInt(3);
           const lanesCount = randomInt(5);
           const trackCount = randomInt(6);
           const historyCount = randomInt(200);
           const config = {
             peopleCount,
+            lockedPeopleCount,
             outCount,
+            lockedOutCount,
             lanesCount,
             trackCount,
             historyCount,
@@ -767,7 +931,7 @@ describe('Recommendation', () => {
             assert.strictEqual(
               bestPairing,
               null,
-              JSON.stringify({ config, current: board.current })
+              JSON.stringify({config, current: board.current})
             );
           } else {
             if (trackCount > 0 && peopleCount > 0) {
@@ -778,7 +942,7 @@ describe('Recommendation', () => {
               expect(results.pairStdDev).toBeLessThan(4);
               expect(results.trackStdDev).toBeLessThan(6);
             }
-            assert.ok(bestPairing, JSON.stringify({ config, current: board.current }));
+            assert.ok(bestPairing, JSON.stringify({config, current: board.current}));
             expect(bestPairing).toBeTruthy();
             expect(_.flatten(bestPairing.map((p) => p.entities)).length).toBeGreaterThanOrEqual(
               board.current.entities.filter(
@@ -809,7 +973,7 @@ describe('Recommendation', () => {
 
   describe('getMoves', () => {
     it('does not blow up if given an undefined pairing', () => {
-      expect(Recommendation.getMoves({ pairing: undefined, lanes: [] })).toEqual([]);
+      expect(Recommendation.getMoves({pairing: undefined, lanes: []})).toEqual([]);
     });
   });
 
@@ -817,8 +981,8 @@ describe('Recommendation', () => {
     it('does not blow up if history is not set', () => {
       const best = Recommendation.calculateMovesToBestAssignment({
         current: {
-          entities: [{ '.key': 'p1', type: 'person', location: 'l1' }],
-          lanes: [{ '.key': 'l1' }],
+          entities: [{'.key': 'p1', type: 'person', location: 'l1'}],
+          lanes: [{'.key': 'l1'}],
         },
       });
 
@@ -831,11 +995,11 @@ describe('Recommendation', () => {
         right: 'potato',
         current: {
           entities: [
-            { '.key': 'p1', type: 'person', location: 'l1' },
-            { '.key': 'p2', type: 'person', location: 'l1' },
-            { '.key': 'spud', type: 'potato', location: constants.LOCATION.UNASSIGNED },
+            {'.key': 'p1', type: 'person', location: 'l1'},
+            {'.key': 'p2', type: 'person', location: 'l1'},
+            {'.key': 'spud', type: 'potato', location: constants.LOCATION.UNASSIGNED},
           ],
-          lanes: [{ '.key': 'l1' }],
+          lanes: [{'.key': 'l1'}],
         },
         history: [],
       });
@@ -855,13 +1019,13 @@ describe('Recommendation', () => {
           right: 'role',
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: 'l1' },
-              { '.key': 'p2', type: 'person', location: 'l1' },
-              { '.key': 'p3', type: 'person', location: 'l2' },
-              { '.key': 'r1', type: 'role', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'r2', type: 'role', location: constants.LOCATION.UNASSIGNED },
+              {'.key': 'p1', type: 'person', location: 'l1'},
+              {'.key': 'p2', type: 'person', location: 'l1'},
+              {'.key': 'p3', type: 'person', location: 'l2'},
+              {'.key': 'r1', type: 'role', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'r2', type: 'role', location: constants.LOCATION.UNASSIGNED},
             ],
-            lanes: [{ '.key': 'l1' }, { '.key': 'l2' }],
+            lanes: [{'.key': 'l1'}, {'.key': 'l2'}],
           },
           history: [
             {
@@ -871,21 +1035,21 @@ describe('Recommendation', () => {
             {
               '.key': '' + previousScore(2),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l1' },
-                { '.key': 'r1', type: 'role', location: 'l1' },
-                { '.key': 'r2', type: 'role', location: 'l2' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l1'},
+                {'.key': 'r1', type: 'role', location: 'l1'},
+                {'.key': 'r2', type: 'role', location: 'l2'},
               ],
             },
             {
               '.key': '' + previousScore(1),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l1' },
-                { '.key': 'p3', type: 'person', location: 'l2' },
-                { '.key': 'r1', type: 'role', location: 'l1' },
-                { '.key': 'r2', type: 'role', location: 'l2' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l1'},
+                {'.key': 'p3', type: 'person', location: 'l2'},
+                {'.key': 'r1', type: 'role', location: 'l1'},
+                {'.key': 'r2', type: 'role', location: 'l2'},
               ],
             },
           ],
@@ -913,34 +1077,34 @@ describe('Recommendation', () => {
           right: 'role',
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: 'l1' },
-              { '.key': 'p2', type: 'person', location: 'l1' },
-              { '.key': 'p3', type: 'person', location: 'l2' },
-              { '.key': 'r1', type: 'role', location: 'l1' },
-              { '.key': 'r2', type: 'role', location: 'l2' },
+              {'.key': 'p1', type: 'person', location: 'l1'},
+              {'.key': 'p2', type: 'person', location: 'l1'},
+              {'.key': 'p3', type: 'person', location: 'l2'},
+              {'.key': 'r1', type: 'role', location: 'l1'},
+              {'.key': 'r2', type: 'role', location: 'l2'},
             ],
             lanes: [
-              { '.key': 'l1', locked: true },
-              { '.key': 'l2', locked: false },
+              {'.key': 'l1', locked: true},
+              {'.key': 'l2', locked: false},
             ],
           },
           history: [
             {
               '.key': '' + previousScore(2),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l1' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l1'},
               ],
             },
             {
               '.key': '' + previousScore(1),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l1' },
-                { '.key': 'p3', type: 'person', location: 'l2' },
-                { '.key': 'r1', type: 'role', location: 'l1' },
-                { '.key': 'r2', type: 'role', location: 'l1' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l1'},
+                {'.key': 'p3', type: 'person', location: 'l2'},
+                {'.key': 'r1', type: 'role', location: 'l1'},
+                {'.key': 'r2', type: 'role', location: 'l1'},
               ],
             },
           ],
@@ -955,36 +1119,36 @@ describe('Recommendation', () => {
           right: 'role',
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'p3', type: 'person', location: 'l2' },
-              { '.key': 'r1', type: 'role', location: 'l1' },
-              { '.key': 'r2', type: 'role', location: 'l2' },
+              {'.key': 'p1', type: 'person', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'p2', type: 'person', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'p3', type: 'person', location: 'l2'},
+              {'.key': 'r1', type: 'role', location: 'l1'},
+              {'.key': 'r2', type: 'role', location: 'l2'},
             ],
             lanes: [
-              { '.key': 'l1', locked: true },
-              { '.key': 'l2', locked: false },
+              {'.key': 'l1', locked: true},
+              {'.key': 'l2', locked: false},
             ],
           },
           history: [
             {
               '.key': '' + previousScore(2),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l1' },
-                { '.key': 'r1', type: 'role', location: 'l1' },
-                { '.key': 'r2', type: 'role', location: 'l2' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l1'},
+                {'.key': 'r1', type: 'role', location: 'l1'},
+                {'.key': 'r2', type: 'role', location: 'l2'},
               ],
             },
             {
               '.key': '' + previousScore(1),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l1' },
-                { '.key': 'p3', type: 'person', location: 'l2' },
-                { '.key': 'r1', type: 'role', location: 'l1' },
-                { '.key': 'r2', type: 'role', location: 'l2' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l1'},
+                {'.key': 'p3', type: 'person', location: 'l2'},
+                {'.key': 'r1', type: 'role', location: 'l1'},
+                {'.key': 'r2', type: 'role', location: 'l2'},
               ],
             },
           ],
@@ -1001,51 +1165,51 @@ describe('Recommendation', () => {
           right: 'role',
           current: {
             entities: [
-              { '.key': 'p1', type: 'person', location: 'l1' },
-              { '.key': 'p2', type: 'person', location: 'l1' },
-              { '.key': 'p3', type: 'person', location: 'l2' },
-              { '.key': 'p4', type: 'person', location: 'l2' },
-              { '.key': 'r1', type: 'role', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'r2', type: 'role', location: constants.LOCATION.UNASSIGNED },
-              { '.key': 'r3', type: 'role', location: constants.LOCATION.UNASSIGNED },
+              {'.key': 'p1', type: 'person', location: 'l1'},
+              {'.key': 'p2', type: 'person', location: 'l1'},
+              {'.key': 'p3', type: 'person', location: 'l2'},
+              {'.key': 'p4', type: 'person', location: 'l2'},
+              {'.key': 'r1', type: 'role', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'r2', type: 'role', location: constants.LOCATION.UNASSIGNED},
+              {'.key': 'r3', type: 'role', location: constants.LOCATION.UNASSIGNED},
             ],
-            lanes: [{ '.key': 'l1' }, { '.key': 'l2' }],
+            lanes: [{'.key': 'l1'}, {'.key': 'l2'}],
           },
           history: [
             {
               '.key': '' + previousScore(3),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l3' },
-                { '.key': 'p4', type: 'person', location: 'l3' },
-                { '.key': 'r1', type: 'role', location: 'l3' },
-                { '.key': 'r2', type: 'role', location: 'l2' },
-                { '.key': 'r3', type: 'role', location: 'l1' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l3'},
+                {'.key': 'p4', type: 'person', location: 'l3'},
+                {'.key': 'r1', type: 'role', location: 'l3'},
+                {'.key': 'r2', type: 'role', location: 'l2'},
+                {'.key': 'r3', type: 'role', location: 'l1'},
               ],
             },
             {
               '.key': '' + previousScore(2),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l3' },
-                { '.key': 'p4', type: 'person', location: 'l1' },
-                { '.key': 'r1', type: 'role', location: 'l1' },
-                { '.key': 'r2', type: 'role', location: 'l3' },
-                { '.key': 'r3', type: 'role', location: 'l2' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l3'},
+                {'.key': 'p4', type: 'person', location: 'l1'},
+                {'.key': 'r1', type: 'role', location: 'l1'},
+                {'.key': 'r2', type: 'role', location: 'l3'},
+                {'.key': 'r3', type: 'role', location: 'l2'},
               ],
             },
             {
               '.key': '' + previousScore(1),
               entities: [
-                { '.key': 'p1', type: 'person', location: 'l1' },
-                { '.key': 'p2', type: 'person', location: 'l2' },
-                { '.key': 'p3', type: 'person', location: 'l3' },
-                { '.key': 'p4', type: 'person', location: 'l2' },
-                { '.key': 'r1', type: 'role', location: 'l2' },
-                { '.key': 'r2', type: 'role', location: 'l1' },
-                { '.key': 'r3', type: 'role', location: 'l3' },
+                {'.key': 'p1', type: 'person', location: 'l1'},
+                {'.key': 'p2', type: 'person', location: 'l2'},
+                {'.key': 'p3', type: 'person', location: 'l3'},
+                {'.key': 'p4', type: 'person', location: 'l2'},
+                {'.key': 'r1', type: 'role', location: 'l2'},
+                {'.key': 'r2', type: 'role', location: 'l1'},
+                {'.key': 'r3', type: 'role', location: 'l3'},
               ],
             },
           ],
@@ -1094,7 +1258,7 @@ describe('Recommendation', () => {
             right: 'thing',
             ...board,
           });
-          assert.ok(best, JSON.stringify({ config, current: board.current }));
+          assert.ok(best, JSON.stringify({config, current: board.current}));
           expect(best).toBeTruthy();
         });
       }
@@ -1128,7 +1292,7 @@ const generateBoard = ({
   for (let i = 0; i < lanesCount; i++) {
     const id = guid('l');
     locations.push(id);
-    board.current.lanes.push({ '.key': id });
+    board.current.lanes.push({'.key': id});
   }
 
   let people = [];
@@ -1209,12 +1373,12 @@ const generateBoard = ({
 const previousScore = (timeAgo) => 1000000 - timeAgo;
 const randomInt = (max) => Math.floor(Math.random() * Math.floor(max));
 
-const measureAllocations = ({ current, history }) => {
+const measureAllocations = ({current, history}) => {
   const applyAssignment = (current, pairing) => {
     let newLaneCounter = 0;
     return pairing.reduce((current, asst) => {
       if (asst.lane === 'new-lane') {
-        current.lanes.push({ '.key': 'alloc-l-' + newLaneCounter });
+        current.lanes.push({'.key': 'alloc-l-' + newLaneCounter});
         asst.lane = 'alloc-l-' + newLaneCounter;
         newLaneCounter += 1;
       }
@@ -1306,7 +1470,7 @@ const measureAllocations = ({ current, history }) => {
   let meanTrackCount = _.mean(trackCounts);
   let trackStdDev = Math.sqrt(_.mean(trackCounts.map((c) => Math.pow(c - meanTrackCount, 2))));
 
-  return { pairAggregate, trackAggregate: aggregate, pairStdDev, trackStdDev };
+  return {pairAggregate, trackAggregate: aggregate, pairStdDev, trackStdDev};
 };
 
 const normalizePairing = (pairing) => {

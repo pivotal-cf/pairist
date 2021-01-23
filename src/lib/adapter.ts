@@ -9,6 +9,7 @@ export interface AdaptedLane {
 export interface AdaptedEntity {
   '.key': string;
   type: 'role' | 'track' | 'person';
+  locked?: boolean;
   location: string;
 }
 
@@ -49,14 +50,13 @@ export function adaptCurrentDataForRecommendationEngine(current: TeamPlacements)
 
   Object.keys(people).forEach((userId) => {
     const person = people[userId];
-
     let location = constants.LOCATION.UNASSIGNED;
-    if (person.isLocked) location = constants.LOCATION.OUT;
-    else if (person.laneId) location = person.laneId;
+    if (person.laneId) location = person.laneId;
 
     adaptedEntities.push({
       '.key': userId,
       type: 'person',
+      locked: person.isLocked,
       location,
     });
   });

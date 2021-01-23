@@ -67,7 +67,6 @@ export default function Person(props: Props) {
 
       <div className={styles.name}>{name}</div>
 
-      {props.editable && (
         <div className={styles.buttons}>
           <IconButton
             icon={isLocked ? <Lock /> : <Unlock />}
@@ -75,9 +74,10 @@ export default function Person(props: Props) {
             onClick={toggleLocked}
             dark={isLocked}
           />
+        {props.editable && (
           <IconButton icon={<Trash />} label="Remove person from team" onClick={removeMember} />
+        )}
         </div>
-      )}
     </div>
   );
 }

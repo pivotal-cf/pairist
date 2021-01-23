@@ -45,6 +45,7 @@ export default function Lane(props: Props) {
 
     for (const person of people) {
       personActions.movePersonToLane(teamId, person.userId, '');
+      personActions.unlockPerson(teamId, person.userId);
     }
 
     laneActions.deleteLane(teamId, laneId);
@@ -100,6 +101,7 @@ export default function Lane(props: Props) {
               userId={person.userId}
               displayName={person.displayName}
               teamId={teamId}
+              isLocked={person.isLocked}
               photoURL={person.photoURL}
               draggable={!isLocked}
             />

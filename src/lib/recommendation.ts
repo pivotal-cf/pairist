@@ -319,7 +319,45 @@ export const allPossibleAssignments = function* ({ current }) {
   });
 };
 
-export const calculateMovesToBestPairing = ({ current, history }) => {
+const convertLockedPeopleToEquivalents = (current) => {
+  let currentCopy = _clone(current);
+  const people = current.entities.filter(
+    (e) => e.type === 'person'
+  );
+  const peopleLocations = _groupBy(people, 'location');
+  currentCopy.lanes.forEach((l) => {
+    if (peopleLocations[key(l)] && peopleLocations[key(l)].length > 0) {
+      // someone is in this lane
+      const lockedCount = peopleLocations[key(l)].filter((person) => person.locked).length;
+      if (lockedCount > 0) {
+        // someone will hold context
+        if (lockedCount > 1) {
+          // there are two or more locked people in this lane, so no planning needed
+          // => lock the lane
+          l.locked = true;
+        }
+        // Since there is someone already holding context, unassign all unlocked people
+        peopleLocations[key(l)].filter((person) => !person.locked).forEach(
+          (person) => person.location = constants.LOCATION.UNASSIGNED
+        );
+      }
+    }
+  })
+  // move unassigned + locked people to out
+  if (peopleLocations[constants.LOCATION.UNASSIGNED]) {
+    peopleLocations[constants.LOCATION.UNASSIGNED].forEach(
+      (person) => {
+        if (person.locked) {
+          person.location = constants.LOCATION.OUT;
+        }
+      }
+    );
+  }
+  return currentCopy;
+};
+
+export const calculateMovesToBestPairing = ({current: rawCurrent, history}) => {
+  const current = convertLockedPeopleToEquivalents(rawCurrent);
   const laneKeys = current.lanes.filter((l) => !l.locked).map(key);
   let optimizedHistory = [];
   const people = current.entities.filter(

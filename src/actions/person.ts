@@ -15,7 +15,6 @@ export async function lockPerson(teamId: string, userId: string) {
   await teamsRef.doc(teamId).collection('people').doc(userId).set(
     {
       isLocked: true,
-      laneId: '',
     },
     { merge: true }
   );
