@@ -22,6 +22,7 @@ import TrackChip from './TrackChip';
 interface Props {
   flavor: 'track' | 'role';
   mode: 'create' | 'edit';
+  newChip?: boolean;
   entityId?: string;
   initialName?: string;
   initialEmoji?: string;
@@ -146,9 +147,9 @@ export default function CreateTrackOrRole(props: Props) {
       </ModalBody>
 
       <ModalFooter error={error}>
-        <Button flavor="danger" bold onClick={deleteTrackOrRole}>
+        {!props.newChip && <Button flavor="danger" bold onClick={deleteTrackOrRole}>
           Delete
-        </Button>
+        </Button>}
         <div style={{ flex: 1 }} />
         <Button onClick={cancel}>Cancel</Button>
         <Button disabled={!canSubmit} type="submit" bold flavor="confirm">
