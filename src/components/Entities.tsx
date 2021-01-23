@@ -75,7 +75,7 @@ export default function Entities(props: Props) {
             label="New track"
             icon={<Plus />}
             headerButton={true}
-            onClick={() => setModalContent(<CreateTrackOrRole newChip mode="create" flavor="track" />)}
+            onClick={() => setModalContent(<CreateTrackOrRole mode="create" flavor="track" />)}
           />
         </header>
 
@@ -106,7 +106,7 @@ export default function Entities(props: Props) {
             label="New role"
             icon={<Plus />}
             headerButton={true}
-            onClick={() => setModalContent(<CreateTrackOrRole newChip mode="create" flavor="role" />)}
+            onClick={() => setModalContent(<CreateTrackOrRole mode="create" flavor="role" />)}
           />
         </header>
 
