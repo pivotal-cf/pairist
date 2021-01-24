@@ -13,10 +13,10 @@ import EmojiPicker from './EmojiPicker';
 import FormField from './FormField';
 import IconButton from './IconButton';
 import Input from './Input';
+import ColorSelect from './ColorSelect';
 import ModalBody from './ModalBody';
 import ModalFooter from './ModalFooter';
 import ModalHeader from './ModalHeader';
-import Select from './Select';
 import TrackChip from './TrackChip';
 
 interface Props {
@@ -118,11 +118,11 @@ export default function CreateTrackOrRole(props: Props) {
           </FormField>
 
           <FormField label="Color" grow>
-            <Select
+            <ColorSelect
               id="create-edit-track-or-role-color"
               value={color}
-              values={colors}
-              onChange={(evt) => {
+              onChange={evt => {
+                evt.preventDefault();
                 setColor(evt.target.value);
               }}
             />

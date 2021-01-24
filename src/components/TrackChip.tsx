@@ -17,7 +17,7 @@ interface Props {
   editable?: boolean;
 }
 
-function readableTextColor(bgHexColor: string) {
+export function readableTextColor(bgHexColor: string) {
   const [r, g, b] = hexToRgb(bgHexColor);
   let [h, s, l] = rgbToHsl(+r, +g, +b);
 
