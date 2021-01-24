@@ -1,5 +1,5 @@
 import { css } from 'astroturf';
-import { CSSProperties, MouseEventHandler } from 'react';
+import { CSSProperties } from 'react';
 import { Select, MenuItem } from '@material-ui/core';
 import { colors } from '../colors';
 import { readableTextColor } from './TrackChip';
@@ -11,8 +11,6 @@ interface Props {
 };
 
 export default function ColorSelect(props: Props) {
-  const handleClick: MouseEventHandler = (evt) => evt.stopPropagation();
-
   return (
     <Select
       id={props.id}
@@ -31,7 +29,6 @@ export default function ColorSelect(props: Props) {
             value={c.value}
             key={c.value}
             style={style}
-            onMouseDown={handleClick}
           >
               {c.name}
           </MenuItem>

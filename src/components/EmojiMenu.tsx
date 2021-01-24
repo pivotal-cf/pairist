@@ -1,6 +1,7 @@
 import { css } from 'astroturf';
 import { useEffect, useRef, useState } from 'react';
 import { emojiList } from '../emojis';
+import { cn } from '../helpers';
 
 interface Props {
   onSelect: (emojiName: string | null) => void;
@@ -19,6 +20,8 @@ export default function EmojiMenu(props: Props) {
 
   useEffect(() => {
     const handleWindowClick = (evt: MouseEvent) => {
+      const classList = document.activeElement?.classList;
+      if (classList && classList.contains('emojiSearchInput')) return;
       if (containerRef.current && !containerRef.current.contains(evt.target as Node)) {
         onSelect(null);
       }
@@ -38,7 +41,7 @@ export default function EmojiMenu(props: Props) {
         ref={inputRef}
         value={search}
         onChange={(evt) => setSearch(evt.target.value.toLowerCase())}
-        className={styles.searchInput}
+        className={cn(styles.searchInput, 'emojiSearchInput')}
         placeholder="Search emojis..."
       />
 

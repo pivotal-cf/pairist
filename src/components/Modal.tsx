@@ -50,6 +50,8 @@ export default function Modal(props: Props) {
   };
 
   const handleClick: MouseEventHandler = (evt) => {
+    const classList = document.activeElement?.classList;
+    if (classList && classList.contains('MuiListItem-root')) return;
     if (dialogRef.current && !dialogRef.current.contains(evt.target as Node)) {
       setModalContent(null);
     }
