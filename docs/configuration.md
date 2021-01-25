@@ -66,3 +66,9 @@ Default is `America/Los_Angeles`.
 This is the number of history entries Pairist stores per team. The default is `20`. The recommendation engine uses these to generate pairs based on pairing history.
 
 _You probably won't ever need to change this!_
+
+## `PAIRIST_BACKUP_BUCKET_NAME` (optional)
+
+This is the Cloud Storage bucket a backup of your Firestore database will be stored in. If configured, a backup will be taken every 24 hours.
+
+As described in the [Firebase docs about scheduling data exports](https://firebase.google.com/docs/firestore/solutions/schedule-export), this value should be in the format "gs://BUCKET_NAME".

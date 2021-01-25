@@ -41,7 +41,8 @@ firebase functions:config:set \
   pairist.allowed_email_domains=${PAIRIST_ALLOWED_EMAIL_DOMAINS} \
   pairist.history_cron_schedule=${PAIRIST_HISTORY_CRON_SCHEDULE} \
   pairist.history_cron_timezone=${PAIRIST_HISTORY_CRON_TIMEZONE} \
-  pairist.history_entries_to_keep=${PAIRIST_HISTORY_ENTRIES_TO_KEEP}
+  pairist.history_entries_to_keep=${PAIRIST_HISTORY_ENTRIES_TO_KEEP} \
+  pairist.backup_bucket_name=${PAIRIST_BACKUP_BUCKET_NAME}
 
 # Deploy functions, hosting, database
 REACT_APP_PAIRIST_VERSION=$(node -p "require('./package').version") \
