@@ -78,6 +78,7 @@ const styles = css`
   @import '../variables.scss';
 
   .input {
+    color: var(--color-text);
     padding: $unit;
     display: block;
     font-size: inherit;

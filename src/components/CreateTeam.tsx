@@ -4,6 +4,7 @@ import * as teamActions from '../actions/team';
 import { validateTeamSettings } from '../helpers';
 import { useModal } from '../hooks/useModal';
 import { useSession } from '../hooks/useSession';
+import { auth } from '../firebase';
 import Button from './Button';
 import FormField from './FormField';
 import Input from './Input';
@@ -20,6 +21,8 @@ export const CreateTeam: FC = () => {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const unverified = Boolean(auth.currentUser && !auth.currentUser.emailVerified);
+  console.log(unverified);
   const canSubmit = Boolean(loaded && !error && !submitting);
 
   function cancel() {
@@ -54,39 +57,51 @@ export const CreateTeam: FC = () => {
     }
   }
 
+  const modalBody = unverified ? (
+    <ModalBody>
+      <p>
+        Unverified users cannot create new teams. We've sent you an email to verify your account.
+        <br/><br/>
+        <b>Note: it may be in your spam folder.</b>
+      </p>
+    </ModalBody>
+  ) : (
+    <ModalBody>
+      <FormField label={`Team URL (/teams/${teamURL})`}>
+        <Input
+          id="create-team-url"
+          value={teamURL}
+          onChange={(evt) => {
+            setTeamURL(evt.target.value);
+            setError('');
+          }}
+        />
+      </FormField>
+
+      <FormField label="Team name">
+        <Input
+          id="create-team-name"
+          value={teamName}
+          onChange={(evt) => {
+            setTeamName(evt.target.value);
+            setError('');
+          }}
+        />
+      </FormField>
+    </ModalBody>
+  );
+
   return (
     <form onSubmit={save}>
       <ModalHeader text="Create team" />
 
-      <ModalBody>
-        <FormField label={`Team URL (/teams/${teamURL})`}>
-          <Input
-            id="create-team-url"
-            value={teamURL}
-            onChange={(evt) => {
-              setTeamURL(evt.target.value);
-              setError('');
-            }}
-          />
-        </FormField>
-
-        <FormField label="Team name">
-          <Input
-            id="create-team-name"
-            value={teamName}
-            onChange={(evt) => {
-              setTeamName(evt.target.value);
-              setError('');
-            }}
-          />
-        </FormField>
-      </ModalBody>
+      { modalBody }
 
       <ModalFooter error={error}>
         <Button disabled={submitting} onClick={cancel}>
           Cancel
         </Button>
-        <Button
+        {!unverified && <Button
           disabled={!canSubmit}
           submitting={submitting}
           submittingText="Creating..."
@@ -95,7 +110,7 @@ export const CreateTeam: FC = () => {
           flavor="confirm"
         >
           Create
-        </Button>
+        </Button>}
       </ModalFooter>
     </form>
   );
