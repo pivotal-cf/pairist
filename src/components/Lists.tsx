@@ -96,6 +96,7 @@ const styles = css`
     border: 1px solid var(--color-border);
     border-radius: 6px;
     box-shadow: 0 0 $unit 0 rgba(var(--color-box-shadow), 0.2);
+    max-width: 33%;
 
     @media screen and (max-width: $breakpoint) {
       display: block;

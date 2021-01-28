@@ -177,6 +177,7 @@ const styles = css`
     margin: $unit-2 0;
     flex-direction: column;
     overflow-y: auto;
+    max-width: 33%;
 
     @media screen and (max-width: $breakpoint) {
       height: initial;

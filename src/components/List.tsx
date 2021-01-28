@@ -213,6 +213,7 @@ const styles = css`
     padding: $unit;
     display: flex;
     align-items: center;
+    overflow-wrap: anywhere;
 
     &.dragging {
       box-shadow: 0 4px 8px 0px rgba(var(--color-box-shadow), 0.2);

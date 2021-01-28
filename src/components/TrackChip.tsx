@@ -82,6 +82,7 @@ const styles = css`
     position: relative;
     user-select: none;
     margin: $unit-half;
+    overflow-wrap: anywhere;
 
     &[draggable='true'] {
       cursor: move;
