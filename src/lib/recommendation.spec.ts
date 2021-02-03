@@ -460,6 +460,61 @@ describe('Recommendation', () => {
         );
       })
 
+      it("will not move people out of a lane when the lane is locked and some people are locked too", () => {
+        const current = {
+            entities: [
+              {'.key': 'p1', type: 'person', location: 'l1', locked: true},
+              {'.key': 'p2', type: 'person', location: 'l1', locked: true},
+              {'.key': 'p3', type: 'person', location: 'l1', locked: false},
+            ],
+            lanes: [
+              {'.key': 'l1', locked: true},
+            ]
+          }
+        const bestPairing = Recommendation.calculateMovesToBestPairing({
+          current: current,
+          history: [],
+        });
+
+        expect(normalizePairing(bestPairing)).toEqual([]);
+        expect(current).toEqual({
+            entities: [
+              {'.key': 'p1', type: 'person', location: 'l1', locked: true},
+              {'.key': 'p2', type: 'person', location: 'l1', locked: true},
+              {'.key': 'p3', type: 'person', location: 'l1', locked: false},
+            ],
+            lanes: [
+              {'.key': 'l1', locked: true},
+            ]
+          });
+      })
+
+      it("will not modify the board during calls to calculateMovesToBestPairing", () => {
+        const current = {
+            entities: [
+              {'.key': 'p1', type: 'person', location: 'l1', locked: true},
+              {'.key': 'p2', type: 'person', location: 'l1', locked: true},
+            ],
+            lanes: [
+              {'.key': 'l1', locked: false},
+            ]
+        }
+
+        const bestPairing = Recommendation.calculateMovesToBestPairing({
+          current: current,
+          history: [],
+        });
+
+        expect(current).toEqual({
+            entities: [
+              {'.key': 'p1', type: 'person', location: 'l1', locked: true},
+              {'.key': 'p2', type: 'person', location: 'l1', locked: true},
+            ],
+            lanes: [
+              {'.key': 'l1', locked: false},
+            ]
+        })
+      })
       it("will still move people from the lane when everyone else in a lane is locked", () => {
         const bestPairing = Recommendation.calculateMovesToBestPairing({
           current: {

@@ -3,6 +3,7 @@
 import bigInt from 'big-integer';
 import { combination, permutation } from 'js-combinatorics';
 import _clone from 'lodash/clone';
+import _cloneDeep from 'lodash/cloneDeep';
 import _difference from 'lodash/difference';
 import _flatten from 'lodash/flatten';
 import _groupBy from 'lodash/groupBy';
@@ -320,10 +321,19 @@ export const allPossibleAssignments = function* ({ current }) {
 };
 
 const convertLockedPeopleToEquivalents = (current) => {
-  let currentCopy = _clone(current);
-  const people = current.entities.filter(
-    (e) => e.type === 'person'
+  let currentCopy = _cloneDeep(current);
+  const laneKeys = currentCopy.lanes.filter((l) => !l.locked).map(key);
+  const people = currentCopy.entities.filter(
+    (e) =>
+    e.type === 'person' &&
+    (e.location === constants.LOCATION.UNASSIGNED || laneKeys.includes(e.location))
   );
+  people.forEach((person) => {
+    // move unassigned + locked people to out
+    if (person.location == constants.LOCATION.UNASSIGNED && person.locked) {
+      person.location = constants.LOCATION.OUT;
+    }
+  })
   const peopleLocations = _groupBy(people, 'location');
   currentCopy.lanes.forEach((l) => {
     if (peopleLocations[key(l)] && peopleLocations[key(l)].length > 0) {
@@ -343,16 +353,7 @@ const convertLockedPeopleToEquivalents = (current) => {
       }
     }
   })
-  // move unassigned + locked people to out
-  if (peopleLocations[constants.LOCATION.UNASSIGNED]) {
-    peopleLocations[constants.LOCATION.UNASSIGNED].forEach(
-      (person) => {
-        if (person.locked) {
-          person.location = constants.LOCATION.OUT;
-        }
-      }
-    );
-  }
+
   return currentCopy;
 };
 
