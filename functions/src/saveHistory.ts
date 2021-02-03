@@ -71,10 +71,28 @@ async function saveTeamHistory(
 
     await db.collection('teamHistories').doc(teamId).set(entries);
 
+    updateContextCount(teamId, teamDoc);
     console.log(`Saved history for team ${teamId}.`);
   } catch (err) {
     console.error(`Failed to save history for team ${teamId}. ${err.message}`);
   }
+}
+
+async function updateContextCount(teamId: string, teamDoc: admin.firestore.DocumentReference) {
+  teamDoc.collection('people').get().then((querySnapshot) => {
+    var batch = db.batch();
+    querySnapshot.forEach((person) => {
+      let currentContextCount = person.data().contextCount || 0;
+      batch.set(
+        person.ref,
+        { contextCount: currentContextCount + 1 },
+        { merge: true },
+      )
+    });
+    batch.commit().then(() => {
+      console.log(`Updated context counts for team ${teamId}`);
+    });
+  });
 }
 
 async function getDocs(ref: admin.firestore.CollectionReference) {

@@ -6,6 +6,7 @@ export async function movePersonToLane(teamId: string, userId: string, laneId: s
   await teamsRef.doc(teamId).collection('people').doc(userId).set(
     {
       laneId,
+      contextCount: 0,
     },
     { merge: true }
   );
@@ -25,6 +26,15 @@ export async function unlockPerson(teamId: string, userId: string) {
   await teamsRef.doc(teamId).collection('people').doc(userId).set(
     {
       isLocked: false,
+    },
+    { merge: true }
+  );
+}
+
+export async function setContextCount(teamId: string, userId: string, contextCount: number) {
+  await teamsRef.doc(teamId).collection('people').doc(userId).set(
+    {
+      contextCount
     },
     { merge: true }
   );

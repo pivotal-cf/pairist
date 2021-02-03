@@ -66,6 +66,7 @@ export interface PersonData {
   userId: string;
   laneId: string;
   isLocked: boolean;
+  contextCount: number;
 }
 
 export interface TeamPlacements {
