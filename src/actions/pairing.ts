@@ -25,22 +25,14 @@ export function getRecommendations(teamId: string, current: TeamPlacements, hist
     return false;
   }
 
-  // Then, add any moves needed to assign roles to people
-  const roleMoves = calculateMovesToBestAssignment({
-    left: 'person',
-    right: 'role',
-    current: adaptedCurrent,
-    history: adaptedHistory,
-  });
-
-  moves.push(...roleMoves);
-
-  moves.forEach(async (rec: any) => {
+  // the problem is that this is async; need to wait
+  Promise.all(moves.map(async (rec: any) => {
     const { lane, entities } = rec;
 
     let laneId: string = lane;
     if (lane === 'new-lane') {
       laneId = await laneActions.createLane(teamId);
+      current.lanes[laneId] = { isLocked: false };
     }
 
     for (const entityId of entities) {
@@ -49,9 +41,28 @@ export function getRecommendations(teamId: string, current: TeamPlacements, hist
       } else if (current.roles.hasOwnProperty(entityId)) {
         roleActions.moveRoleToLane(teamId, entityId, laneId);
       } else if (current.people.hasOwnProperty(entityId)) {
+        current.people[entityId].laneId = laneId;
         personActions.movePersonToLane(teamId, entityId, laneId);
       }
     }
+  })).then(() => {
+    // Then, add any moves needed to assign roles to people
+    const roleMoves = calculateMovesToBestAssignment({
+      left: 'person',
+      right: 'role',
+      current: adaptCurrentDataForRecommendationEngine(current),
+      history: adaptedHistory,
+    });
+
+    roleMoves.forEach(async (rec: any) => {
+      const { lane, entities } = rec;
+      let laneId: string = lane;
+      for (const entityId of entities) {
+        if (current.roles.hasOwnProperty(entityId)) {
+          roleActions.moveRoleToLane(teamId, entityId, laneId);
+        }
+      }
+    })
   });
 
   return true;
