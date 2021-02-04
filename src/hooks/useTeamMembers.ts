@@ -7,6 +7,7 @@ interface TeamMembers {
   [userId: string]: {
     displayName: string;
     photoURL: string;
+    contextCount: number;
   };
 }
 

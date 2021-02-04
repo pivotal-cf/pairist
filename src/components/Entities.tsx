@@ -157,6 +157,7 @@ export default function Entities(props: Props) {
                 photoURL={person.photoURL}
                 teamId={teamId}
                 isLocked={isLocked}
+                contextCount={person.contextCount}
                 draggable
                 editable
               />
