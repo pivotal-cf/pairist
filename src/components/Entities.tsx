@@ -262,7 +262,7 @@ const styles = css`
   }
 
   .lockSvg {
-    opacity: 65%;
+    opacity: 0.65;
   }
 
   .hr {
