@@ -1,6 +1,6 @@
 import { css } from 'astroturf';
 import { DragEvent } from 'react';
-import { Plus } from 'react-feather';
+import { Lock, Plus } from 'react-feather';
 import * as personActions from '../actions/person';
 import * as roleActions from '../actions/role';
 import * as trackActions from '../actions/track';
@@ -20,6 +20,7 @@ interface Props {
 }
 
 export default function Entities(props: Props) {
+  let lockedMembers:string[] = [], unlockedMembers:string[] = [];
   const { teamId } = props;
   const [, setModalContent] = useModal();
   const members = useTeamMembers();
@@ -37,6 +38,12 @@ export default function Entities(props: Props) {
     }),
     {}
   );
+
+  Object.keys(members).forEach((userId) => {
+    const { laneId, isLocked } = peopleLocations[userId] || {};
+    if (laneId) return null;
+    isLocked ? lockedMembers.push(userId) : unlockedMembers.push(userId);
+  });
 
   function onDragOver(evt: DragEvent<HTMLDivElement>) {
     evt.preventDefault();
@@ -142,11 +149,29 @@ export default function Entities(props: Props) {
         </header>
 
         <div className={styles.content}>
-          {Object.keys(members).map((userId) => {
-            const { laneId, isLocked } = peopleLocations[userId] || {};
+          {unlockedMembers.map((userId) => {
+            const { isLocked } = peopleLocations[userId] || {};
+            const person = members[userId];
 
-            if (laneId) return null;
-
+            return (
+              <Person
+                key={userId}
+                userId={userId}
+                displayName={person.displayName}
+                photoURL={person.photoURL}
+                teamId={teamId}
+                isLocked={isLocked}
+                draggable
+                editable
+              />
+            );
+          })}
+          {lockedMembers.length ? <div className={styles.hrSection}>
+            <Lock className={styles.lockSvg} />
+            <hr className={styles.hr} />
+          </div> : null}
+          {lockedMembers.map((userId) => {
+            const { isLocked } = peopleLocations[userId] || {};
             const person = members[userId];
 
             return (
@@ -228,5 +253,21 @@ const styles = css`
 
   .content {
     padding: $unit;
+  }
+
+  .hrSection {
+    display: flex;
+    margin-top: $unit-half;
+    justify-content: space-between;
+  }
+
+  .lockSvg {
+    opacity: 65%;
+  }
+
+  .hr {
+    width: 90%;
+    display: inline-block;
+    border: solid 0.5px var(--color-border);
   }
 `;
