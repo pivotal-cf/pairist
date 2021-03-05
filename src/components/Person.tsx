@@ -45,7 +45,6 @@ export default function Person(props: Props) {
   }
 
   function onDragStart(evt: DragEvent<HTMLDivElement>) {
-    if (isLocked) return;
     evt.dataTransfer.setData('entityType', 'person');
     evt.dataTransfer.setData('entityId', props.userId);
   }
@@ -53,7 +52,7 @@ export default function Person(props: Props) {
   return (
     <div
       className={cn(styles.person)}
-      draggable={props.draggable && !isLocked}
+      draggable={props.draggable}
       onDragStart={onDragStart}
     >
       <div className={styles.photo}>

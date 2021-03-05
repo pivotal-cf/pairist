@@ -12,8 +12,8 @@ import { useTracks } from '../hooks/useTracks';
 import AddTeamMember from './AddTeamMember';
 import CreateTrackOrRole from './CreateTrackOrRole';
 import IconButton from './IconButton';
-import Person from './Person';
 import TrackChip from './TrackChip';
+import TheBench from './TheBench';
 
 interface Props {
   teamId: string;
@@ -149,44 +149,17 @@ export default function Entities(props: Props) {
         </header>
 
         <div className={styles.content}>
-          {unlockedMembers.map((userId) => {
-            const { isLocked } = peopleLocations[userId] || {};
-            const person = members[userId];
-
-            return (
-              <Person
-                key={userId}
-                userId={userId}
-                displayName={person.displayName}
-                photoURL={person.photoURL}
-                teamId={teamId}
-                isLocked={isLocked}
-                draggable
-                editable
-              />
-            );
-          })}
-          {lockedMembers.length ? <div className={styles.hrSection}>
+          <TheBench
+            benchwarmers={unlockedMembers}
+          />
+          <div className={styles.hrSection}>
             <Lock className={styles.lockSvg} />
             <hr className={styles.hr} />
-          </div> : null}
-          {lockedMembers.map((userId) => {
-            const { isLocked } = peopleLocations[userId] || {};
-            const person = members[userId];
-
-            return (
-              <Person
-                key={userId}
-                userId={userId}
-                displayName={person.displayName}
-                photoURL={person.photoURL}
-                teamId={teamId}
-                isLocked={isLocked}
-                draggable
-                editable
-              />
-            );
-          })}
+          </div>
+          <TheBench
+            lockedZone
+            benchwarmers={lockedMembers}
+          />
         </div>
       </section>
     </div>
