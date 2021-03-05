@@ -9,12 +9,12 @@ import { RouteParams } from '../types';
 import Person from './Person';
 
 interface Props {
-  theBench?: boolean,
+  lockedZone?: boolean,
   benchwarmers: string[];
 }
 
 export default function TheBench(props: Props) {
-  const { theBench, benchwarmers } = props;
+  const { lockedZone, benchwarmers } = props;
   const { teamId = '-' } = useParams<RouteParams>();
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const members = useTeamMembers();
@@ -53,7 +53,7 @@ export default function TheBench(props: Props) {
 
     switch (entityType) {
       case 'person': {
-        theBench
+        lockedZone
           ? personActions.lockPerson(teamId, entityId)
           : personActions.unlockPerson(teamId, entityId);
         break;
