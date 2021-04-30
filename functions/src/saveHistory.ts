@@ -23,7 +23,7 @@ export const saveHistory = functions.pubsub
       const teamId = teamDocSnapshot.id;
       const teamDoc = db.collection('teams').doc(teamId);
 
-      saveTeamHistory(timestamp, teamId, teamDoc);
+      await saveTeamHistory(timestamp, teamId, teamDoc);
     }
   });
 
