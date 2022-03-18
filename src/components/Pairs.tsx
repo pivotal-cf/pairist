@@ -143,6 +143,7 @@ const styles = css`
 
     @media screen and (max-width: $breakpoint) {
       order: 99;
+      max-width: 100%;
     }
   }
 
