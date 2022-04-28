@@ -180,6 +180,7 @@ const styles = css`
     @media screen and (max-width: $breakpoint) {
       height: initial;
       display: block;
+      max-width: 100%;
     }
   }
 
