@@ -23,10 +23,11 @@ To do so, follow the steps below. It should only take 10-15 minutes.
 
    1. Install Node/NPM, if you don't already have them. There are lots of ways to do this, but some options are listed [here](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm). **You must have Node 10 installed.** The deploy will fail with a helpful error if you have the wrong version.
    1. Install Yarn, as described [here](https://classic.yarnpkg.com/en/docs/install/).
+   1. Run `yarn install`.
 
 1. **Install the Firebase CLI & target new Firebase project.**
 
-   1. Can either install with NPM (`npm install -g firebase-tools`) or as a standalone binary (`curl -sL firebase.tools | bash`). More options are listed [here](https://firebase.google.com/docs/cli).
+   1. Can either install with NPM (`npm install -g firebase-tools`) or as a standalone binary (`curl -sL firebase.tools | bash`). More options are listed [here](https://firebase.google.com/docs/cli). **You must install firebase-tools < v10, as v10 requires at least Node 12.**
    1. Run `firebase login` (which will pop up a browser window to authenticate).
    1. Run `firebase projects:list` to list your projects (which should include the one you created earlier).
    1. Run `firebase use <your-project-id>` to target your new project.
