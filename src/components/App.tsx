@@ -23,7 +23,6 @@ export default function App() {
   const { theme } = useAdditionalUserInfo(userId);
 
   const notLoggedIn = loaded && !userId;
-  const unverified = Boolean(auth.currentUser && !auth.currentUser.emailVerified);
 
   useEffect(() => {
     // When a new user signs in for the first time, there will be a brief
@@ -59,7 +58,7 @@ export default function App() {
 
         <Route path="/">
           <Header />
-          {notLoggedIn ? <SignIn /> : unverified ? <NewUser /> : <ChooseTeam />}
+          {notLoggedIn ? <SignIn /> : <ChooseTeam />}
           <Footer />
           {modalContent && <Modal>{modalContent}</Modal>}
         </Route>

@@ -21,8 +21,6 @@ export const CreateTeam: FC = () => {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const unverified = Boolean(auth.currentUser && !auth.currentUser.emailVerified);
-  console.log(unverified);
   const canSubmit = Boolean(loaded && !error && !submitting);
 
   function cancel() {
@@ -57,15 +55,7 @@ export const CreateTeam: FC = () => {
     }
   }
 
-  const modalBody = unverified ? (
-    <ModalBody>
-      <p>
-        Unverified users cannot create new teams. We've sent you an email to verify your account.
-        <br/><br/>
-        <b>Note: it may be in your spam folder.</b>
-      </p>
-    </ModalBody>
-  ) : (
+  const modalBody =
     <ModalBody>
       <FormField label={`Team URL (/teams/${teamURL})`}>
         <Input
@@ -88,8 +78,7 @@ export const CreateTeam: FC = () => {
           }}
         />
       </FormField>
-    </ModalBody>
-  );
+    </ModalBody>;
 
   return (
     <form onSubmit={save}>
@@ -101,7 +90,7 @@ export const CreateTeam: FC = () => {
         <Button disabled={submitting} onClick={cancel}>
           Cancel
         </Button>
-        {!unverified && <Button
+        <Button
           disabled={!canSubmit}
           submitting={submitting}
           submittingText="Creating..."
@@ -110,7 +99,7 @@ export const CreateTeam: FC = () => {
           flavor="confirm"
         >
           Create
-        </Button>}
+        </Button>
       </ModalFooter>
     </form>
   );

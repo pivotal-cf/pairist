@@ -8,10 +8,6 @@ export function ensureAuthenticated(context: functions.https.CallableContext) {
   if (!context.auth || !context.auth.uid) {
     throw new functions.https.HttpsError('unauthenticated', 'Unauthenticated.');
   }
-
-  if (context.auth.token.pairistValidEmail !== true || context.auth.token.email_verified !== true) {
-    throw new functions.https.HttpsError('unauthenticated', 'Unverified.');
-  }
 }
 
 export async function validateFirebaseAuthentication(
@@ -31,13 +27,8 @@ export async function validateFirebaseAuthentication(
 
   try {
     const token = await admin.auth().verifyIdToken(idToken);
-
-    if (token.pairistValidEmail === true && token.email_verified === true) {
       res.locals.userId = token.uid;
       next();
-    } else {
-      res.send(403).send('Unverified');
-    }
     return;
   } catch (error) {
     res.status(403).send('Unauthorized');
