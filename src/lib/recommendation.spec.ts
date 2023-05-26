@@ -848,6 +848,57 @@ describe('Recommendation', () => {
       ]);
     });
 
+    describe('when 1 pair has not done the role ever', () => {
+      it("assigns the role to that pair", () => {
+        const best = Recommendation.calculateMovesToBestAssignment({
+          left: 'person',
+          right: 'role',
+          current: {
+            entities: [
+              { '.key': 'p1', type: 'person', location: 'l1' },
+              { '.key': 'p2', type: 'person', location: 'l1' },
+              { '.key': 'p3', type: 'person', location: 'l2' },
+              { '.key': 'r1', type: 'role', location: constants.LOCATION.UNASSIGNED },
+            ],
+            lanes: [{ '.key': 'l1' }, { '.key': 'l2' }],
+          },
+          history: [
+            {
+              '.key': '' + previousScore(3),
+              entities: [],
+            },
+            {
+              '.key': '' + previousScore(2),
+              entities: [
+                { '.key': 'p1', type: 'person', location: 'l1' },
+                { '.key': 'p2', type: 'person', location: 'l2' },
+                { '.key': 'p3', type: 'person', location: 'l1' },
+                { '.key': 'r1', type: 'role', location: 'l2' },
+              ],
+            },
+            {
+              '.key': '' + previousScore(1),
+              entities: [
+                { '.key': 'p1', type: 'person', location: 'l1' },
+                { '.key': 'p2', type: 'person', location: 'l1' },
+                { '.key': 'p3', type: 'person', location: 'l2' },
+                { '.key': 'r1', type: 'role', location: 'l1' },
+              ],
+            },
+          ],
+        });
+
+        expect(best).toEqual(
+          expect.arrayContaining([
+            {
+              lane: 'l2',
+              entities: ['r1'],
+            },
+          ])
+        );
+      });
+    });
+
     describe('with 3 people', () => {
       it("assigns roles to pairs that haven't had them for longer", () => {
         const best = Recommendation.calculateMovesToBestAssignment({
@@ -895,11 +946,11 @@ describe('Recommendation', () => {
           expect.arrayContaining([
             {
               lane: 'l1',
-              entities: ['r1'],
+              entities: ['r2'],
             },
             {
               lane: 'l2',
-              entities: ['r2'],
+              entities: ['r1'],
             },
           ])
         );
@@ -994,7 +1045,7 @@ describe('Recommendation', () => {
       });
     });
 
-    describe('less right than lanes', () => {
+    describe('more rights than lanes', () => {
       it('puts multiple on the same lane', () => {
         const best = Recommendation.calculateMovesToBestAssignment({
           left: 'person',
@@ -1062,7 +1113,7 @@ describe('Recommendation', () => {
               entities: ['r2'],
             },
             {
-              lane: 'l1',
+              lane: 'l2',
               entities: ['r3'],
             },
           ])

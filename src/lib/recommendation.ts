@@ -469,7 +469,7 @@ export const calculateMovesToBestAssignment = ({ left, right, current, history }
   let maxScore = 0;
 
   if (history && history.length > 0) {
-    maxScore = parseInt(_last(history)['.key']);
+    maxScore = parseInt(key(_last(history)));
 
     history = history.map((h) => {
       const groups = _groupBy(
@@ -480,14 +480,12 @@ export const calculateMovesToBestAssignment = ({ left, right, current, history }
         'location'
       );
       const lanes = [];
-      const score = maxScore - parseInt(h['.key']);
+      const score = maxScore - parseInt(key(h));
 
       Object.values(groups).forEach((entities) => {
-        entities = entities.map(key);
-
         lanes.push({
-          left: entities.filter((e) => e.type === left),
-          right: entities.filter((e) => e.type === right),
+          left: entities.filter((e) => e.type === left).map(key),
+          right: entities.filter((e) => e.type === right).map(key),
         });
       });
       return { score, lanes };
