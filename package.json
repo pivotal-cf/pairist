@@ -11,6 +11,7 @@
     "@iconify-icons/la": "^1.1.0",
     "@iconify/react": "^1.1.3",
     "@material-ui/core": "^4.11.2",
+    "@types/history": "^4.7.11",
     "big-integer": "^1.6.48",
     "firebase": "^8.1.1",
     "firebase-admin": "^9.4.1",
