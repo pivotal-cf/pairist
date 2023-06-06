@@ -28,3 +28,8 @@ jobs:
         cache: 'yarn'
     - run: yarn install
     - run: yarn test
+      env:
+        REACT_APP_FIREBASE_PROJECT_ID:  ignore
+        REACT_APP_FIREBASE_API_KEY:     ignore
+        REACT_APP_FIREBASE_AUTH_DOMAIN: ignore
+        REACT_APP_FIREBASE_URL:         ignore
