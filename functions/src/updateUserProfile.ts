@@ -1,9 +1,10 @@
-import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
+import * as functions from 'firebase-functions/v1';
 import { ensureAuthenticated } from './helpers';
 
-const db = admin.firestore();
-const auth = admin.auth();
+const db = getFirestore();
+const auth = getAuth();
 
 export const updateUserProfile = functions.https.onCall(async (data, context) => {
   ensureAuthenticated(context);

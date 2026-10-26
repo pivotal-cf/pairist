@@ -1,12 +1,10 @@
-import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
+import * as functions from 'firebase-functions/v1';
+import { allowedEmailDomains } from './config';
 
-const allowedEmailDomains = functions.config().pairist.allowed_email_domains
-  ? (functions.config().pairist.allowed_email_domains || '').split(',')
-  : null;
-
-const auth = admin.auth();
-const db = admin.firestore();
+const auth = getAuth();
+const db = getFirestore();
 
 export const verifyNewUser = functions.auth.user().onCreate(async (user) => {
   const email = user.email || '';
@@ -14,14 +12,14 @@ export const verifyNewUser = functions.auth.user().onCreate(async (user) => {
   console.log(`Verifying new user with id ${user.uid}`);
   console.log(`Allowed email domains are ${JSON.stringify(allowedEmailDomains)}`);
 
-  if (!allowedEmailDomains || !allowedEmailDomains.length) {
+  if (!allowedEmailDomains.length) {
     console.log(`No allowed email domains set; verifying`);
 
     await setUserVerified(user.uid);
     return;
   }
 
-  const emailDomain = email.split('@').pop();
+  const emailDomain = email.split('@').pop() ?? '';
   const hasAllowedEmailDomain = allowedEmailDomains.includes(emailDomain);
 
   if (hasAllowedEmailDomain) {

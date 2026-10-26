@@ -1,8 +1,14 @@
-import * as functions from 'firebase-functions';
-import * as express from 'express';
-import * as admin from 'firebase-admin';
+import * as functions from 'firebase-functions/v1';
+import type { Request, Response, NextFunction } from 'express';
+import { getAuth } from 'firebase-admin/auth';
+import {
+  getFirestore,
+  type CollectionReference,
+  type DocumentData,
+  type DocumentReference,
+} from 'firebase-admin/firestore';
 
-const db = admin.firestore();
+const db = getFirestore();
 
 export function ensureAuthenticated(context: functions.https.CallableContext) {
   if (!context.auth || !context.auth.uid) {
@@ -15,9 +21,9 @@ export function ensureAuthenticated(context: functions.https.CallableContext) {
 }
 
 export async function validateFirebaseAuthentication(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) {
   let idToken;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
@@ -30,13 +36,13 @@ export async function validateFirebaseAuthentication(
   }
 
   try {
-    const token = await admin.auth().verifyIdToken(idToken);
+    const token = await getAuth().verifyIdToken(idToken);
 
     if (token.pairistValidEmail === true && token.email_verified === true) {
       res.locals.userId = token.uid;
       next();
     } else {
-      res.send(403).send('Unverified');
+      res.status(403).send('Unverified');
     }
     return;
   } catch (error) {
@@ -49,8 +55,8 @@ export async function validateTeamMembership(
   teamId: string,
   userId: string
 ): Promise<{
-  teamDoc: admin.firestore.DocumentReference;
-  membersData: admin.firestore.DocumentData;
+  teamDoc: DocumentReference;
+  membersData: DocumentData;
 }> {
   if (typeof teamId !== 'string' || teamId.length === 0) {
     throw new Error('Invalid team');
@@ -73,7 +79,7 @@ export async function validateTeamMembership(
   return { teamDoc, membersData };
 }
 
-export async function getDocs(ref: admin.firestore.CollectionReference) {
+export async function getDocs(ref: CollectionReference) {
   const snapshot = await ref.get();
   const docsById: any = {};
 
@@ -82,4 +88,8 @@ export async function getDocs(ref: admin.firestore.CollectionReference) {
   }
 
   return docsById;
+}
+
+export function errorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
 }

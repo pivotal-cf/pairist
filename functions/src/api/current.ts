@@ -1,6 +1,6 @@
-import * as admin from 'firebase-admin';
-import * as express from 'express';
-import { getDocs, validateTeamMembership } from '../helpers';
+import type { DocumentReference } from 'firebase-admin/firestore';
+import type { Request, Response } from 'express';
+import { errorMessage, getDocs, validateTeamMembership } from '../helpers';
 
 interface PairsResponse {
   pairs: PairResponse[];
@@ -21,15 +21,15 @@ export interface PairResponse {
   }[];
 }
 
-export async function currentPairsEndpoint(req: express.Request, res: express.Response) {
-  const { teamId } = req.params;
+export async function currentPairsEndpoint(req: Request, res: Response) {
+  const teamId = String(req.params.teamId);
   const { userId } = res.locals;
 
   let teamDoc, membersData;
   try {
     ({ teamDoc, membersData } = await validateTeamMembership(teamId, userId));
   } catch (err) {
-    res.status(400).send(err.message);
+    res.status(400).send(errorMessage(err));
     return;
   }
 
@@ -42,7 +42,7 @@ export async function currentPairsEndpoint(req: express.Request, res: express.Re
 
 async function getCurrentPairs(
   membersData: any,
-  teamDoc: admin.firestore.DocumentReference
+  teamDoc: DocumentReference
 ): Promise<PairsResponse> {
   const pairsByLaneId: { [laneId: string]: PairResponse } = {};
 

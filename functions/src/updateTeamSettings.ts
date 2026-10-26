@@ -1,7 +1,7 @@
-import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
+import { getFirestore } from 'firebase-admin/firestore';
+import * as functions from 'firebase-functions/v1';
 
-const db = admin.firestore();
+const db = getFirestore();
 
 /**
  * This function is meant to propagate changes to team settings (e.g. team names)

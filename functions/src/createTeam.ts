@@ -1,8 +1,8 @@
-import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+import * as functions from 'firebase-functions/v1';
 import { ensureAuthenticated } from './helpers';
 
-const db = admin.firestore();
+const db = getFirestore();
 
 export const createTeam = functions.https.onCall(async (data, context) => {
   ensureAuthenticated(context);
@@ -27,7 +27,7 @@ export const createTeam = functions.https.onCall(async (data, context) => {
   const batch = db.batch();
 
   batch.set(db.collection('teams').doc(teamId), {
-    created: admin.firestore.FieldValue.serverTimestamp(),
+    created: FieldValue.serverTimestamp(),
     teamName,
   });
 

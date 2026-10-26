@@ -1,7 +1,7 @@
-import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+import * as functions from 'firebase-functions/v1';
 
-const db = admin.firestore();
+const db = getFirestore();
 
 export const onUserDelete = functions.auth.user().onDelete(async (user) => {
   const userId = user.uid;
@@ -19,7 +19,7 @@ export const onUserDelete = functions.auth.user().onDelete(async (user) => {
     batch.set(
       db.collection('teamMembers').doc(teamId),
       {
-        [userId]: admin.firestore.FieldValue.delete(),
+        [userId]: FieldValue.delete(),
       },
       { merge: true }
     );

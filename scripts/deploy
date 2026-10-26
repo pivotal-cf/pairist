@@ -36,13 +36,20 @@ set -x
 # Target project
 firebase use ${PAIRIST_FIREBASE_PROJECT_ID}
 
-# Configure function environment
-firebase functions:config:set \
-  pairist.allowed_email_domains=${PAIRIST_ALLOWED_EMAIL_DOMAINS} \
-  pairist.history_cron_schedule=${PAIRIST_HISTORY_CRON_SCHEDULE} \
-  pairist.history_cron_timezone=${PAIRIST_HISTORY_CRON_TIMEZONE} \
-  pairist.history_entries_to_keep=${PAIRIST_HISTORY_ENTRIES_TO_KEEP} \
-  pairist.backup_bucket_name=${PAIRIST_BACKUP_BUCKET_NAME}
+# Configure function environment. The Firebase CLI loads functions/.env.<project-id> and deploys
+# the values to the functions, which read them from process.env (see functions/src/config.ts).
+FUNCTIONS_ENV_FILE="functions/.env.${PAIRIST_FIREBASE_PROJECT_ID}"
+: > "${FUNCTIONS_ENV_FILE}"
+for name in \
+  PAIRIST_ALLOWED_EMAIL_DOMAINS \
+  PAIRIST_HISTORY_CRON_SCHEDULE \
+  PAIRIST_HISTORY_CRON_TIMEZONE \
+  PAIRIST_HISTORY_ENTRIES_TO_KEEP \
+  PAIRIST_BACKUP_BUCKET_NAME; do
+  if [ -n "${!name}" ]; then
+    echo "${name}=\"${!name}\"" >> "${FUNCTIONS_ENV_FILE}"
+  fi
+done
 
 # Deploy functions, hosting, database
 REACT_APP_PAIRIST_VERSION=$(node -p "require('./package').version") \

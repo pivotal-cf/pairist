@@ -1,6 +1,6 @@
-import * as functions from 'firebase-functions';
-import * as express from 'express';
-import * as cors from 'cors';
+import * as functions from 'firebase-functions/v1';
+import express from 'express';
+import cors from 'cors';
 import { validateFirebaseAuthentication } from './helpers';
 import { currentPairsEndpoint } from './api/current';
 import { listsEndpoint } from './api/lists';

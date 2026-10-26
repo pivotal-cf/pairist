@@ -1,6 +1,6 @@
-import * as admin from 'firebase-admin';
-import * as express from 'express';
-import { getDocs, validateTeamMembership } from '../helpers';
+import type { DocumentReference } from 'firebase-admin/firestore';
+import type { Request, Response } from 'express';
+import { errorMessage, getDocs, validateTeamMembership } from '../helpers';
 
 interface ListsResponse {
   lists: ListResponse[];
@@ -18,15 +18,15 @@ interface ListResponse {
   }[];
 }
 
-export async function listsEndpoint(req: express.Request, res: express.Response) {
-  const { teamId } = req.params;
+export async function listsEndpoint(req: Request, res: Response) {
+  const teamId = String(req.params.teamId);
   const { userId } = res.locals;
 
   let teamDoc;
   try {
     ({ teamDoc } = await validateTeamMembership(teamId, userId));
   } catch (err) {
-    res.status(400).send(err.message);
+    res.status(400).send(errorMessage(err));
     return;
   }
 
@@ -37,7 +37,7 @@ export async function listsEndpoint(req: express.Request, res: express.Response)
   res.json(result);
 }
 
-async function getCurrentLists(teamDoc: admin.firestore.DocumentReference): Promise<ListsResponse> {
+async function getCurrentLists(teamDoc: DocumentReference): Promise<ListsResponse> {
   const lists = await getDocs(teamDoc.collection('lists'));
 
   const promises = [];
@@ -54,7 +54,7 @@ async function getCurrentLists(teamDoc: admin.firestore.DocumentReference): Prom
 }
 
 async function getList(
-  teamDoc: admin.firestore.DocumentReference,
+  teamDoc: DocumentReference,
   listId: string,
   listTitle: string,
   order: number

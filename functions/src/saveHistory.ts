@@ -1,17 +1,17 @@
-import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
+import {
+  getFirestore,
+  type CollectionReference,
+  type DocumentReference,
+} from 'firebase-admin/firestore';
+import { historyCronSchedule, historyCronTimezone, historyEntriesToKeep } from './config';
+import { errorMessage } from './helpers';
+import * as functions from 'firebase-functions/v1';
 
-const db = admin.firestore();
-
-const { pairist } = functions.config();
-
-const cronSchedule = pairist.history_cron_schedule || 'every mon,tue,wed,thu,fri 00:00';
-const timezone = pairist.history_cron_timezone || 'America/Los_Angeles';
-const entriesToKeep = parseInt(pairist.history_entries_to_keep) || 20;
+const db = getFirestore();
 
 export const saveHistory = functions.pubsub
-  .schedule(cronSchedule)
-  .timeZone(timezone)
+  .schedule(historyCronSchedule)
+  .timeZone(historyCronTimezone)
   .onRun(async () => {
     const timestamp = Date.now().toString();
 
@@ -30,7 +30,7 @@ export const saveHistory = functions.pubsub
 async function saveTeamHistory(
   newTimestampKey: string,
   teamId: string,
-  teamDoc: admin.firestore.DocumentReference
+  teamDoc: DocumentReference
 ) {
   const [tracks, roles, people, lanes] = await Promise.all([
     getDocs(teamDoc.collection('tracks')),
@@ -51,12 +51,12 @@ async function saveTeamHistory(
     // We'll be adding one more entry in this function, so use length + 1 for calculations
     const newLength = oldTimestampKeys.length + 1;
 
-    if (newLength > entriesToKeep) {
-      const amountToRemove = newLength - entriesToKeep;
+    if (newLength > historyEntriesToKeep) {
+      const amountToRemove = newLength - historyEntriesToKeep;
 
-      // Filter down to N-1 most recent timestamps (N = entriesToKeep). These are the ones
+      // Filter down to N-1 most recent timestamps (N = historyEntriesToKeep). These are the ones
       // we'll be keeping (plus the new one we're adding right now).
-      oldTimestampKeys = oldTimestampKeys.slice(newLength - entriesToKeep);
+      oldTimestampKeys = oldTimestampKeys.slice(newLength - historyEntriesToKeep);
 
       console.log(`Removing ${amountToRemove} old entries for team ${teamId}`);
     }
@@ -73,11 +73,11 @@ async function saveTeamHistory(
 
     console.log(`Saved history for team ${teamId}.`);
   } catch (err) {
-    console.error(`Failed to save history for team ${teamId}. ${err.message}`);
+    console.error(`Failed to save history for team ${teamId}. ${errorMessage(err)}`);
   }
 }
 
-async function getDocs(ref: admin.firestore.CollectionReference) {
+async function getDocs(ref: CollectionReference) {
   const snapshot = await ref.get();
   const docsById: any = {};
 

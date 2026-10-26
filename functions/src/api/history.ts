@@ -1,6 +1,6 @@
-import * as admin from 'firebase-admin';
-import * as express from 'express';
-import { validateTeamMembership } from '../helpers';
+import { getFirestore } from 'firebase-admin/firestore';
+import type { Request, Response } from 'express';
+import { errorMessage, validateTeamMembership } from '../helpers';
 import { PairResponse } from './current';
 
 interface HistoryResponse {
@@ -9,17 +9,17 @@ interface HistoryResponse {
   };
 }
 
-const db = admin.firestore();
+const db = getFirestore();
 
-export async function historyEndpoint(req: express.Request, res: express.Response) {
-  const { teamId } = req.params;
+export async function historyEndpoint(req: Request, res: Response) {
+  const teamId = String(req.params.teamId);
   const { userId } = res.locals;
 
   let membersData;
   try {
     ({ membersData } = await validateTeamMembership(teamId, userId));
   } catch (err) {
-    res.status(400).send(err.message);
+    res.status(400).send(errorMessage(err));
     return;
   }
 

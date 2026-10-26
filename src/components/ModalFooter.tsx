@@ -35,7 +35,7 @@ const styles = css`
     border-radius: $unit-half;
     padding: $unit;
     color: var(--color-danger);
-    margin-bottom: $unit-2
+    margin-bottom: $unit-2;
 
     ::before {
       background: var(--color-danger);

@@ -11,6 +11,11 @@ else
   echo "No .env.pairist file found"
 fi
 
+# webpack 4 (used by react-scripts 4) needs OpenSSL's legacy provider on Node 17+
+if [ "$(node -p 'process.versions.node.split(".")[0]')" -ge 17 ]; then
+  export NODE_OPTIONS="--openssl-legacy-provider ${NODE_OPTIONS}"
+fi
+
 if [ -z "$PAIRIST_FIREBASE_PROJECT_ID" ]; then
   echo "PAIRIST_FIREBASE_PROJECT_ID is not set."
   echo "This should be set to your Firebase project ID."

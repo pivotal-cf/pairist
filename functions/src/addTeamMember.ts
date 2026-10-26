@@ -1,9 +1,10 @@
-import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
+import { getAuth, type UserRecord } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
+import * as functions from 'firebase-functions/v1';
 import { ensureAuthenticated } from './helpers';
 
-const db = admin.firestore();
-const auth = admin.auth();
+const db = getFirestore();
+const auth = getAuth();
 
 /**
  * This function is called directly from the front-end when a user adds a team member to a
@@ -30,7 +31,7 @@ export const addTeamMember = functions.https.onCall(async (data, context) => {
 
   console.log(`Adding user ${memberEmail} to team ${teamName} (teamId: ${teamId})`);
 
-  let userToAdd: admin.auth.UserRecord;
+  let userToAdd: UserRecord;
   try {
     userToAdd = await auth.getUserByEmail(memberEmail);
   } catch (err) {
